@@ -1,4 +1,13 @@
-const { User } = require('../models/models');
+import { User } from '../models/models';
+
+// Interfaccia per descrivere la struttura dell'utente
+interface UserInput {
+    name: string;
+    surname: string;
+    email: string;
+    type: string;
+    residual_tokens: number;
+}
 
 /*
 *
@@ -11,7 +20,7 @@ export async function createUser({
     email,
     type,
     residual_tokens
-}): Promise<void> {
+}: UserInput): Promise<any> {
     try {
         const newUser = await User.create({
             name,

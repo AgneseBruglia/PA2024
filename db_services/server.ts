@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+const express = require('express'); 
+import { Request, Response } from 'express';
 const { createUser } = require('./routes_db/controller_db'); 
 
 const app = express();
