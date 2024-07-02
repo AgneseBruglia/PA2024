@@ -12,13 +12,13 @@ app = Flask(__name__)
 global_model = None
 
 # Funzione per caricare il modello TensorFlow Lite
-def load_tflite_model(model_path):
+def _load_tflite_model(model_path):
     interpreter = tf.lite.Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
     return interpreter
 
 # Funzione per il preprocessamento del video
-def preprocess_video(video_path, input_shape, batch_size):
+def _preprocess_video(video_path, input_shape, batch_size):
     cap = cv2.VideoCapture(video_path)
     frames = []
     while cap.isOpened():
@@ -43,7 +43,7 @@ def preprocess_video(video_path, input_shape, batch_size):
     return batches
 
 # Funzione per eseguire l'inferenza sul video utilizzando il modello TensorFlow Lite
-def run_inference(interpreter, input_data):
+def _run_inference(interpreter, input_data):
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
@@ -54,11 +54,11 @@ def run_inference(interpreter, input_data):
     return float(output_data)
 
 # Funzione per l'inferenza sul video utilizzando il modello TensorFlow Lite
-def inferenceV3_ConvLSTM(video_folder):
+def _inferenceV3_ConvLSTM(video_folder):
     global global_model
 
     if global_model is None:
-        return abort(404, description="Modello non caricato. Carica il modello utilizzando /loadModel endpoint.")
+        raise ValueError("Modello non caricato. Carica il modello utilizzando /loadModel endpoint.")
 
     
     input_shape = (224, 224)
@@ -73,8 +73,8 @@ def inferenceV3_ConvLSTM(video_folder):
         # Verifica se il percorso è un file video
         if os.path.isfile(video_path) and any(video_path.endswith(extension) for extension in ['.mp4', '.avi', '.mov']):
             results = []
-            for chunks in preprocess_video(video_path, input_shape, batch_size):
-                result = run_inference(global_model, chunks)
+            for chunks in _preprocess_video(video_path, input_shape, batch_size):
+                result = _run_inference(global_model, chunks)
                 results.append(result)
             
             # Calcola la media dei risultati dei batch per il video corrente
@@ -88,26 +88,53 @@ def inferenceV3_ConvLSTM(video_folder):
 
     return video_results
 
+# Funzione per verificare i crediti residui
+def _check_residual_credits(video_path):
+    total_frames = 0
+
+    # Itera su tutti i file nella cartella video_folder
+    for filename in os.listdir(video_path):
+        video_path = os.path.join(video_path, filename)
+        
+        # Verifica se il percorso è un file video
+        if os.path.isfile(video_path) and any(video_path.endswith(extension) for extension in ['.mp4', '.avi', '.mov']):
+            cap = cv2.VideoCapture(video_path)
+            
+            # Conta il numero di frame nel video corrente
+            num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            total_frames += num_frames
+            
+            # Chiudi il video capture
+            cap.release()
+
+    return float(total_frames) * 1.25
+
+# Funzione per la gestione degli errori
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if isinstance(e, ValueError):
+        return jsonify({"error": str(e)}), 400
+    if isinstance(e, FileNotFoundError):
+        return jsonify({"error": str(FileNotFoundError)}), 404
+    if isinstance(e, PermissionError):
+        return jsonify({"error": str(PermissionError)}), 401
+    return jsonify({"error": "Internal server error"}), 500
+
 # Rotte dell'applicazione Flask
 
 @app.route('/analyzeVideo', methods=['GET'])
 def analyze_video():
-    """Il metodo ritorna il risultato sulle inferenze dei video solo se l'utente ha il credito necessario
-       altrimenti va in errore."""
     video_path = request.args.get('video_path')
     residual_credits = request.args.get('residual_credits')
     # Verifica se il video esiste
     if not os.path.exists(video_path):
-        return abort(404, description="Video non trovato")
+        raise FileNotFoundError('File not found error.')
 
-    if(_check_residual_credits(video_path) > float(residual_credits)):
-        return abort(401, description="Accesso non autorizzato. Controllare crediti residui")
+    if _check_residual_credits(video_path) > float(residual_credits):
+        raise PermissionError('Unauthorized access. Check residual tokens.')
     
-    predictions = inferenceV3_ConvLSTM(video_path)
+    predictions = _inferenceV3_ConvLSTM(video_path)
     
-    if 'error' in predictions:
-        return jsonify(predictions), 400
-            
     result_list = [{"video_name": video_name, "result": label} for video_name, label in predictions.items()]
 
     return jsonify(result_list)
@@ -129,39 +156,18 @@ def app_info():
 def load_model():
     global global_model
     
-    #return jsonify(request.json)
     if 'model_path' not in request.json:
-        return abort(400, description="Percorso del modello non fornito")
+        raise ValueError("Missing model path.")
     
     model_path = request.json['model_path']
     
     if not os.path.exists(model_path):
-        return abort(404, description="Modello inesitente")
+        raise FileNotFoundError
     
-    global_model = load_tflite_model(model_path)
+    global_model = _load_tflite_model(model_path)
     
     return jsonify({"Risultato": "Modello caricato con successo"})
-    
-def _check_residual_credits(video_path):
-    total_frames = 0
-
-    # Itera su tutti i file nella cartella video_folder
-    for filename in os.listdir(video_path):
-        video_path = os.path.join(video_path, filename)
-        
-        # Verifica se il percorso è un file video
-        if os.path.isfile(video_path) and any(video_path.endswith(extension) for extension in ['.mp4', '.avi', '.mov']):
-            cap = cv2.VideoCapture(video_path)
-            
-            # Conta il numero di frame nel video corrente
-            num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-            total_frames += num_frames
-            
-            # Chiudi il video capture
-            cap.release()
-
-    return float(total_frames)*1.25
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', port=5000, debug=True)
-    app.run(host='py-services', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='py-services', port=port, debug=True)
