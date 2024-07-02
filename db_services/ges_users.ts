@@ -8,7 +8,6 @@ const { User } = require('./models/models');
 export async function createUser() {
     try {
         const newAdmin = await User.create({
-            id: 333,
             name: 'Agnese',
             surname: 'Bruglia',
             email: 'agnib@gmail.com',
@@ -17,7 +16,6 @@ export async function createUser() {
         });
 
         const newUser1 = await User.create({
-            id: 444,
             name: 'Luca',
             surname: 'Bellante',
             email: 'lubells@gmail.com',
@@ -26,7 +24,6 @@ export async function createUser() {
         });
 
         const newUser2 = await User.create({
-            id: 555,
             name: 'Adriano',
             surname: 'Mancini',
             email: 'mancins@gmail.com',
@@ -41,3 +38,5 @@ export async function createUser() {
         console.error('Errore durante la creazione dell\'utente:', error);
     }
 }
+
+createUser();

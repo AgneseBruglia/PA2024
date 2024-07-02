@@ -7,10 +7,11 @@ import Database from '../sequelize';
 */
 const sequelize: Sequelize = Database.getInstance();
 
-export const User = sequelize.define('user', {
+export const User = sequelize.define('users', {
     id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
+        autoIncrement: true,
+        primaryKey: true
     },
     name: {
         type: DataTypes.STRING(30),
@@ -36,10 +37,6 @@ export const User = sequelize.define('user', {
 });
 
 export const Dataset = sequelize.define('dataset', {
-    id_user: {
-        type: DataTypes.INTEGER,
-        primaryKey: true
-    },
     dataset_name: {
         type: DataTypes.STRING(50),
         primaryKey: true
@@ -49,6 +46,16 @@ export const Dataset = sequelize.define('dataset', {
         allowNull: false
     }
 });
+
+// Definizione della relazione tra le tabelle
+User.hasMany(Dataset, {
+    foreignKey: {
+        name: 'id_user',
+        allowNull: false
+    },
+    onDelete: 'CASCADE'
+});
+Dataset.belongsTo(User, { foreignKey: 'id_user' });
 
 User.sync({ alter: true });
 Dataset.sync({ alter: true });

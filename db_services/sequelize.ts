@@ -1,5 +1,3 @@
-let path = require("path");
-require(path.join(__dirname, 'config.json'));
 import { Sequelize } from 'sequelize';
 
 /*
