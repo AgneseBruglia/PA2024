@@ -1,0 +1,13 @@
+services:
+  python-app:
+    container_name: py-services
+    build:
+      context: ./python_services
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
