@@ -1,0 +1,14 @@
+services:
+  python-app:
+    container_name: py-services
+    build:
+      context: ./python_services
+      dockerfile: Dockerfile
+    ports:
+      - "${PYTHON_PORT}:${PYTHON_PORT}"
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHON_PORT=${PYTHON_PORT}
+    restart: unless-stopped
