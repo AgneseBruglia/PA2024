@@ -1,5 +1,5 @@
-const { DataTypes } = require("sequelize/types");
-import { Sequelize } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
+let path = require("path");
 import Database from '../sequelize';
 
 /*
@@ -7,16 +7,9 @@ import Database from '../sequelize';
 */
 const sequelize: Sequelize = Database.getInstance();
 
-// Definizione delle possibili tipologie di utente
-enum UserRole {
-    ADMIN = 1,
-    USER = 2,
-  }
-
 export const User = sequelize.define('user', {
     id: {
         type: DataTypes.INTEGER,
-        autoIncrement: true,
         primaryKey: true,
     },
     name: {
@@ -36,23 +29,26 @@ export const User = sequelize.define('user', {
         allowNull: false
     },
     type: {
-        type: DataTypes.ENUM(...Object.values(UserRole)),
+        type: DataTypes.ENUM('ADMIN', 'USER'),
         allowNull: false,
-        defaultValue: UserRole.USER
+        defaultValue: 'USER'
     }
 });
 
 export const Dataset = sequelize.define('dataset', {
     id_user: {
         type: DataTypes.INTEGER,
-        // primaryKey: true,
+        primaryKey: true
     },
     dataset_name: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        primaryKey: true
     },
     dataset_path: {
         type: DataTypes.STRING(80),
         allowNull: false
     }
 });
+
+User.sync({ alter: true });
+Dataset.sync({ alter: true });

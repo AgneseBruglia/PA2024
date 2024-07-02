@@ -1,4 +1,5 @@
-require('.\config.json');
+let path = require("path");
+require(path.join(__dirname, 'config.json'));
 import { Sequelize } from 'sequelize';
 
 /*
@@ -7,7 +8,6 @@ import { Sequelize } from 'sequelize';
 * per la creazione del database
 *
 */
-
 class Database {
   private static instance: Sequelize;
 
@@ -16,7 +16,7 @@ class Database {
 
   public static getInstance(): Sequelize {
     if (!Database.instance) {
-      Database.instance = new Sequelize('database', 'username', 'password', {
+      Database.instance = new Sequelize('PA2024', 'postgres', 'agnib', {
         host: '127.0.0.1',
         port: 5432,
         dialect: 'postgres',
