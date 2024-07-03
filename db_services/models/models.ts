@@ -1,5 +1,4 @@
 import { Sequelize, DataTypes } from 'sequelize';
-let path = require("path");
 import Database from '../sequelize';
 
 /*
