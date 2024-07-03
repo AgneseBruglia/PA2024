@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   # Servizio per il database PostgreSQL
   pgs:
@@ -9,7 +10,11 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Servizio per il server Express
   app:
@@ -19,5 +24,5 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - pgs
-
+      pgs:
+        condition: service_healthy
