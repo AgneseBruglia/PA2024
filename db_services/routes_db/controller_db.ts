@@ -44,7 +44,7 @@ export async function createUser({
  * @param id_user ID dell'utente associato al dataset.
  * @returns True se l'aggiunta è riuscita correttamente, altrimenti false.
  */
-export async function addDataset(dataset_name: string, dataset_path: string, id_user: number): Promise<boolean> {
+export async function addDataset(dataset_name: string, id_user: number): Promise<any> {
     try {
         // Creazione della tupla nel database
         await Dataset.create({
@@ -56,9 +56,9 @@ export async function addDataset(dataset_name: string, dataset_path: string, id_
         const folderPath = path.join(__dirname, 'dataset_&_modelli', dataset_name);
         fs.mkdirSync(folderPath, { recursive: true });
 
-        return true;
-    } catch (error) {
-        return false;
+        return dataset_name;
+    } catch (error:any) {
+        return error.message;
     }
 }
 
