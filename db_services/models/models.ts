@@ -11,15 +11,16 @@ export const User = sequelize.define('users', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
-        primaryKey: true
     },
     name: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
     },
     surname: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
     },
     email: {
         type: DataTypes.STRING(30),

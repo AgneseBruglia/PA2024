@@ -1,9 +1,6 @@
 const express = require('express'); 
 import { Request, Response } from 'express';
 const { createUser, addDataset, getAllUsers } = require('./routes_db/controller_db'); 
-const {createUserAutomatic} = require('./ges_users')
-
-createUserAutomatic()
 
 const app = express();
 const port = 3000;
@@ -11,7 +8,7 @@ const port = 3000;
 app.use(express.json());
 
 // Route per l'inserimento di un nuovo utente
-app.post('/api/users', async (req: Request, res: Response) => {
+app.post('/insertUser', async (req: Request, res: Response) => {
     const { name, surname, email, type, residual_tokens } = req.body;
 
     try {
@@ -34,7 +31,7 @@ app.post('/createDataset', async (req: Request, res: Response) => {
 });
 
 // Definizione della rotta per recuperare tutti gli utenti
-app.get('/users', async (req: Request, res: Response) => {
+app.get('/getUsers', async (req: Request, res: Response) => {
     try {
         const users = await getAllUsers();
         res.status(200).json(users);
