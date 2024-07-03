@@ -41,6 +41,13 @@ app.get('/getUsers', async (req: Request, res: Response) => {
 });
 
 
+// Definizione della rotta per recuperare tutti gli utenti
+app.get('/prova', async (req: Request, res: Response) => {
+    const fs = require('fs');
+    const stats = fs.statSync('/app/dataset_&_modelli/dataset/1.mp4');
+    return res.json(stats);
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });

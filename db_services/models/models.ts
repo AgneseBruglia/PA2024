@@ -14,17 +14,16 @@ export const User = sequelize.define('users', {
     },
     name: {
         type: DataTypes.STRING(30),
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     },
     surname: {
         type: DataTypes.STRING(30),
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     },
     email: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: false,
+        unique: true  // Aggiunto vincolo di unicità per l'email
     },
     residual_tokens: {
         type: DataTypes.INTEGER,
@@ -43,6 +42,14 @@ export const Dataset = sequelize.define('dataset', {
         type: DataTypes.STRING(50),
         primaryKey: true
     },
+    videos: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true  // Modificato per consentire valore null
+    },
+}, {
+    indexes: [
+        { unique: true, fields: ['dataset_name', 'id_user'] }  // Vincolo di unicità su dataset_name e id_user
+    ]
 });
 
 // Definizione della relazione tra le tabelle

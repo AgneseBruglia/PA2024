@@ -15,6 +15,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
 
   # Servizio per il server Express
   app:
@@ -26,3 +28,5 @@ services:
     depends_on:
       pgs:
         condition: service_healthy
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
