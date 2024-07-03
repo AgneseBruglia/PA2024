@@ -14,8 +14,8 @@ class Database {
 
   public static getInstance(): Sequelize {
     if (!Database.instance) {
-      Database.instance = new Sequelize('PA2024', 'postgres', 'agnib', {
-        host: '127.0.0.1',
+      Database.instance = new Sequelize('postgres', 'postgres', 'admin', {
+        host: 'pgs',
         port: 5432,
         dialect: 'postgres',
         logging: false,

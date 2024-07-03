@@ -1,14 +1,23 @@
 services:
-  python-app:
-    container_name: py-services
-    build:
-      context: ./python_services
+  # Servizio per il database PostgreSQL
+  pgs:
+    container_name: pgs
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+
+
+  # Servizio per il server Express
+  app:
+    build: 
+      context: ./db_services
       dockerfile: Dockerfile
     ports:
-      - "${PYTHON_PORT}:${PYTHON_PORT}"
-    volumes:
-      - ./dataset_&_modelli:/app/dataset_&_modelli
-    environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHON_PORT=${PYTHON_PORT}
-    restart: unless-stopped
+      - "3000:3000"
+    depends_on:
+      - pgs
+

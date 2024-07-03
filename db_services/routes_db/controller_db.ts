@@ -31,7 +31,7 @@ export async function createUser({
         });
 
         return newUser.toJSON();
-    } catch (error) {
+    } catch (error:any) {
         return error.toJSON();
     }
 }
