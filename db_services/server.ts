@@ -1,6 +1,9 @@
 const express = require('express'); 
 import { Request, Response } from 'express';
 const { createUser } = require('./routes_db/controller_db'); 
+const {createUserAutomatic} = require('./ges_users')
+
+createUserAutomatic()
 
 const app = express();
 const port = 3000;

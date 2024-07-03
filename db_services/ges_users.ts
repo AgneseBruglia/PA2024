@@ -5,7 +5,7 @@ const { User } = require('./models/models');
 * Funzione per la creazione degli utenti nel database
 * 
 */
-export async function createUser() {
+export async function createUserAutomatic() {
     try {
         const newAdmin = await User.create({
             name: 'Agnese',
@@ -39,4 +39,4 @@ export async function createUser() {
     }
 }
 
-createUser();
+//createUser();
