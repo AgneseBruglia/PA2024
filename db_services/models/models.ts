@@ -9,7 +9,8 @@ const sequelize: Sequelize = Database.getInstance();
 export const User = sequelize.define('users', {
     id: {
         type: DataTypes.INTEGER,
-        autoIncrement: true,
+        primaryKey: true,
+        autoIncrement: true
     },
     name: {
         type: DataTypes.STRING(30),
@@ -35,6 +36,7 @@ export const User = sequelize.define('users', {
         defaultValue: 'USER'
     }
 });
+
 
 export const Dataset = sequelize.define('dataset', {
     dataset_name: {
