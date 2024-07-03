@@ -41,10 +41,6 @@ export const Dataset = sequelize.define('dataset', {
         type: DataTypes.STRING(50),
         primaryKey: true
     },
-    dataset_path: {
-        type: DataTypes.STRING(80),
-        allowNull: false
-    }
 });
 
 // Definizione della relazione tra le tabelle
