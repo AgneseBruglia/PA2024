@@ -1,3 +1,4 @@
-sequelize
-express
-@types/express
+npm install :
+    sequelize
+    express
+    @types/express
