@@ -38,5 +38,3 @@ export async function createUsers() {
         console.error('Errore durante la creazione dell\'utente:', error);
     }
 }
-
-createUsers();
