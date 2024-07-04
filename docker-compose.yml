@@ -15,8 +15,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - ./dataset_&_modelli:/app/dataset_&_modelli
+    #volumes:
+      #- ./dataset_&_modelli:/app/dataset_&_modelli
 
   # Servizio per il server Express
   app:
