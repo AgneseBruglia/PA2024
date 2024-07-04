@@ -1,6 +1,6 @@
 const express = require('express'); 
 import { Request, Response } from 'express';
-const { createUser, addDataset, getAllUsers } = require('./routes_db/controller_db'); 
+const { createUser, addDataset, getAllUsers, getDatasets, getAllDataset } = require('./routes_db/controller_db'); 
 
 const app = express();
 const port = 3000;
@@ -40,13 +40,26 @@ app.get('/getUsers', async (req: Request, res: Response) => {
     }
 });
 
+// Definizione della rotta per recuperare tutti gli utenti
+app.get('/getDataset/:id_user', async (req: Request, res: Response) => {
+    const result = await getDatasets(req.params.id_user);
+    return res.json(result);
+});
+
+// Definizione della rotta per recuperare tutti gli utenti
+app.get('/getDataset/:id_user/:dataset_name', async (req: Request, res: Response) => {
+    const result = await getDatasets(req.params.id_user, req.params.dataset_name);
+    return res.json(result);
+});
+
+
 
 // Definizione della rotta per recuperare tutti gli utenti
 app.get('/prova', async (req: Request, res: Response) => {
-    const fs = require('fs');
-    const stats = fs.statSync('/app/dataset_&_modelli/dataset/1.mp4');
-    return res.json(stats);
+    const result = await getAllDataset()
+    return res.json(result);
 });
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
