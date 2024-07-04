@@ -2,14 +2,23 @@ import express, { Request, Response } from 'express';
 import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
     visualizeAllUserCredits, rechargeCredits 
  } from './routes_db/controller_db';
+import * as Middleware from './middleware/middleware_chains';
+import { EnumError, getError } from './factory/errors';
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use((err: Error, req: any, res: any, next: any) => {
+    if (err instanceof SyntaxError) {
+        const new_err = getError(EnumError.MalformedPayload).getErrorObj();
+        res.status(new_err.status).json(new_err.message);
+    }
+    next();
+});
 
 // Route per l'inserimento di un nuovo utente
-app.post('/insertUser', async (req: Request, res: Response) => {
+app.post('/insertUser', Middleware.checkInsertUsers, Middleware.error_handling, async (req: Request, res: Response) => {
     const { name, surname, email, type, residual_tokens } = req.body;
 
     try {
@@ -143,3 +152,20 @@ app.put('/rechargeCredits', async (req: Request, res: Response) => {
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+
+/**
+ * Funzione 'controllerErrors'
+ * 
+ * Funzione invocata dai metodi del Controller in caso di errori e che si occupa di invocare
+ * il metodo {@link getError} della Factory di errori per costruire oggetti da ritornare al client
+ * nel corpo della risposta.
+ * 
+ * @param enum_error Il tipo di errore da costruire
+ * @param err L'effettivo errore sollevato
+ * @param res La risposta da parte del server
+ */
+function controllerErrors(enum_error: EnumError, err: any, res: any) {
+    const new_err = getError(enum_error).getErrorObj();
+    console.log(err);
+    res.status(new_err.status).json(new_err.message);
+}
