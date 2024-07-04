@@ -15,7 +15,7 @@ import { Op } from 'sequelize'
 * @params res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkResidualTokens(req: any, res: any, next: any) {
+export function checkResidualTokens(req: any, res: any, next: any): void {
     User.findOne({
         attributes: ['residual_tokens'],
         where: {
@@ -35,6 +35,8 @@ export function checkResidualTokens(req: any, res: any, next: any) {
     });
 }
 
+
+
 /*
 * Middleware 'checkEnoughTokens'
 *
@@ -46,7 +48,7 @@ export function checkResidualTokens(req: any, res: any, next: any) {
 * @params res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkEnoughTokens(req: any, res: any, next: any) {
+export function checkEnoughTokens(req: any, res: any, next: any): void {
     User.findOne({
         attributes: ['residual_tokens'],
         where: {
@@ -82,7 +84,7 @@ function countTokens(req: any, tokens: any): any {
 * @params res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkAdmin(req: any, res: any, next: any) {
+export function checkAdmin(req: any, res: any, next: any): void {
     User.findOne({
         where: {
             id: req.params.id_user,
@@ -111,23 +113,23 @@ export function checkAdmin(req: any, res: any, next: any) {
 * @params res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkUser(req: any, res: any, next: any) {
-    User.findAll({
-        where: {
-            name: req.params.name,
-            surname: req.params.surname
-        }
-    })
-    .then((user) => {
-        if (user == null) {
-            next();
+export async function checkUser(req: any, res: any, next: any): Promise<void> {
+    try {
+        let users = await User.findAll({
+            where: {
+                name: req.body.name,
+                surname: req.body.surname
+            }
+        })
+        if (users.length == 0) {
+                next();
         } else {
             next(EnumError.UserAlreadyExists);
         }
-    })
-    .catch((error) => {
+    }
+    catch(error){
         next(error);
-    });
+    }
 }
 
 /*
@@ -140,7 +142,7 @@ export function checkUser(req: any, res: any, next: any) {
 * @params res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkUserExists(req: any, res: any, next: any) {
+export function checkUserExists(req: any, res: any, next: any): void {
     User.findOne({
         where: {
             name: req.params.name,
@@ -160,15 +162,30 @@ export function checkUserExists(req: any, res: any, next: any) {
 }
 
 /*
-* Middleware 'checkJWT'
+* Middleware 'checkDatasetExists'
 *
-* Controlla che la chiave JWT sia corretta,
-* altrimenti dà errore e rifiuta la richiesta.
+* Controlla che nel database esista un utente con quel nome
+* e cognome, altrimenti dà errore e rifiuta la richiesta.
 * 
 * @params req Richiesta del client
 * @params res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkJWT(req: any, res: any, next: any) {
-    // TODO
+export function checkDatasetExists(req: any, res: any, next: any): void {
+    User.findOne({
+        where: {
+            dataset_name: req.params.dataset_name,
+            id_user: req.params.id_user
+        }
+    })
+    .then((dataset) => {
+        if (dataset !== null) {
+            next();
+        } else {
+            next(EnumError.DatasetAlreadyExists);
+        }
+    })
+    .catch((error) => {
+        next(error);
+    });
 }
