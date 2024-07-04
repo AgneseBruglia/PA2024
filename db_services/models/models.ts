@@ -7,7 +7,7 @@ import Database from '../sequelize';
 const sequelize: Sequelize = Database.getInstance();
 
 export const User = sequelize.define('users', {
-    id: {
+    user_id: {  // Modificato da 'id' a 'user_id'
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -26,7 +26,7 @@ export const User = sequelize.define('users', {
         unique: true  // Aggiunto vincolo di unicità per l'email
     },
     residual_tokens: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DOUBLE,
         allowNull: false
     },
     type: {
@@ -46,34 +46,39 @@ export const Dataset = sequelize.define('dataset', {
     },
     videos: {
         type: DataTypes.ARRAY(DataTypes.STRING),
-        allowNull: true  // Modificato per consentire valore null
+        allowNull: false,
+        defaultValue: []
     },
+    user_id: {  // Aggiunto campo user_id come chiave esterna
+        type: DataTypes.INTEGER,
+        allowNull: false
+    }
 }, {
     indexes: [
-        { unique: true, fields: ['dataset_name', 'id'] }  // Vincolo di unicità su dataset_name e id_user
+        { unique: true, fields: ['dataset_name', 'user_id'] }  // Vincolo di unicità su dataset_name e user_id
     ]
 });
 
 // Definizione della relazione tra le tabelle
 User.hasMany(Dataset, {
     foreignKey: {
-        name: 'id',
+        name: 'user_id',
         allowNull: false
     },
     onDelete: 'CASCADE'
 });
-Dataset.belongsTo(User, { foreignKey: 'id' });
+Dataset.belongsTo(User, { foreignKey: 'user_id' });
 
 const syncModels = async () => {
     try {
-      await sequelize.sync({ force: true });
-      console.log('Modelli sincronizzati con successo');
-      await createUsers(); // seed
+        await sequelize.sync({ force: true });
+        console.log('Modelli sincronizzati con successo');
+        await createUsers(); // seed
     } catch (error) {
-      console.error('Errore durante la sincronizzazione dei modelli:', error);
+        console.error('Errore durante la sincronizzazione dei modelli:', error);
     }
-  };
-  
+};
+
 syncModels();
 
 /*

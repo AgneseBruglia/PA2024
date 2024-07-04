@@ -64,7 +64,7 @@ export async function addDataset(dataset_name: string, id_user: number): Promise
         // Creazione della tupla nel database
         await Dataset.create({
             dataset_name: dataset_name,
-            id: id_user  // Associa il dataset all'utente tramite la relazione definita
+            user_id: id_user  // Associa il dataset all'utente tramite la relazione definita
         });
     // Todo LUCA: vedere di fare i controlli per assicurarsi che non esiste uno stesso user con uno stesso dataset
         return dataset_name;
@@ -101,7 +101,7 @@ export async function getDatasets(id_user:String, dataset_name?: String) {
             const result = await Dataset.findAll({
                 where: {
                     dataset_name : dataset_name,
-                    id : id_user,
+                    user_id : id_user,
                 },
             });
             return {
@@ -113,7 +113,7 @@ export async function getDatasets(id_user:String, dataset_name?: String) {
         else{
             const result = await Dataset.findAll({
                 where: {
-                    id : id_user,
+                    user_id : id_user,
                 },
             });
             return {
@@ -166,7 +166,7 @@ export async function updateDataset(id_user:String, dataset_name: String, new_da
             { dataset_name: new_dataset_name},
             {
               where: {
-                id: id_user,
+                user_id: id_user,
                 dataset_name: dataset_name
               },
             },
@@ -197,7 +197,7 @@ export async function insertVideoIntoDataset(id_user: String, dataset_name: Stri
     try{
         const videos = await Dataset.findOne({
             where: {
-                id : id_user,
+                user_id : id_user,
                 dataset_name: dataset_name,
             },
             attributes: ['videos']
@@ -211,7 +211,7 @@ export async function insertVideoIntoDataset(id_user: String, dataset_name: Stri
                 { videos: video},
                 {
                   where: {
-                    id: id_user,
+                    user_id: id_user,
                     dataset_name: dataset_name
                   },
                 },
@@ -242,7 +242,7 @@ export async function deleteDataset(id_user: String, dataset_name: String): Prom
     try{
         const result = await Dataset.destroy({
                 where: {
-                    id: id_user,
+                    user_id: id_user,
                     dataset_name: dataset_name
                 }
         });
@@ -262,31 +262,28 @@ export async function deleteDataset(id_user: String, dataset_name: String): Prom
 
 /**
  * Funzione per visualizzare i crediti di un dato utente
- * @param id_user ID dell'utente associato al dataset.
- * @returns Json contenente i crediti residui dell'utente oppure messaggio di errore.
+ * @param id_user ID dell'utente associato al dataset. Se non presente, restiuisce i crediti di tutti gli utenti
+ * @returns Json contenente i crediti residui dell'utente/degli utenti oppure messaggio di errore.
  */
-export async function visualizeAllUserCredits(id_user: String, type?:String): Promise<Json>{
+export async function visualizeCredits(id_user?: String): Promise<Json>{
     try{
-        if(type == typeOfUser.USER){
+        if(id_user !== undefined){
             const value = await User.findOne({
                 where: {
-                    id : id_user,
+                    user_id : id_user,
                 },
                 attributes: ['residual_tokens']
             }); 
             const tokens: number = value?.getDataValue('residual_tokens');
             return{
                 successo: true,
-                data: 'Utente: ${id_user}. Crediti rimanenti: ${tokens}'
+                data: tokens
             }
         }
         else {
             const value = await User.findAll({
-                where: {
-                    id : id_user,
-                },
-                attributes: ['id', 'residual_tokens']
-            }); 
+                attributes: ['user_id', 'residual_tokens']  
+            });
             return{
                 successo: true,
                 data: value
@@ -309,24 +306,25 @@ export async function visualizeAllUserCredits(id_user: String, type?:String): Pr
  */
 export async function rechargeCredits(id_user: string , tokens_to_charge: number): Promise<Json>{
     try{
-        // MI faccio ritornare il credito residuo
-        visualizeAllUserCredits(id_user,'USER').then(result => {
+
+        visualizeCredits(id_user).then(result => {
             if(result.successo==false){
                 throw new EmptyResultError('User credits reading operation for update failed.');
             }
             const toAdd = result.data + tokens_to_charge
+            console.log(result.data)
             User.update(
                 { residual_tokens: toAdd},
                 {
                   where: {
-                    id: id_user,
+                    user_id: id_user,
                   },
                 },
               );
         })
         return{
             successo: true,
-            data: "Utente ${id_user}, nuovo credito: ${tokens} correttamente salvato."
+            data: 'Credito correttamente aggiornato.'
         }
     }
     catch(error:any){

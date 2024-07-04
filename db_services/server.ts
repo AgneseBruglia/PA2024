@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
-    visualizeAllUserCredits, rechargeCredits 
+    visualizeCredits, rechargeCredits 
  } from './routes_db/controller_db';
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
@@ -55,15 +55,21 @@ app.get('/getDatasets', async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
 
+    console.log(id_user);
+    console.log(dataset_name);
+
     try {
         if (id_user && dataset_name) {
             const result = await getDatasets(id_user, dataset_name);
             res.json(result);
         } else if (id_user) {
+            const result = await getDatasets(id_user);
+            res.json(result);
+        }
+
+        if(id_user===undefined && dataset_name===undefined) {
             const result = await getAllDataset();
             res.json(result);
-        } else {
-            res.status(400).json({ error: 'Parametri mancanti: id_user' });
         }
     } catch (error:any) {
         res.status(500).json({ error: error.message });
@@ -126,10 +132,9 @@ app.delete('/deleteDataset', async (req: Request, res: Response) => {
 
 app.get('/credits', async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
-    const type = req.query.type as string; // Se type è presente nella query string
 
     try {
-        const result = await visualizeAllUserCredits(id_user, type);
+        const result = await visualizeCredits(id_user);
         res.json(result); // Rispondi con il risultato della funzione visualizeAllUserCredits
     } catch (error:any) {
         res.status(500).json({ successo: false, errore: error.message }); // Gestione degli errori
