@@ -2,3 +2,4 @@ npm install :
     sequelize
     express
     @types/express
+    @types/sequelize
