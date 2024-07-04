@@ -48,19 +48,19 @@ export const Dataset = sequelize.define('dataset', {
     },
 }, {
     indexes: [
-        { unique: true, fields: ['dataset_name', 'id_user'] }  // Vincolo di unicità su dataset_name e id_user
+        { unique: true, fields: ['dataset_name', 'id'] }  // Vincolo di unicità su dataset_name e id_user
     ]
 });
 
 // Definizione della relazione tra le tabelle
 User.hasMany(Dataset, {
     foreignKey: {
-        name: 'id_user',
+        name: 'id',
         allowNull: false
     },
     onDelete: 'CASCADE'
 });
-Dataset.belongsTo(User, { foreignKey: 'id_user' });
+Dataset.belongsTo(User, { foreignKey: 'id' });
 
 User.sync({ alter: true });
 Dataset.sync({ alter: true });

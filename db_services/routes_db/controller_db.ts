@@ -1,4 +1,7 @@
+import {EmptyResultError, IntegerDataType } from 'sequelize';
 import { Dataset, User } from '../models/models';
+import { DatabaseError } from 'pg';
+
 const fs = require('fs');
 const path = require('path');
 
@@ -15,6 +18,11 @@ interface Json {
     successo: boolean;
     data?: any; 
     errore?: string;
+}
+
+enum typeOfUser {
+    ADMIN = 'ADMIN',
+    USER = 'USER'
 }
 
 
@@ -223,3 +231,108 @@ export async function insertVideoIntoDataset(id_user: String, dataset_name: Stri
     }
 }
 
+
+/**
+ * Funzione per rimuovere un dataset dal DB.
+ * @param id_user ID dell'utente associato al dataset.
+ * @param dataset_name Nome del dataset (chiave primaria).
+ * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
+ */
+export async function deleteDataset(id_user: String, dataset_name: String): Promise<Json>{
+    try{
+        const result = await Dataset.destroy({
+                where: {
+                    id: id_user,
+                    dataset_name: dataset_name
+                }
+        });
+        return{
+            successo: true,
+            data: 'Dataset rimosso correttamente dal DB.'
+        }
+    }
+    catch(error: any){
+        return{
+            successo: false,
+            errore: error.message
+        }
+    }
+}
+
+
+/**
+ * Funzione per visualizzare i crediti di un dato utente
+ * @param id_user ID dell'utente associato al dataset.
+ * @returns Json contenente i crediti residui dell'utente oppure messaggio di errore.
+ */
+export async function visualizeAllUserCredits(id_user: String, type?:String): Promise<Json>{
+    try{
+        if(type == typeOfUser.USER){
+            const value = await User.findOne({
+                where: {
+                    id : id_user,
+                },
+                attributes: ['residual_tokens']
+            }); 
+            const tokens: number = value?.getDataValue('residual_tokens');
+            return{
+                successo: true,
+                data: 'Utente: ${id_user}. Crediti rimanenti: ${tokens}'
+            }
+        }
+        else {
+            const value = await User.findAll({
+                where: {
+                    id : id_user,
+                },
+                attributes: ['id', 'residual_tokens']
+            }); 
+            return{
+                successo: true,
+                data: value
+            }
+        }
+    }
+    catch(error: any){
+        return{
+            successo: false,
+            errore: error.message
+        }
+    }
+}
+
+
+/**
+ * Funzione per ricaricare i crediti di un utente
+ * @param id_user ID dell'utente a cui si vuole ricaricare il credito.
+ * @returns Json contenente messaggio di buona riuscita oppure json contenente un errore.
+ */
+export async function rechargeCredits(id_user: string , tokens_to_charge: number): Promise<Json>{
+    try{
+        // MI faccio ritornare il credito residuo
+        visualizeAllUserCredits(id_user,'USER').then(result => {
+            if(result.successo==false){
+                throw new EmptyResultError('User credits reading operation for update failed.');
+            }
+            const toAdd = result.data + tokens_to_charge
+            User.update(
+                { residual_tokens: toAdd},
+                {
+                  where: {
+                    id: id_user,
+                  },
+                },
+              );
+        })
+        return{
+            successo: true,
+            data: "Utente ${id_user}, nuovo credito: ${tokens} correttamente salvato."
+        }
+    }
+    catch(error:any){
+        return{
+            successo: false,
+            errore: error.message
+        }
+    }
+}
