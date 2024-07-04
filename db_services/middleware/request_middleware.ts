@@ -1,6 +1,4 @@
-import { stringify } from "querystring";
-import { EnumError, getError } from "../factory/errors";
-import { json } from "sequelize";
+import { getError } from "../factory/errors";
 
 // Rotta non prevista
 
@@ -11,12 +9,11 @@ import { json } from "sequelize";
 /**
  * Middleware 'logErrors'
  * 
- * Invocato dagli strati middleware precedenti, si occupa di stampare a schermo l'oggetto
- * creato dalla Factory {@link getError} degli errori.
+ * Stampa a schermo l'oggetto creato dalla Factory {@link getError} degli errori.
  * 
  * @param err L'errore generato dagli strati middleware precedenti
- * @param req La richiesta da parte del client
- * @param res La risposta da parte del server
+ * @param req La richiesta del client
+ * @param res La risposta del server
  * @param next Il riferimento al middleware successivo
  */
 export function logErrors(err: any, req: any, res: any, next: any): void {
@@ -35,9 +32,8 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
 /**
  * Middleware 'errorHandler'
  * 
- * Invocato dagli strati middleware precedenti, si occupa di ritornare nel corpo della
- * risposta l'oggetto creato dalla Factory {@link getError} degli errori e ricevuto 
- * dal middleware {@link logErrors}.
+ * Ritorna nel body della risposta l'oggetto creato dalla Factory
+ * {@link getError} degli errori e ricevuto dal middleware {@link logErrors}.
  * 
  * @param err L'errore generato dagli strati middleware precedenti
  * @param req La richiesta da parte del client

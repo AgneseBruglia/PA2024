@@ -4,68 +4,66 @@ import * as Controller from '../routes_db/controller_db';
 import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
 
-/*
+/**
 * Middleware 'checkResidualTokens'
 *
 * Controlla che l'utente che sta effettuando le richieste 
 * abbia un numero di tokens > 0, altrimenti dà errore e 
 * rifiuta la richiesta.
 * 
-* @params req Richiesta del client
-* @params res Risposta del server
-* @param next Riferimento al middleware successivo
+* @param req Richiesta del client
+* @param res Risposta del server
+* @param next Riferimento al middleware successivo 
 */
-export function checkResidualTokens(req: any, res: any, next: any): void {
-    User.findOne({
-        attributes: ['residual_tokens'],
-        where: {
-            id: req.params.id_user,
-            residual_tokens: { [Op.gt]: 0 }
-        }
-    })
-    .then((tokens) => {
+export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
+    try {
+        let tokens = await User.findOne({
+            attributes: ['residual_tokens'],
+            where: {
+                id: req.body.id_user,
+                residual_tokens: { [Op.gt]: 0 }
+            }
+        })
         if (tokens !== null) {
-            next();
+                next();
         } else {
             next(EnumError.ZeroTokensAvailable);
         }
-    })
-    .catch((error) => {
+    }
+    catch(error){
         next(EnumError.UserDoesNotExist);
-    });
+    }
 }
 
-
-
-/*
-* Middleware 'checkEnoughTokens'
+/**
+*  Middleware 'checkEnoughTokens'
 *
 * Controlla che l'utente che sta effettuando le richieste 
 * abbia abbastanza token, altrimenti dà errore e 
 * rifiuta la richiesta.
 * 
-* @params req Richiesta del client
-* @params res Risposta del server
+* @param req Richiesta del client
+* @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkEnoughTokens(req: any, res: any, next: any): void {
-    User.findOne({
-        attributes: ['residual_tokens'],
-        where: {
-            id: req.params.id_user
-        }
-    })
-    .then((tokens) => {
+export async function checkEnoughTokens(req: any, res: any, next: any): Promise<void> {
+    try {
+        let tokens = await User.findOne({
+            attributes: ['residual_tokens'],
+            where: {
+                id: req.body.id_user,
+            }
+        })
         if (tokens !== null) {
             countTokens(req, tokens);
             next();
         } else {
             next(EnumError.NotEnoughTokens);
         }
-    })
-    .catch((error) => {
+    }
+    catch(error){
         next(EnumError.UserDoesNotExist);
-    });
+    }
 }
 
 // Funzione per controllare che il numero di tokens sia sufficiente
@@ -73,44 +71,44 @@ function countTokens(req: any, tokens: any): any {
     // TODO
 }
 
-/*
-* Middleware 'CheckAdmin'
+/**
+ * Middleware 'CheckAdmin'
 *
 * Controlla che l'utente che sta effettuando le richieste 
 * abbia i permessi, altrimenti dà errore e 
 * rifiuta la richiesta.
 * 
-* @params req Richiesta del client
-* @params res Risposta del server
+* @param req Richiesta del client
+* @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkAdmin(req: any, res: any, next: any): void {
-    User.findOne({
-        where: {
-            id: req.params.id_user,
-        }
-    })
-    .then((user) => {
-        if (user !== null && user.getDataValue('type') == 'ADMIN') {
+export async function checkAdmin(req: any, res: any, next: any): Promise<void> {
+    try {
+        let admin = await User.findOne({
+            where: {
+                id: req.body.id_user,
+            }
+        })
+        if (admin !== null && admin.getDataValue('type') == 'ADMIN') {
             next();
         } else {
             next(EnumError.UserNotAdmin);
         }
-    })
-    .catch((error) => {
+    }
+    catch(error){
         next(EnumError.UserDoesNotExist);
-    });
+    }
 }
 
-/*
-* Middleware 'checkUser'
+/**
+ * Middleware 'checkUser'
 *
 * Controlla che nel database non esista già un utente
 * con quel nome e cognome, altrimenti dà errore e 
 * rifiuta la richiesta.
 * 
-* @params req Richiesta del client
-* @params res Risposta del server
+* @param req Richiesta del client
+* @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
 export async function checkUser(req: any, res: any, next: any): Promise<void> {
@@ -132,60 +130,60 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
     }
 }
 
-/*
+/**
 * Middleware 'checkUserExists'
 *
 * Controlla che nel database esista un utente con quel nome
 * e cognome, altrimenti dà errore e rifiuta la richiesta.
 * 
-* @params req Richiesta del client
-* @params res Risposta del server
+* @param req Richiesta del client
+* @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkUserExists(req: any, res: any, next: any): void {
-    User.findOne({
-        where: {
-            name: req.params.name,
-            surname: req.params.surname
-        }
-    })
-    .then((user) => {
+export async function checkUserExists(req: any, res: any, next: any): Promise<void> {
+    try {
+        let user = await User.findOne({
+            where: {
+                name: req.body.name,
+                surname: req.body.surname
+            }
+        })
         if (user !== null) {
-            next();
+                next();
         } else {
             next(EnumError.UserDoesNotExist);
         }
-    })
-    .catch((error) => {
+    }
+    catch(error){
         next(error);
-    });
+    }
 }
 
-/*
+/**
 * Middleware 'checkDatasetExists'
 *
-* Controlla che nel database esista un utente con quel nome
-* e cognome, altrimenti dà errore e rifiuta la richiesta.
+* Controlla che nel database non esista un dataset con lo stesso nome
+* creato dallo stesso utente, altrimenti dà errore e rifiuta la richiesta.
 * 
-* @params req Richiesta del client
-* @params res Risposta del server
+* @param req Richiesta del client
+* @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export function checkDatasetExists(req: any, res: any, next: any): void {
-    User.findOne({
-        where: {
-            dataset_name: req.params.dataset_name,
-            id_user: req.params.id_user
-        }
-    })
-    .then((dataset) => {
-        if (dataset !== null) {
-            next();
+export async function checkDatasetExists(req: any, res: any, next: any): Promise<void> {
+    try {
+        let dataset = await User.findOne({
+            where: {
+                dataset_name: req.body.dataset_name,
+                id_user: req.body.id_user
+            }
+        })
+        if (dataset == null) {
+                next();
         } else {
             next(EnumError.DatasetAlreadyExists);
         }
-    })
-    .catch((error) => {
+    }
+    catch(error){
         next(error);
-    });
+    }
 }
