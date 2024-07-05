@@ -4,9 +4,12 @@ import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, update
  } from './routes_db/controller_db';
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
+import dotenv from 'dotenv';
+
+dotenv.config(); 
 
 const app = express();
-const port = 3000;
+const port = process.env.APP_PORT || 3000;
 
 app.use(express.json());
 app.use((err: Error, req: any, res: any, next: any) => {
