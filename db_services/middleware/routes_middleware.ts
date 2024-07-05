@@ -154,31 +154,25 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         let datasetName: string | undefined;
         let userId: number | undefined;
 
-        console.log('checkDatasetExists: ', req.decodeJwt);
-        if (req.query.dataset_name) {
-            datasetName = req.query.dataset_name as string;
-        } else if (req.query.new_dataset_name) {
-            datasetName = req.query.new_dataset_name as string;
-        }
 
-        console.log('ID user: ', req.decodeJwt.id);
+        if (req.body.dataset_name) {
+            datasetName = req.body.dataset_name as string;
+        } else if (req.body.new_dataset_name) {
+            datasetName = req.body.new_dataset_name as string;
+        }
+        
+        console.log('dataset_name: ', datasetName);
         userId = parseInt(req.decodeJwt.id)
         console.log('ID_USER parse int: ', userId);
 
-        const dataset = await Dataset.findAll({
-            where: {
-                dataset_name: datasetName as string,
-                user_id: userId as number,
-            }
-        });
 
-        console.log("lunghezza dataset: ", dataset.length)
-        if (dataset.length === 0) {
+        if (0 === 0) {
             next();  // Procedi se il dataset non esiste
         } else {
             next(EnumError.DatasetAlreadyExists);  // Se il dataset esiste, invia un errore appropriato
         }
     } catch (error) {
+        console.log(error);
         next(error);  // Passa l'errore al gestore degli errori
     }
 }

@@ -17,6 +17,8 @@ import { getError } from "../factory/errors";
  * @param next Il riferimento al middleware successivo
  */
 export function logErrors(err: any, req: any, res: any, next: any): void {
+    console.log('Jwt dentro logErrors: ', req.decodeJwt);
+    console.log('Errore logErrors: ', err);
     const new_err = getError(err);
     if (new_err !== null) {
         new_err.getErrorObj();
@@ -41,6 +43,8 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
  * @param next Il riferimento al middleware successivo
  */
 export function errorHandler(err: any, req: any, res: any, next: any): void { 
+    console.log('Jwt dentro errorHandler: ', req.decodeJwt);
+    console.log('Errore errorHandler: ', err);
     if (err !== null) {
         let status = err.status;
         console.log(status);
