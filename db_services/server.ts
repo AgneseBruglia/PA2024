@@ -28,9 +28,10 @@ app.post('/insertUser', Middleware.checkInsertUsers, Middleware.error_handling, 
     res.json(newUser);
 });
 
-app.post('/createDataset', Middleware.checkJwt ,Middleware.createDataset, Middleware.error_handling, async (req: Request, res: Response) => {
+app.post('/createDataset', Middleware.checkJwt ,Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const { dataset_name} = req.body.dataset_name;
-    const {user_id} = req.body.id;
+    const {user_id} = req.decodeJwt.id;
+    console.log('**********ID:  ', user_id);
     const result = await addDataset(dataset_name, user_id);
     res.json(result);
 });

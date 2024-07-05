@@ -22,10 +22,12 @@ dotenv.config();
 */
 export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
     try {
+        
+        console.log('JWT dentro checkResidualTokens: ', req.decodeJwt);
         let tokens = await User.findOne({
             attributes: ['residual_tokens'],
             where: {
-                id: req.body.id_user,
+                user_id: req.decodeJwt.id,
                 residual_tokens: { [Op.gt]: 0 }
             }
         })
@@ -119,10 +121,11 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
 */
 export async function checkUserExists(req: any, res: any, next: any): Promise<void> {
     try {
+        console.log('JWT dentro checkUserExits: ', req.decodeJwt);
         let user = await User.findOne({
             where: {
-                name: req.body.name,
-                surname: req.body.surname
+                name: req.decodeJwt.name,
+                surname: req.decodeJwt.surname
             }
         })
         if (user !== null) {
@@ -146,31 +149,31 @@ export async function checkUserExists(req: any, res: any, next: any): Promise<vo
 * @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkDatasetExists(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function checkDatasetExists(req: any, res: any, next: any): Promise<void> {
     try {
         let datasetName: string | undefined;
         let userId: number | undefined;
 
- 
+        console.log('checkDatasetExists: ', req.decodeJwt);
         if (req.query.dataset_name) {
             datasetName = req.query.dataset_name as string;
         } else if (req.query.new_dataset_name) {
             datasetName = req.query.new_dataset_name as string;
         }
 
- 
-        if (req.query.id_user) {
-            userId = parseInt(req.query.id_user as string, 10);
-        }
+        console.log('ID user: ', req.decodeJwt.id);
+        userId = parseInt(req.decodeJwt.id)
+        console.log('ID_USER parse int: ', userId);
 
-        const dataset = await Dataset.findOne({
+        const dataset = await Dataset.findAll({
             where: {
-                dataset_name: datasetName,
-                user_id: userId
+                dataset_name: datasetName as string,
+                user_id: userId as number,
             }
         });
 
-        if (!dataset) {
+        console.log("lunghezza dataset: ", dataset.length)
+        if (dataset.length === 0) {
             next();  // Procedi se il dataset non esiste
         } else {
             next(EnumError.DatasetAlreadyExists);  // Se il dataset esiste, invia un errore appropriato
@@ -271,7 +274,8 @@ export async function checkJwt(req: any, res: any, next: any): Promise<void>{
     const bearerHeader: string = req.headers.authorization;
     if (typeof bearerHeader !== 'undefined'){
         const bearerToken: string = bearerHeader.split(' ')[1];
-        req.token = bearerToken;
+        req.checkJwt = bearerToken;
+        console.log('JWT dentro checkJwt: ', req.checkJwt);
         next();
     } else next(EnumError.NoJwtInTheHeaderError);
 }
@@ -288,10 +292,12 @@ export async function checkJwt(req: any, res: any, next: any): Promise<void>{
  */
 export async function verifyAndAuthenticate(req: any, res: any, next: any): Promise<void> {
     try {
-
-        const decoded: string | JwtPayload = jwt.verify(req.token, process.env.JWT_SECRET_KEY || '');
+        console.log('JWT non decodificato:  ', req.checkJwt);
+        const decoded: string | JwtPayload = jwt.verify(req.checkJwt as string, process.env.JWT_SECRET_KEY || '');
+        //const decoded: string | JwtPayload = jwt.verify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIiLCJuYW1lIjoiTHVjYSIsInN1cm5hbWUiOiJCZWxsYW50ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzIwMTk3MDA2LCJleHAiOjE3MjAyODM0MDZ9.PIdQL6TO-vFEwSrNHeEJSw__wmAM2drQViDRWCWT2bA', 'PA2024');
         if (decoded != null) {
-            req.body = decoded;
+            req.decodeJwt = decoded;
+            console.log('JWT dentro verifyAndAuthenticate: ', req.decodeJwt);
             next();
         }
     } catch (error) {
