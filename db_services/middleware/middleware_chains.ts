@@ -36,14 +36,25 @@ export const getDataset = [
 export const updateDataset = [
     RouteMiddleware.checkDatasetAlreadyExist,
     RouteMiddleware.checkDatasetExists
-]
+];
 
 export const insertVideo = [
     RouteMiddleware.checkSameVideo
-]
+];
 
 export const deleteDataset = [
     RouteMiddleware.checkDatasetAlreadyExist
+];
+
+// Va applicato a tutte le rotte(USER ed ADMIN). Salva il Payload del JWT in req.body.
+export const checkJwt = [
+    RouteMiddleware.checkJwt,
+    RouteMiddleware.verifyAndAuthenticate
+];
+
+// Va applicato solo alle rotte per gli admin, controlla che l'utente sia un ADMIN.
+export const checkPermission = [
+    RouteMiddleware.checkAdminPermission
 ]
 
 export const error_handling =[

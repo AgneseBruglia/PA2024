@@ -3,7 +3,12 @@ import { User, Dataset } from '../models/models'
 import * as Controller from '../routes_db/controller_db';
 import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
+import * as jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { JwtPayload, Secret } from 'jsonwebtoken';
+import {typeOfUser} from '../routes_db/controller_db';
 
+dotenv.config(); 
 /**
 * Middleware 'checkResidualTokens'
 *
@@ -71,34 +76,6 @@ function countTokens(req: any, tokens: any): any {
     // TODO
 }
 
-/**
- * Middleware 'CheckAdmin'
-*
-* Controlla che l'utente che sta effettuando le richieste 
-* abbia i permessi, altrimenti dà errore e 
-* rifiuta la richiesta.
-* 
-* @param req Richiesta del client
-* @param res Risposta del server
-* @param next Riferimento al middleware successivo
-*/
-export async function checkAdmin(req: any, res: any, next: any): Promise<void> {
-    try {
-        let admin = await User.findOne({
-            where: {
-                id: req.body.id_user,
-            }
-        })
-        if (admin !== null && admin.getDataValue('type') == 'ADMIN') {
-            next();
-        } else {
-            next(EnumError.UserNotAdmin);
-        }
-    }
-    catch(error){
-        next(EnumError.UserDoesNotExist);
-    }
-}
 
 /**
  * Middleware 'checkUser'
@@ -280,3 +257,55 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
     }
 }
 
+
+/**
+ * Middleware 'checkJwt'
+ * 
+ * Controlla che nell'header compaia il JWT TOKEN.
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
+export async function checkJwt(req: any, res: any, next: any): Promise<void>{
+    const bearerHeader: string = req.headers.authorization;
+    if (typeof bearerHeader !== 'undefined'){
+        const bearerToken: string = bearerHeader.split(' ')[1];
+        req.token = bearerToken;
+        next();
+    } else next(EnumError.NoJwtInTheHeaderError);
+}
+
+/**
+ * Middleware 'verifyAndAuthenticate'
+ * 
+ * Verifica che il TOKEN riporti una chiave di autenticazione che corrisponda
+ * alla chiave segreta registrata tra le variabili d'ambiente.
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
+export async function verifyAndAuthenticate(req: any, res: any, next: any): Promise<void> {
+    try {
+
+        const decoded: string | JwtPayload = jwt.verify(req.token, process.env.JWT_SECRET_KEY || '');
+        if (decoded != null) {
+            req.body = decoded;
+            next();
+        }
+    } catch (error) {
+        next(EnumError.VerifyAndAuthenticateError); 
+    }
+}
+
+
+export async function checkAdminPermission(req: any, res: any, next: any): Promise<void>{
+    try{
+        if(req.body.role === typeOfUser.ADMIN) next();
+        next(EnumError.UserNotAdmin);
+    }
+    catch(error:any){
+        next(error);
+    }
+}

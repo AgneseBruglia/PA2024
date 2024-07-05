@@ -4,6 +4,7 @@ import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, update
  } from './routes_db/controller_db';
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
+
 import dotenv from 'dotenv';
 
 dotenv.config(); 
@@ -27,9 +28,10 @@ app.post('/insertUser', Middleware.checkInsertUsers, Middleware.error_handling, 
     res.json(newUser);
 });
 
-app.post('/createDataset', Middleware.createDataset, Middleware.error_handling, async (req: Request, res: Response) => {
-    const { dataset_name, id_user } = req.body;
-    const result = await addDataset(dataset_name, id_user);
+app.post('/createDataset', Middleware.checkJwt ,Middleware.createDataset, Middleware.error_handling, async (req: Request, res: Response) => {
+    const { dataset_name} = req.body.dataset_name;
+    const {user_id} = req.body.id;
+    const result = await addDataset(dataset_name, user_id);
     res.json(result);
 });
 

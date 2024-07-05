@@ -20,7 +20,7 @@ interface Json {
     errore?: string;
 }
 
-enum typeOfUser {
+export enum typeOfUser {
     ADMIN = 'ADMIN',
     USER = 'USER'
 }

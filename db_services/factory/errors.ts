@@ -104,7 +104,7 @@ export class UserNotAdmin implements IErrorObj {
     message: string;
 
     constructor() {
-        this.status = 404;
+        this.status = 403;
         this.message = Message.userNotAdmin_message;
     }
 
@@ -185,6 +185,43 @@ export class VideosAlreadyExitError implements IErrorObj {
     }
 }
 
+
+export class NoJwtInTheHeaderError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 401;
+        this.message = Message.noJwtInTheHeader_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
+export class VerifyAndAuthenticateError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 401;
+        this.message = Message.verifyAndAuthenticate_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
 export enum EnumError {
     ZeroTokensAvailable,
     NotEnoughTokens,
@@ -195,7 +232,9 @@ export enum EnumError {
     MalformedPayload,
     InternalServerError,
     DatasetNotExitsError,
-    VideosAlreadyExitError
+    VideosAlreadyExitError,
+    NoJwtInTheHeaderError,
+    VerifyAndAuthenticateError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -230,7 +269,13 @@ export function getError(type: EnumError): IErrorObj {
             break;   
         case EnumError.VideosAlreadyExitError:
             val = new VideosAlreadyExitError(); 
-            break;       
+            break;
+        case EnumError.NoJwtInTheHeaderError:
+            val = new NoJwtInTheHeaderError();
+            break;  
+        case EnumError.VerifyAndAuthenticateError:
+            val = new VerifyAndAuthenticateError();
+            break;    
     }
     return val; 
 }
