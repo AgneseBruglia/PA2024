@@ -150,6 +150,41 @@ export class InternalServerError implements IErrorObj {
     }
 }
 
+export class DatasetNotExitsError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 400;
+        this.message = Message.datasetNotExits_message;
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
+export class VideosAlreadyExitError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 400;
+        this.message = Message.videoAlreadyExist_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
 export enum EnumError {
     ZeroTokensAvailable,
     NotEnoughTokens,
@@ -158,7 +193,9 @@ export enum EnumError {
     DatasetAlreadyExists,
     UserNotAdmin,
     MalformedPayload,
-    InternalServerError
+    InternalServerError,
+    DatasetNotExitsError,
+    VideosAlreadyExitError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -187,7 +224,13 @@ export function getError(type: EnumError): IErrorObj {
             break;
         case EnumError.InternalServerError:
             val = new InternalServerError();
-            break;          
+            break; 
+        case EnumError.DatasetNotExitsError:
+            val = new DatasetNotExitsError(); 
+            break;   
+        case EnumError.VideosAlreadyExitError:
+            val = new VideosAlreadyExitError(); 
+            break;       
     }
     return val; 
 }

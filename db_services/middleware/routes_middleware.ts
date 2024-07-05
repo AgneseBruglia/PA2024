@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../models/models'
+import { User, Dataset } from '../models/models'
 import * as Controller from '../routes_db/controller_db';
 import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
@@ -169,21 +169,114 @@ export async function checkUserExists(req: any, res: any, next: any): Promise<vo
 * @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkDatasetExists(req: any, res: any, next: any): Promise<void> {
+export async function checkDatasetExists(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        let dataset = await User.findOne({
+        let datasetName: string | undefined;
+        let userId: number | undefined;
+
+ 
+        if (req.query.dataset_name) {
+            datasetName = req.query.dataset_name as string;
+        } else if (req.query.new_dataset_name) {
+            datasetName = req.query.new_dataset_name as string;
+        }
+
+ 
+        if (req.query.id_user) {
+            userId = parseInt(req.query.id_user as string, 10);
+        }
+
+        const dataset = await Dataset.findOne({
             where: {
-                dataset_name: req.body.dataset_name,
-                id_user: req.body.id_user
+                dataset_name: datasetName,
+                user_id: userId
+            }
+        });
+
+        if (!dataset) {
+            next();  // Procedi se il dataset non esiste
+        } else {
+            next(EnumError.DatasetAlreadyExists);  // Se il dataset esiste, invia un errore appropriato
+        }
+    } catch (error) {
+        next(error);  // Passa l'errore al gestore degli errori
+    }
+}
+
+
+
+/**
+* Middleware 'checkDatasetAlreadyExist'
+*
+* Controlla che nel database esista un dataset con lo stesso nome passato in input e
+* creato dallo stesso utente passato in input. 
+* 
+* @param req Richiesta del client
+* @param res Risposta del server
+* @param next Riferimento al middleware successivo
+*/
+export async function checkDatasetAlreadyExist(req: any, res: any, next: any): Promise<void>{
+    const id_user = req.query.id_user as string;
+    const dataset_name = req.query.dataset_name as string;
+    const new_dataset_name = req.query.new_dataset_name as string;
+    try{
+        // Cerco se il dataset esiste 
+        const dataset = await Dataset.findAll({
+            where: {
+                user_id: id_user,
+                dataset_name: dataset_name
             }
         })
-        if (dataset == null) {
-                next();
-        } else {
-            next(EnumError.DatasetAlreadyExists);
+        if(dataset.length == 0){
+            next(EnumError.DatasetNotExitsError)
         }
+
+        if(dataset.length !== 0){
+            next();
+        }
+
     }
-    catch(error){
+    catch(error:any){
         next(error);
     }
 }
+
+
+
+/**
+* Middleware 'checkSameVideo'
+*
+* Controlla che i video da passare non siano uguali ai video già presenti nel dataset. Nel caso 
+* in cui anche solo un nuovo video fosse uguale a quelli già presenti nel dataset allora lancia
+* l'errore.
+* 
+* @param req Richiesta del client
+* @param res Risposta del server
+* @param next Riferimento al middleware successivo
+*/
+export async function checkSameVideo(req: any, res: any, next: any): Promise<void>{
+    try{
+        const new_videos = req.body.videos;
+        const dataset = await Dataset.findAll({
+            where: {
+                dataset_name: req.query.dataset_name,
+                user_id: req.query.id_user
+            },
+            attributes: ['videos']
+        }) as any;
+        const existingVideos = dataset.videos;
+        const isSameVideoPresent = new_videos.some((video: string) => existingVideos.includes(video));
+        
+        if(isSameVideoPresent){
+            next(EnumError.VideosAlreadyExitError);
+        }
+        else{
+            next();
+        }
+
+    }
+    catch(error: any){
+        next(error);
+    }
+}
+

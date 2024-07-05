@@ -20,138 +20,99 @@ app.use((err: Error, req: any, res: any, next: any) => {
 // Route per l'inserimento di un nuovo utente
 app.post('/insertUser', Middleware.checkInsertUsers, Middleware.error_handling, async (req: Request, res: Response) => {
     const { name, surname, email, type, residual_tokens } = req.body;
-
-    try {
-        const newUser = await createUser({ name, surname, email, type, residual_tokens });
-        res.json(newUser);
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
+    const newUser = await createUser({ name, surname, email, type, residual_tokens });
+    res.json(newUser);
 });
 
-app.post('/createDataset', async (req: Request, res: Response) => {
+app.post('/createDataset', Middleware.createDataset, Middleware.error_handling, async (req: Request, res: Response) => {
     const { dataset_name, id_user } = req.body;
-
-    try {
-        const result = await addDataset(dataset_name, id_user);
-        res.json(result);
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
+    const result = await addDataset(dataset_name, id_user);
+    res.json(result);
 });
 
-// Definizione della rotta per recuperare tutti gli utenti
-app.get('/getUsers', async (req: Request, res: Response) => {
-    try {
-        const users = await getAllUsers();
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Errore nel recupero degli utenti' });
-    }
-});
+
 
 // Definizione della rotta per recuperare tutti i dataset di un utente
-app.get('/getDatasets', async (req: Request, res: Response) => {
+app.get('/getDataset', Middleware.getDataset, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
-
-    console.log(id_user);
-    console.log(dataset_name);
-
-    try {
-        if (id_user && dataset_name) {
-            const result = await getDatasets(id_user, dataset_name);
-            res.json(result);
-        } else if (id_user) {
-            const result = await getDatasets(id_user);
-            res.json(result);
-        }
-
-        if(id_user===undefined && dataset_name===undefined) {
-            const result = await getAllDataset();
-            res.json(result);
-        }
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
+    if (id_user && dataset_name) {
+        const result = await getDatasets(id_user, dataset_name);
+        res.json(result);
+    } else if (id_user) {
+        const result = await getDatasets(id_user);
+        res.json(result);
     }
 });
 
+
+
+
 // Rotta per aggiornare un dataset
-app.post('/updateDataset', async (req: Request, res: Response) => {
+app.post('/updateDataset', Middleware.checkUsers, Middleware.updateDataset, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
     const new_dataset_name = req.query.new_dataset_name as string;
-
-    try {
-        if (id_user && dataset_name && new_dataset_name) {
-            const result = await updateDataset(id_user, dataset_name, new_dataset_name);
-            res.json(result);
-        } else {
-            res.status(400).json({ error: 'Parametri mancanti: id_user, dataset_name, new_dataset_name' });
-        }
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
+    const result = await updateDataset(id_user, dataset_name, new_dataset_name);
+    res.json(result);
 });
 
 // Rotta per aggiungere video a un dataset
-app.put('/insertVideoIntoDataset', async (req: Request, res: Response) => {
+app.put('/insertVideoIntoDataset', Middleware.checkUsers,Middleware.insertVideo, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
     const new_videos = req.body.new_videos;
 
-    try {
-        if (id_user && dataset_name && new_videos) {
-            const result = await insertVideoIntoDataset(id_user, dataset_name, new_videos);
-            res.json(result);
-        } else {
-            res.status(400).json({ error: 'Parametri mancanti: id_user, dataset_name, new_videos' });
-        }
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
+    const result = await insertVideoIntoDataset(id_user, dataset_name, new_videos);
+    res.json(result);
 });
 
 // Rotta DELETE per eliminare un dataset
-app.delete('/deleteDataset', async (req: Request, res: Response) => {
+app.delete('/deleteDataset', Middleware.checkUsers, Middleware.deleteDataset, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
 
-    try {
-        if (id_user && dataset_name) {
-            const result = await deleteDataset(id_user, dataset_name);
-            res.json(result);
-        } else {
-            res.status(400).json({ error: 'Parametri mancanti: id_user, dataset_name' });
-        }
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
+    const result = await deleteDataset(id_user, dataset_name);
+    res.json(result);
 });
 
 
-app.get('/credits', async (req: Request, res: Response) => {
+
+app.get('/credits', Middleware.checkUsers, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
 
-    try {
-        const result = await visualizeCredits(id_user);
-        res.json(result); // Rispondi con il risultato della funzione visualizeAllUserCredits
-    } catch (error:any) {
-        res.status(500).json({ successo: false, errore: error.message }); // Gestione degli errori
-    }
+    const result = await visualizeCredits(id_user);
+    res.json(result); 
 });
+
+
+//*********************************    AMMINISTRATORE    ************************************ */
+
+
+app.get('/getAllDataset', async (req: Request, res: Response) => {
+    const result = await getAllDataset();
+    res.json(result);
+});
+
+// Definizione della rotta per recuperare tutti gli utenti(ADMIN)
+app.get('/getUsers', async (req: Request, res: Response) => {
+    const users = await getAllUsers();
+    res.status(200).json(users);
+});
+
+app.get('/allCredits', async (req: Request, res: Response) => {
+    const result = await visualizeCredits();
+    res.json(result); 
+});
+
 
 // Rotta PUT per ricaricare i crediti di un utente
 app.put('/rechargeCredits', async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string); // Converte tokens_to_charge in numero intero
-
-    try {
-        const result = await rechargeCredits(id_user, tokens_to_charge);
-        res.json(result); // Rispondi con il risultato della funzione rechargeCredits
-    } catch (error:any) {
-        res.status(500).json({ successo: false, errore: error.message }); // Gestione degli errori
-    }
+   
+    const result = await rechargeCredits(id_user, tokens_to_charge);
+    res.json(result); // Rispondi con il risultato della funzione rechargeCredits
 });
 
 app.listen(port, () => {

@@ -26,9 +26,25 @@ export const createDataset = [
     RouteMiddleware.checkDatasetExists
 ];
 
-// getAllDataset : controllare abbastanza crediti
-
+// getDataset
+export const getDataset = [
+    RouteMiddleware.checkUserExists,
+    RouteMiddleware.checkResidualTokens
+]
 // getUserDataset : si può utilizzare checkUsers
+
+export const updateDataset = [
+    RouteMiddleware.checkDatasetAlreadyExist,
+    RouteMiddleware.checkDatasetExists
+]
+
+export const insertVideo = [
+    RouteMiddleware.checkSameVideo
+]
+
+export const deleteDataset = [
+    RouteMiddleware.checkDatasetAlreadyExist
+]
 
 export const error_handling =[
     ReqMiddleware.logErrors,
