@@ -22,8 +22,8 @@ export const User = sequelize.define('users', {
     },
     email: {
         type: DataTypes.STRING(30),
-        allowNull: false,
-        unique: true  // Aggiunto vincolo di unicità per l'email
+        primaryKey: true,
+        allowNull: false
     },
     residual_tokens: {
         type: DataTypes.DOUBLE,
@@ -49,25 +49,25 @@ export const Dataset = sequelize.define('dataset', {
         allowNull: false,
         defaultValue: []
     },
-    user_id: {  // Aggiunto campo user_id come chiave esterna
-        type: DataTypes.INTEGER,
+    email: {  // Aggiunto campo user_id come chiave esterna
+        type: DataTypes.STRING(50),
         allowNull: false
     }
 }, {
     indexes: [
-        { unique: true, fields: ['dataset_name', 'user_id'] }  // Vincolo di unicità su dataset_name e user_id
+        { unique: true, fields: ['dataset_name', 'email'] }  // Vincolo di unicità su dataset_name e user_id
     ]
 });
 
 // Definizione della relazione tra le tabelle
 User.hasMany(Dataset, {
     foreignKey: {
-        name: 'user_id',
+        name: 'email',
         allowNull: false
     },
     onDelete: 'CASCADE'
 });
-Dataset.belongsTo(User, { foreignKey: 'user_id' });
+Dataset.belongsTo(User, { foreignKey: 'email' });
 
 const syncModels = async () => {
     try {

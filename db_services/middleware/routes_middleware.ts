@@ -21,11 +21,10 @@ dotenv.config();
 export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
     try {
         
-        console.log('JWT dentro checkResidualTokens: ', req.decodeJwt);
         let tokens = await User.findOne({
             attributes: ['residual_tokens'],
             where: {
-                user_id: req.decodeJwt.id,
+                email: req.decodeJwt.email,
                 residual_tokens: { [Op.gt]: 0 }
             }
         })
@@ -53,13 +52,13 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
 */
 export async function checkEnoughTokens(req: any, res: any, next: any): Promise<void> {
     try {
-        const userId: number = parseInt(req.decodeJwt.id);
+        const email: string = req.decodeJwt.email;
 
-        // Usa findOne per trovare l'utente con user_id corrispondente
+        // Usa findOne per trovare l'utente con email corrispondente
         const user = await User.findOne({
             attributes: ['residual_tokens'],
             where: {
-                user_id: userId
+                email: email
             }
         });
 
@@ -71,13 +70,10 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
             const tokensRequired: number = new_videos.length * COST;
             const tokensRemains: number = tokens - tokensRequired;
 
-            console.log('tokensRequired:', tokensRequired);
-            console.log('tokensRemains:', tokensRemains);
 
             if (tokensRequired <= tokens) {
-                console.log('I token mi bastanooooooooooooooooooooooooooo');
                 // Aggiorna residual_tokens per l'utente
-                await User.update({ residual_tokens: tokensRemains }, { where: { user_id: userId } });
+                await User.update({ residual_tokens: tokensRemains }, { where: { email: email } });
                 next();
             } else {
                 next(EnumError.NotEnoughTokens);
@@ -107,8 +103,7 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
     try {
         let users = await User.findAll({
             where: {
-                name: req.decodeJwt.name,
-                surname: req.decodeJwt.surname
+                email: req.body.email
             }
         })
         if (users.length == 0) {
@@ -137,8 +132,7 @@ export async function checkUserExists(req: any, res: any, next: any): Promise<vo
         console.log('JWT dentro checkUserExits: ', req.decodeJwt);
         let user = await User.findOne({
             where: {
-                name: req.decodeJwt.name,
-                surname: req.decodeJwt.surname
+                email: req.decodeJwt.email
             }
         })
         if (user !== null) {
@@ -165,7 +159,7 @@ export async function checkUserExists(req: any, res: any, next: any): Promise<vo
 export async function checkDatasetExists(req: any, res: any, next: any): Promise<void> {
     try {
         let datasetName: string | undefined;
-        let userId: number | undefined;
+        let email: string | undefined;
      
         if (req.body.dataset_name) {
             datasetName = req.body.dataset_name as string;
@@ -173,11 +167,11 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
             datasetName = req.body.new_dataset_name as string;
         }
         
-        userId = parseInt(req.decodeJwt.id);
+        email = req.decodeJwt.email;
         const dataset = await Dataset.findAll({
             where: {
                 dataset_name: datasetName as string,
-                user_id: userId as number,
+                email: email as string,
             }
         });
 
@@ -206,13 +200,13 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
 * @param next Riferimento al middleware successivo
 */
 export async function checkDatasetAlreadyExist(req: any, res: any, next: any): Promise<void>{
-    const id_user = req.decodeJwt.id as string;
+    const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     try{
         // Cerco se il dataset esiste 
         const dataset = await Dataset.findAll({
             where: {
-                user_id: id_user,
+                email: email,
                 dataset_name: dataset_name
             }
         })
@@ -249,7 +243,7 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
         const dataset = await Dataset.findOne({
             where: {
                 dataset_name: req.query.dataset_name,
-                user_id: req.decodeJwt.id
+                email: req.decodeJwt.email
             },
             attributes: ['videos']
         });

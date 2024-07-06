@@ -7,15 +7,13 @@ const secretKey = process.env.JWT_SECRET_KEY || '';
 // I dati che vuoi inserire nel payload del JWT
 const payload_user = {
   id: "2",
-  name: "Luca",
-  surname: "Bellante",
+  email: "lubells@gmail.com",
   role: "USER"
 };
 
 const payload_admin = {
     id: "1",
-    name: "Agnese",
-    surname: "Bruglia",
+    email: "agnib@gmail.com",
     role: "ADMIN"
   };
   

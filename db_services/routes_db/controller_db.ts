@@ -59,16 +59,18 @@ export async function createUser({
  * @param id_user ID dell'utente associato al dataset.
  * @returns True se l'aggiunta è riuscita correttamente, altrimenti false.
  */
-export async function addDataset(dataset_name: string, id_user: number): Promise<any> {
+export async function addDataset(dataset_name: string, email: string): Promise<any> {
     try {
         // Creazione della tupla nel database
+       
         await Dataset.create({
             dataset_name: dataset_name,
-            user_id: id_user  // Associa il dataset all'utente tramite la relazione definita
+            email: email  // Associa il dataset all'utente tramite la relazione definita
         });
     // Todo LUCA: vedere di fare i controlli per assicurarsi che non esiste uno stesso user con uno stesso dataset
         return dataset_name;
     } catch (error:any) {
+        console.log(error);
         return error.message;
     }
 }
@@ -96,11 +98,11 @@ export async function getAllUsers(): Promise<Json> {
 
 /**
  * Funzione per ritornare dataset.
- * @param id_user ID dell'utente associato al dataset.
+ * @param email Email dell'utente associato al dataset.
  * @param dataset_name Nome del dataset (chiave primaria). Parametro facoltativo.
  * @returns Dataset specifico riferito ad uno utente oppure tutti i dataset di un'utente. Ritorna un eccezione in caso di errore
  */
-export async function getDatasets(id_user:String, dataset_name?: String) {
+export async function getDatasets(email:String, dataset_name?: String) {
     try {
         
 
@@ -108,7 +110,7 @@ export async function getDatasets(id_user:String, dataset_name?: String) {
             const result = await Dataset.findAll({
                 where: {
                     dataset_name : dataset_name,
-                    user_id : id_user,
+                    email : email,
                 },
             });
             return {
@@ -120,7 +122,7 @@ export async function getDatasets(id_user:String, dataset_name?: String) {
         else{
             const result = await Dataset.findAll({
                 where: {
-                    user_id : id_user,
+                    email : email,
                 },
             });
             return {
@@ -163,17 +165,17 @@ export async function getAllDataset(): Promise<Json>{
 
 /**
  * Funzione per ritornare dataset.
- * @param id_user ID dell'utente associato al dataset.
+ * @param email Email dell'utente associato al dataset.
  * @param dataset_name Nome del dataset (chiave primaria).
  * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
  */
-export async function updateDataset(id_user:String, dataset_name: String, new_dataset_name: String): Promise<Json>{
+export async function updateDataset(email:String, dataset_name: String, new_dataset_name: String): Promise<Json>{
     try{
         await Dataset.update(
             { dataset_name: new_dataset_name},
             {
               where: {
-                user_id: id_user,
+                email: email,
                 dataset_name: dataset_name
               },
             },
@@ -195,16 +197,16 @@ export async function updateDataset(id_user:String, dataset_name: String, new_da
 
 /**
  * Funzione per aggiungere nuovi video al dataset dello user.
- * @param id_user ID dell'utente associato al dataset.
+ * @param email Email dell'utente associato al dataset.
  * @param dataset_name Nome del dataset (chiave primaria).
  * @param new_videos Nuovi video da aggiungere al dataset.
  * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
  */
-export async function insertVideoIntoDataset(id_user: String, dataset_name: String, new_videos: Array<String>): Promise<Json>{
+export async function insertVideoIntoDataset(email: String, dataset_name: String, new_videos: Array<String>): Promise<Json>{
     try{
         const videos = await Dataset.findOne({
             where: {
-                user_id : id_user,
+                email : email,
                 dataset_name: dataset_name,
             },
             attributes: ['videos']
@@ -218,7 +220,7 @@ export async function insertVideoIntoDataset(id_user: String, dataset_name: Stri
                 { videos: video},
                 {
                   where: {
-                    user_id: id_user,
+                    email: email,
                     dataset_name: dataset_name
                   },
                 },
@@ -241,15 +243,15 @@ export async function insertVideoIntoDataset(id_user: String, dataset_name: Stri
 
 /**
  * Funzione per rimuovere un dataset dal DB.
- * @param id_user ID dell'utente associato al dataset.
+ * @param email Email dell'utente associato al dataset.
  * @param dataset_name Nome del dataset (chiave primaria).
  * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
  */
-export async function deleteDataset(id_user: String, dataset_name: String): Promise<Json>{
+export async function deleteDataset(email: String, dataset_name: String): Promise<Json>{
     try{
         const result = await Dataset.destroy({
                 where: {
-                    user_id: id_user,
+                    email: email,
                     dataset_name: dataset_name
                 }
         });
@@ -269,15 +271,15 @@ export async function deleteDataset(id_user: String, dataset_name: String): Prom
 
 /**
  * Funzione per visualizzare i crediti di un dato utente
- * @param id_user ID dell'utente associato al dataset. Se non presente, restiuisce i crediti di tutti gli utenti
+ * @param email Email dell'utente associato al dataset. Se non presente, restiuisce i crediti di tutti gli utenti
  * @returns Json contenente i crediti residui dell'utente/degli utenti oppure messaggio di errore.
  */
-export async function visualizeCredits(id_user?: String): Promise<Json>{
+export async function visualizeCredits(email?: String): Promise<Json>{
     try{
-        if(id_user !== undefined){
+        if(email !== undefined){
             const value = await User.findOne({
                 where: {
-                    user_id : id_user,
+                    email : email,
                 },
                 attributes: ['residual_tokens']
             }); 
@@ -289,7 +291,7 @@ export async function visualizeCredits(id_user?: String): Promise<Json>{
         }
         else {
             const value = await User.findAll({
-                attributes: ['user_id', 'residual_tokens']  
+                attributes: ['email', 'residual_tokens']  
             });
             return{
                 successo: true,
@@ -308,15 +310,15 @@ export async function visualizeCredits(id_user?: String): Promise<Json>{
 
 /**
  * Funzione per ricaricare i crediti di un utente
- * @param id_user ID dell'utente a cui si vuole ricaricare il credito.
+ * @param email Email dell'utente a cui si vuole ricaricare il credito.
  * @returns Json contenente messaggio di buona riuscita oppure json contenente un errore.
  */
-export async function rechargeCredits(id_user: string , tokens_to_charge: number): Promise<Json>{
+export async function rechargeCredits(emailUser: string , tokens_to_charge: number): Promise<Json>{
     try{
 
-        visualizeCredits(id_user).then(result => {
+        visualizeCredits(emailUser).then(result => {
             if(result.successo==false){
-                throw new EmptyResultError('User credits reading operation for update failed.');
+                return result;
             }
             const toAdd = result.data + tokens_to_charge
             console.log(result.data)
@@ -324,7 +326,7 @@ export async function rechargeCredits(id_user: string , tokens_to_charge: number
                 { residual_tokens: toAdd},
                 {
                   where: {
-                    user_id: id_user,
+                    email: emailUser,
                   },
                 },
               );
