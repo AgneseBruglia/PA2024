@@ -1,7 +1,5 @@
 import express, { Request, Response } from 'express';
-import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
-    visualizeCredits, rechargeCredits 
- } from './routes_db/controller_db';
+import * as Controller from './routes_db/controller_db';
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
@@ -26,7 +24,7 @@ app.post('/createDataset', Middleware.checkGeneral, Middleware.createDataset, Mi
     console.log('/createDataset: ', req.decodeJwt);
     const user_id = req.decodeJwt.id;
     console.log('**********ID:  ', user_id);
-    const result = await addDataset(dataset_name, user_id);
+    const result = await Controller.addDataset(dataset_name, user_id);
     res.json(result);
 });
 
@@ -35,10 +33,10 @@ app.get('/getDataset', Middleware.checkGeneral, Middleware.error_handling, async
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
     if (id_user && dataset_name) {
-        const result = await getDatasets(id_user, dataset_name);
+        const result = await Controller.getDatasets(id_user, dataset_name);
         res.json(result);
     } else if (id_user) {
-        const result = await getDatasets(id_user);
+        const result = await Controller.getDatasets(id_user);
         res.json(result);
     }
 });
@@ -48,7 +46,7 @@ app.post('/updateDataset', Middleware.checkGeneral, Middleware.updateDataset, Mi
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
     const new_dataset_name = req.query.new_dataset_name as string;
-    const result = await updateDataset(id_user, dataset_name, new_dataset_name);
+    const result = await Controller.updateDataset(id_user, dataset_name, new_dataset_name);
     res.json(result);
 });
 
@@ -57,7 +55,7 @@ app.put('/insertVideoIntoDataset', Middleware.checkGeneral, Middleware.insertVid
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
     const new_videos = req.body.new_videos;
-    const result = await insertVideoIntoDataset(id_user, dataset_name, new_videos);
+    const result = await Controller.insertVideoIntoDataset(id_user, dataset_name, new_videos);
     res.json(result);
 });
 
@@ -65,14 +63,14 @@ app.put('/insertVideoIntoDataset', Middleware.checkGeneral, Middleware.insertVid
 app.delete('/deleteDataset', Middleware.checkGeneral, Middleware.deleteDataset, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const dataset_name = req.query.dataset_name as string;
-    const result = await deleteDataset(id_user, dataset_name);
+    const result = await Controller.deleteDataset(id_user, dataset_name);
     res.json(result);
 });
 
 // Definizione della rotta per ottenere il numero di token residui per un certo utente
 app.get('/getTokens', Middleware.checkGeneral, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
-    const result = await visualizeCredits(id_user);
+    const result = await Controller.visualizeCredits(id_user);
     res.json(result); 
 });
 
@@ -81,25 +79,25 @@ app.get('/getTokens', Middleware.checkGeneral, Middleware.error_handling, async 
 // Definizione della rotta per l'inserimento di un nuovo utente
 app.post('/insertUser', Middleware.checkGeneral, Middleware.checkInsertUsers, Middleware.error_handling, async (req: Request, res: Response) => {
     const { name, surname, email, type, residual_tokens } = req.body;
-    const newUser = await createUser({ name, surname, email, type, residual_tokens });
+    const newUser = await Controller.createUser({ name, surname, email, type, residual_tokens });
     res.json(newUser);
 });
 
 // Definizione della rotta per ottenere tutti i dataset di tutti gli utenti
 app.get('/getAllDataset', Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: Request, res: Response) => {
-    const result = await getAllDataset();
+    const result = await Controller.getAllDataset();
     res.json(result);
 });
 
 // Definizione della rotta per ottenere tutti gli utenti
 app.get('/getUsers', Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: Request, res: Response) => {
-    const users = await getAllUsers();
+    const users = await Controller.getAllUsers();
     res.status(200).json(users);
 });
 
 // Definizione della rotta per ottenere i token residui di tutti gli utenti
 app.get('/allCredits', Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: Request, res: Response) => {
-    const result = await visualizeCredits();
+    const result = await Controller.visualizeCredits();
     res.json(result); 
 });
 
@@ -107,7 +105,7 @@ app.get('/allCredits', Middleware.checkGeneral, Middleware.checkPermission, Midd
 app.put('/rechargeTokens', Middleware.checkJwt, Middleware.checkPermission, Middleware.error_handling, async (req: Request, res: Response) => {
     const id_user = req.query.id_user as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string);
-    const result = await rechargeCredits(id_user, tokens_to_charge);
+    const result = await Controller.rechargeCredits(id_user, tokens_to_charge);
     res.json(result); 
 });
 
