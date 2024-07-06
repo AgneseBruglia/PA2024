@@ -71,7 +71,7 @@ app.delete('/deleteDataset', Middleware.checkGeneral, Middleware.deleteDataset, 
 
 // Definizione della rotta per ottenere il numero di token residui per un certo utente
 app.get('/getTokens', Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
-    const id_user = req.query.id as string;
+    const id_user = req.decodeJwt.id as string;
     const result = await visualizeCredits(id_user);
     res.json(result); 
 });
@@ -116,23 +116,11 @@ app.put('/rechargeTokens', Middleware.checkJwt, Middleware.checkPermission, Midd
     res.json(result); 
 });
 
-/**
- * Funzione 'controllerErrors'
- * 
- * Funzione invocata dai metodi del Controller in caso di errori e che si occupa di invocare
- * il metodo {@link getError} della Factory di errori per costruire oggetti da ritornare al client
- * nel corpo della risposta.
- * 
- * @param enum_error Il tipo di errore da costruire
- * @param err L'effettivo errore sollevato
- * @param res La risposta da parte del server
- 
-function controllerErrors(enum_error: EnumError, err: any, res: any) {
-    const new_err = getError(enum_error).getErrorObj();
-    console.log(err);
-    res.status(new_err.status).json(new_err.message);
-}
-*/
+app.get('/getAllTokens', Middleware.checkJwt, Middleware.error_handling, async (req: any, res: Response) => {
+    const result = await visualizeCredits();
+    res.json(result); 
+});
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
