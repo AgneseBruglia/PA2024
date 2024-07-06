@@ -65,27 +65,19 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
             // Controllo se ha i crediti sufficienti per inserire tutti i video,
             const new_videos: string[] = req.body.new_videos;
             const id: Number = parseInt(req.decodeJwt.id);
-            const dataset = await  Dataset.findOne({
-                attributes: ['videos'],
-                where: {
-                    user_id: id
-                }
-            }) ;
-            if(dataset){
-                const COST: number = 0.5;
-                const videos: string[] = dataset.get('videos') as string[] ;
-                const tokensRequired: number = (videos.length + new_videos.length)*COST;
-                const tokensRemains: number = tokens - tokensRequired;
-                if(tokensRequired <= tokens){
-                    await Dataset.update({
-                        residual_tokens: tokensRemains
-                    },
-                    {
-                        where: {user_id: id}
-                    });
-                    next();
-                }
-            }   
+            const COST: number = 0.5;
+            const tokensRequired: number = (new_videos.length)*COST;
+            const tokensRemains: number = tokens - tokensRequired;
+            if(tokensRequired <= tokens){
+                await Dataset.update({
+                    residual_tokens: tokensRemains
+                },
+                {
+                    where: {user_id: id}
+                });
+                next();
+            }
+               
         } else {
             next(EnumError.NotEnoughTokens);
         }
