@@ -37,8 +37,8 @@ export const updateDataset = [
 ];
 
 export const insertVideo = [
-    RouteMiddleware.checkSameVideo
-    // aggiungere controllo sul numero di token
+    RouteMiddleware.checkDatasetAlreadyExist,
+    RouteMiddleware.checkSameVideo,
 ];
 
 export const deleteDataset = [
