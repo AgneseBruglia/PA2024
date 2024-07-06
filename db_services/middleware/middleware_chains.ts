@@ -39,7 +39,8 @@ export const updateDataset = [
 ];
 
 export const insertVideo = [
-    RouteMiddleware.checkSameVideo
+    RouteMiddleware.checkDatasetAlreadyExist,
+    RouteMiddleware.checkSameVideo,
 ];
 
 export const deleteDataset = [
