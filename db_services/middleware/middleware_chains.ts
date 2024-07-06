@@ -10,6 +10,8 @@ import * as RouteMiddleware from './routes_middleware';
  */
 
 export const checkInsertUsers = [
+    ReqMiddleware.checkAdminPermission,
+    RouteMiddleware.checkResidualTokens,
     RouteMiddleware.checkUser
 ];
 
@@ -18,20 +20,16 @@ export const checkUsers = [
     RouteMiddleware.checkResidualTokens
 ];
 
-// getUsers : controllare abbastanza token
-
 export const createDataset = [
     RouteMiddleware.checkUserExists,
     RouteMiddleware.checkResidualTokens,
     RouteMiddleware.checkDatasetExists
 ];
 
-// getDataset
 export const getDataset = [
     RouteMiddleware.checkUserExists,
     RouteMiddleware.checkResidualTokens
-]
-// getUserDataset : si può utilizzare checkUsers
+];
 
 export const updateDataset = [
     RouteMiddleware.checkDatasetAlreadyExist,
@@ -40,22 +38,21 @@ export const updateDataset = [
 
 export const insertVideo = [
     RouteMiddleware.checkSameVideo
+    // aggiungere controllo sul numero di token
 ];
 
 export const deleteDataset = [
     RouteMiddleware.checkDatasetAlreadyExist
 ];
 
-// Va applicato a tutte le rotte(USER ed ADMIN). Salva il Payload del JWT in req.body.
 export const checkJwt = [
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate
 ];
 
-// Va applicato solo alle rotte per gli admin, controlla che l'utente sia un ADMIN.
 export const checkPermission = [
     ReqMiddleware.checkAdminPermission
-]
+];
 
 export const error_handling =[
     ReqMiddleware.logErrors,
