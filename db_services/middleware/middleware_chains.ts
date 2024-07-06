@@ -48,13 +48,13 @@ export const deleteDataset = [
 
 // Va applicato a tutte le rotte(USER ed ADMIN). Salva il Payload del JWT in req.body.
 export const checkJwt = [
-    RouteMiddleware.checkJwt,
-    RouteMiddleware.verifyAndAuthenticate
+    ReqMiddleware.checkJwt,
+    ReqMiddleware.verifyAndAuthenticate
 ];
 
 // Va applicato solo alle rotte per gli admin, controlla che l'utente sia un ADMIN.
 export const checkPermission = [
-    RouteMiddleware.checkAdminPermission
+    ReqMiddleware.checkAdminPermission
 ]
 
 export const error_handling =[

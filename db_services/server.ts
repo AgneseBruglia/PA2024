@@ -21,16 +21,11 @@ app.use((err: Error, req: any, res: any, next: any) => {
     next();
 });
 
-// Route per l'inserimento di un nuovo utente
-app.post('/insertUser', Middleware.checkInsertUsers, Middleware.error_handling, async (req: Request, res: Response) => {
-    const { name, surname, email, type, residual_tokens } = req.body;
-    const newUser = await createUser({ name, surname, email, type, residual_tokens });
-    res.json(newUser);
-});
 
 app.post('/createDataset', Middleware.checkJwt ,Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
-    const { dataset_name} = req.body.dataset_name;
-    const {user_id} = req.decodeJwt.id;
+    const dataset_name = req.body.dataset_name;
+    console.log('/createDataset: ', req.decodeJwt);
+    const user_id = req.decodeJwt.id;
     console.log('**********ID:  ', user_id);
     const result = await addDataset(dataset_name, user_id);
     res.json(result);
@@ -94,6 +89,12 @@ app.get('/credits', Middleware.checkUsers, Middleware.error_handling, async (req
 
 //*********************************    AMMINISTRATORE    ************************************ */
 
+// Route per l'inserimento di un nuovo utente
+app.post('/insertUser', Middleware.checkInsertUsers, Middleware.error_handling, async (req: Request, res: Response) => {
+    const { name, surname, email, type, residual_tokens } = req.body;
+    const newUser = await createUser({ name, surname, email, type, residual_tokens });
+    res.json(newUser);
+});
 
 app.get('/getAllDataset', async (req: Request, res: Response) => {
     const result = await getAllDataset();
