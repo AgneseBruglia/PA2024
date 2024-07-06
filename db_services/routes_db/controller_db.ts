@@ -75,17 +75,24 @@ export async function addDataset(dataset_name: string, id_user: number): Promise
 
 
 
-export async function getAllUsers(): Promise<any[]> {
+export async function getAllUsers(): Promise<Json> {
     try {
         // Esegui la query per recuperare tutti gli utenti
-        const users = await User.findAll();
-        return users;
-    } catch (error) {
-        throw error;  // Rilancia l'errore per gestione ulteriore
+        const users = await User.findAll({
+            attributes: ['user_id','name','surname','email','residual_tokens']
+        });
+   
+        return {
+            successo: true,
+            data: users 
+        }; 
+    } catch (error:any) {
+        return {
+            successo: false,
+            errore: error.message 
+        }; 
     }
 }
-
-
 
 /**
  * Funzione per ritornare dataset.

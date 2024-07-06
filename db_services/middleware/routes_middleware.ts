@@ -53,37 +53,41 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
 */
 export async function checkEnoughTokens(req: any, res: any, next: any): Promise<void> {
     try {
-        const tupleUser = await User.findOne({
+        const userId: number = parseInt(req.decodeJwt.id);
+
+        // Usa findOne per trovare l'utente con user_id corrispondente
+        const user = await User.findOne({
             attributes: ['residual_tokens'],
             where: {
-                user_id: req.decodeJwt.id 
+                user_id: userId
             }
-        })
-    
-        if (tupleUser !== null) {
-            const tokens: number = tupleUser.get('residual_tokens') as number;
-            // Controllo se ha i crediti sufficienti per inserire tutti i video,
+        });
+
+        if (user) {
+            console.log('sono quii');
+            const tokens: number = user.getDataValue('residual_tokens'); // Accedi al valore di residual_tokens
             const new_videos: string[] = req.body.new_videos;
-            const id: Number = parseInt(req.decodeJwt.id);
             const COST: number = 0.5;
-            const tokensRequired: number = (new_videos.length)*COST;
+            const tokensRequired: number = new_videos.length * COST;
             const tokensRemains: number = tokens - tokensRequired;
-            if(tokensRequired <= tokens){
-                await Dataset.update({
-                    residual_tokens: tokensRemains
-                },
-                {
-                    where: {user_id: id}
-                });
+
+            console.log('tokensRequired:', tokensRequired);
+            console.log('tokensRemains:', tokensRemains);
+
+            if (tokensRequired <= tokens) {
+                console.log('I token mi bastanooooooooooooooooooooooooooo');
+                // Aggiorna residual_tokens per l'utente
+                await User.update({ residual_tokens: tokensRemains }, { where: { user_id: userId } });
                 next();
+            } else {
+                next(EnumError.NotEnoughTokens);
             }
-               
         } else {
-            next(EnumError.NotEnoughTokens);
+            next(EnumError.UserDoesNotExist);
         }
-    }
-    catch(error){
-        next(EnumError.UserDoesNotExist);
+    } catch (error) {
+        console.error('Errore durante il controllo dei tokens:', error);
+        next(EnumError.InternalServerError); // Gestisci l'errore in modo appropriato
     }
 }
 
@@ -103,8 +107,8 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
     try {
         let users = await User.findAll({
             where: {
-                name: req.body.name,
-                surname: req.body.surname
+                name: req.decodeJwt.name,
+                surname: req.decodeJwt.surname
             }
         })
         if (users.length == 0) {
@@ -202,9 +206,8 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
 * @param next Riferimento al middleware successivo
 */
 export async function checkDatasetAlreadyExist(req: any, res: any, next: any): Promise<void>{
-    const id_user = req.query.id_user as string;
+    const id_user = req.decodeJwt.id as string;
     const dataset_name = req.query.dataset_name as string;
-    const new_dataset_name = req.query.new_dataset_name as string;
     try{
         // Cerco se il dataset esiste 
         const dataset = await Dataset.findAll({
@@ -242,24 +245,32 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
 */
 export async function checkSameVideo(req: any, res: any, next: any): Promise<void>{
     try{
-        const new_videos = req.body.videos;
-        const dataset = await Dataset.findAll({
+        const new_videos = req.body.new_videos;
+        const dataset = await Dataset.findOne({
             where: {
                 dataset_name: req.query.dataset_name,
-                user_id: req.query.id_user
+                user_id: req.decodeJwt.id
             },
             attributes: ['videos']
-        }) as any;
-        const existingVideos = dataset.videos;
-        const isSameVideoPresent = new_videos.some((video: string) => existingVideos.includes(video));
-        
-        if(isSameVideoPresent){
-            next(EnumError.VideosAlreadyExitError);
+        });
+        // All'inizio i videos sono settati di default a []
+        if(dataset?.getDataValue('videos').length != 0){
+            console.log('lunghezza VIDEOS: ', dataset?.getDataValue('videos').length);
+            const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName)
+            const existingVideos: string[] = dataset?.getDataValue('videos');
+            console.log("VIdeo gia esistenti: ", existingVideos);
+            console.log("NEW VIDEOS: ", new_videos_complete);
+            const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
+            
+            if(isSameVideoPresent){
+                next(EnumError.VideosAlreadyExitError);
+            } else next();
+            
         }
         else{
             next();
         }
-
+    
     }
     catch(error: any){
         next(error);

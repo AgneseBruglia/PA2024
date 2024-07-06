@@ -107,8 +107,9 @@ export async function verifyAndAuthenticate(req: any, res: any, next: any): Prom
 
 export async function checkAdminPermission(req: any, res: any, next: any): Promise<void>{
     try{
-        if(req.body.role === typeOfUser.ADMIN) next();
-        next(EnumError.UserNotAdmin);
+        console.log('Ruolo: ', req.decodeJwt.role as string);
+        if(req.decodeJwt.role as string === typeOfUser.ADMIN as string) next();
+        else next(EnumError.UserNotAdmin);
     }
     catch(error:any){
         next(error);
