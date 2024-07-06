@@ -15,20 +15,15 @@ export const checkInsertUsers = [
     RouteMiddleware.checkUser
 ];
 
-export const checkUsers = [
+export const checkGeneral = [
+    ReqMiddleware.checkJwt,
+    ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists,
     RouteMiddleware.checkResidualTokens
 ];
 
 export const createDataset = [
-    RouteMiddleware.checkUserExists,
-    RouteMiddleware.checkResidualTokens,
     RouteMiddleware.checkDatasetExists
-];
-
-export const getDataset = [
-    RouteMiddleware.checkUserExists,
-    RouteMiddleware.checkResidualTokens
 ];
 
 export const updateDataset = [
@@ -38,6 +33,7 @@ export const updateDataset = [
 
 export const insertVideo = [
     RouteMiddleware.checkDatasetAlreadyExist,
+    RouteMiddleware.checkEnoughTokens,
     RouteMiddleware.checkSameVideo,
 ];
 
@@ -45,14 +41,15 @@ export const deleteDataset = [
     RouteMiddleware.checkDatasetAlreadyExist
 ];
 
-export const checkJwt = [
-    ReqMiddleware.checkJwt,
-    ReqMiddleware.verifyAndAuthenticate
-];
-
 export const checkPermission = [
     ReqMiddleware.checkAdminPermission
 ];
+
+export const checkJwt = [
+    ReqMiddleware.checkJwt,
+    ReqMiddleware.verifyAndAuthenticate,
+    RouteMiddleware.checkUserExists
+]
 
 export const error_handling =[
     ReqMiddleware.logErrors,
