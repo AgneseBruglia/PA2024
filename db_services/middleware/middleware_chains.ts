@@ -1,6 +1,6 @@
 import * as ReqMiddleware from './request_middleware';
 import * as RouteMiddleware from './routes_middleware';
-
+import * as InputMiddleware from './input_correcteness_middleware';
 /**
  * 'Middleware chain' 
  * 
@@ -10,12 +10,15 @@ import * as RouteMiddleware from './routes_middleware';
  */
 
 export const checkInsertUsers = [
+    InputMiddleware.validateSchema(InputMiddleware.createUserSchema),
     ReqMiddleware.checkAdminPermission,
     RouteMiddleware.checkResidualTokens,
     RouteMiddleware.checkUser
 ];
 
 export const checkGeneral = [
+    ReqMiddleware.checkPayloadHeader,
+    ReqMiddleware.checkAuthHeader,
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists,
@@ -23,21 +26,25 @@ export const checkGeneral = [
 ];
 
 export const createDataset = [
+    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema), 
     RouteMiddleware.checkDatasetExists
 ];
 
 export const updateDataset = [
+    InputMiddleware.validateSchema(InputMiddleware.updateDatasetSchema),
     RouteMiddleware.checkDatasetAlreadyExist,
     RouteMiddleware.checkDatasetExists
 ];
 
 export const insertVideo = [
+    InputMiddleware.validateInsertVideo,
     RouteMiddleware.checkDatasetAlreadyExist,
     RouteMiddleware.checkSameVideo,
     RouteMiddleware.checkEnoughTokens,
 ];
 
 export const deleteDataset = [
+    InputMiddleware.validateSchema(InputMiddleware.newVideoSchema),
     RouteMiddleware.checkDatasetAlreadyExist
 ];
 
@@ -46,6 +53,8 @@ export const checkPermission = [
 ];
 
 export const checkJwt = [
+    ReqMiddleware.checkPayloadHeader,
+    ReqMiddleware.checkAuthHeader,
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists
@@ -54,4 +63,8 @@ export const checkJwt = [
 export const error_handling =[
     ReqMiddleware.logErrors,
     ReqMiddleware.errorHandler
+];
+
+export const rechargeCredits = [
+    InputMiddleware.validateSchema(InputMiddleware.rechargeTokensSchema)
 ];

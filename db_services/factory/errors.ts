@@ -221,6 +221,56 @@ export class VerifyAndAuthenticateError implements IErrorObj {
     }
 }
 
+export class IncorrectInputError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 400;
+        this.message = Message.incorrectParameter_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+export class PayloadHeaderError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 415;
+        this.message = Message.incorrectPayloadHeader_messsage
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+export class AuthHeaderError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 400;
+        this.message = Message.noAuthHeader_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
 
 export enum EnumError {
     ZeroTokensAvailable,
@@ -234,7 +284,10 @@ export enum EnumError {
     DatasetNotExitsError,
     VideosAlreadyExitError,
     NoJwtInTheHeaderError,
-    VerifyAndAuthenticateError
+    VerifyAndAuthenticateError,
+    IncorrectInputError,
+    PayloadHeaderError,
+    AuthHeaderError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -275,7 +328,16 @@ export function getError(type: EnumError): IErrorObj {
             break;  
         case EnumError.VerifyAndAuthenticateError:
             val = new VerifyAndAuthenticateError();
-            break;    
+            break;
+        case EnumError.IncorrectInputError:
+            val = new IncorrectInputError();
+            break; 
+        case EnumError.PayloadHeaderError:
+            val = new PayloadHeaderError();
+            break; 
+        case EnumError.AuthHeaderError:
+            val = new AuthHeaderError();
+            break;
     }
     return val; 
 }

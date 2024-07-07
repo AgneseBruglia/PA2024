@@ -15,3 +15,6 @@ export const videoAlreadyExist_message: string = 'Some of the videos you want to
 export const noJwtInTheHeader_message: string = 'The route requires the presence of a JWT in the header.'; 
 export const verifyAndAuthenticate_message: string = 'JWT token authentication failed.'
 export const checkPermission_message: string = 'Only admin can run the route.';
+export const incorrectParameter_message: string = 'Parameters missing or incorrectly entered';
+export const incorrectPayloadHeader_messsage: string = 'Incorrect header payload.';
+export const noAuthHeader_message: string = 'No authorization header in the request.';

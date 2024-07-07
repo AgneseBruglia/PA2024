@@ -104,7 +104,7 @@ app.get('/allCredits', Middleware.checkGeneral, Middleware.checkPermission, Midd
 });
 
 // Definizione della rotta per ricaricare i token di un utente
-app.put('/rechargeTokens', Middleware.checkJwt, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
+app.put('/rechargeTokens', Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.query.email as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string);
     const result = await rechargeCredits(email, tokens_to_charge);
