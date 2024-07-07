@@ -68,12 +68,11 @@ export function errorHandler(err: any, req: any, res: any, next: any): void {
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export async function checkJwt(req: any, res: any, next: any): Promise<void>{
+export  function checkJwt(req: any, res: any, next: any): void{
     const bearerHeader: string = req.headers.authorization;
     if (typeof bearerHeader !== 'undefined'){
         const bearerToken: string = bearerHeader.split(' ')[1];
         req.checkJwt = bearerToken;
-        console.log('JWT dentro checkJwt: ', req.checkJwt);
         next();
     } else next(EnumError.NoJwtInTheHeaderError);
 }
@@ -88,7 +87,7 @@ export async function checkJwt(req: any, res: any, next: any): Promise<void>{
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export async function verifyAndAuthenticate(req: any, res: any, next: any): Promise<void> {
+export function verifyAndAuthenticate(req: any, res: any, next: any): void {
     try {
         console.log('JWT non decodificato:  ', req.checkJwt);
         const decoded: string | JwtPayload = jwt.verify(req.checkJwt as string, process.env.JWT_SECRET_KEY || '');
@@ -105,7 +104,7 @@ export async function verifyAndAuthenticate(req: any, res: any, next: any): Prom
 
 
 
-export async function checkAdminPermission(req: any, res: any, next: any): Promise<void>{
+export function checkAdminPermission(req: any, res: any, next: any): void{
     try{
         console.log('Ruolo: ', req.decodeJwt.role as string);
         if(req.decodeJwt.role as string === typeOfUser.ADMIN as string) next();
@@ -114,4 +113,34 @@ export async function checkAdminPermission(req: any, res: any, next: any): Promi
     catch(error:any){
         next(error);
     }
+}
+
+
+/**
+ * Middleware 'checkAuthHeader'
+ * 
+ * Controlla che la richiesta HTTP abbia un Authorization Header.
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
+export function checkAuthHeader (req: any, res: any, next: any): void{
+    if (req.headers.authorization) next();
+    else next(EnumError.AuthHeaderError);
+}
+
+/**
+ * Middleware 'checkPayloadHeader'
+ * 
+ * Controlla che la richiesta HTTP abbia un Content-Type all'interno dell'header che specifichi 
+ * il tipo di contenuto 'application/json'.
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
+export function checkPayloadHeader(req: any, res: any, next: any): void{
+    if (req.headers["content-type"] == 'application/json') next();
+    else next(EnumError.PayloadHeaderError);
 }

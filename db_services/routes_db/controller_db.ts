@@ -279,11 +279,12 @@ export async function visualizeCredits(email?: String): Promise<Json>{
         if(email !== undefined){
             const value = await User.findOne({
                 where: {
-                    email : email,
+                    email : email as string,
                 },
                 attributes: ['residual_tokens']
-            }); 
-            const tokens: number = value?.getDataValue('residual_tokens');
+            });
+            const tokens: number = value?.getDataValue('residual_tokens') as number;
+            console.log('Tokens: ', tokens);
             return{
                 successo: true,
                 data: tokens
@@ -320,8 +321,7 @@ export async function rechargeCredits(emailUser: string , tokens_to_charge: numb
             if(result.successo==false){
                 return result;
             }
-            const toAdd = result.data + tokens_to_charge
-            console.log(result.data)
+            const toAdd = result.data + tokens_to_charge;
             User.update(
                 { residual_tokens: toAdd},
                 {

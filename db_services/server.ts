@@ -20,7 +20,7 @@ app.use((err: Error, req: any, res: any, next: any) => {
 });
 
 // Definizione della rotta per creare un nuovo dataset vuoto
-app.post('/createDataset', Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
+app.post('/createDataset', Middleware.checkPayloadHeader,Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const dataset_name = req.body.dataset_name;
     console.log('dataset_name: ', dataset_name);
     const email: string = req.decodeJwt.email as string;
@@ -30,7 +30,7 @@ app.post('/createDataset', Middleware.checkGeneral, Middleware.createDataset, Mi
 });
 
 // Definizione della rotta per recuperare tutti i dataset di un utente
-app.get('/getDataset', Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/getDataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     if (email && dataset_name) {
@@ -43,7 +43,7 @@ app.get('/getDataset', Middleware.checkGeneral, Middleware.error_handling, async
 });
 
 // Definizione della rotta per aggiornare un dataset
-app.post('/updateDataset', Middleware.checkGeneral, Middleware.updateDataset, Middleware.error_handling, async (req: any, res: Response) => {
+app.post('/updateDataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.updateDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     const new_dataset_name = req.query.new_dataset_name as string;
@@ -52,7 +52,7 @@ app.post('/updateDataset', Middleware.checkGeneral, Middleware.updateDataset, Mi
 });
 
 // Definizione della rotta per aggiungere un contenuto a un dataset
-app.put('/insertVideoIntoDataset', Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
+app.put('/insertVideoIntoDataset', Middleware.checkPayloadHeader , Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     console.log("/inserVIdeoIntoDataset: ", dataset_name);
@@ -62,7 +62,7 @@ app.put('/insertVideoIntoDataset', Middleware.checkGeneral, Middleware.insertVid
 });
 
 // Definizione della rotta per eliminare un dataset
-app.delete('/deleteDataset', Middleware.checkGeneral, Middleware.deleteDataset, Middleware.error_handling, async (req: any, res: Response) => {
+app.delete('/deleteDataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.deleteDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     const result = await deleteDataset(email, dataset_name);
@@ -70,7 +70,7 @@ app.delete('/deleteDataset', Middleware.checkGeneral, Middleware.deleteDataset, 
 });
 
 // Definizione della rotta per ottenere il numero di token residui per un certo utente
-app.get('/getTokens', Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/getTokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const result = await visualizeCredits(email);
     res.json(result); 
@@ -79,39 +79,39 @@ app.get('/getTokens', Middleware.checkGeneral, Middleware.error_handling, async 
 /*********************************    AMMINISTRATORE    ************************************ */
 
 // Definizione della rotta per l'inserimento di un nuovo utente
-app.post('/insertUser', Middleware.checkGeneral, Middleware.checkPermission, Middleware.checkInsertUsers, Middleware.error_handling, async (req: any, res: Response) => {
+app.post('/insertUser', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.checkInsertUsers, Middleware.error_handling, async (req: any, res: Response) => {
     const { name, surname, email, type, residual_tokens } = req.body;
     const newUser = await createUser({ name, surname, email, type, residual_tokens });
     res.json(newUser);
 });
 
 // Definizione della rotta per ottenere tutti i dataset di tutti gli utenti
-app.get('/getAllDataset', Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/getAllDataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await getAllDataset();
     res.json(result);
 });
 
 // Definizione della rotta per ottenere tutti gli utenti
-app.get('/getUsers', Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/getUsers', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const users = await getAllUsers();
     res.json(users);
 });
 
 // Definizione della rotta per ottenere i token residui di tutti gli utenti
-app.get('/allCredits', Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/allCredits', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await visualizeCredits();
     res.json(result); 
 });
 
 // Definizione della rotta per ricaricare i token di un utente
-app.put('/rechargeTokens', Middleware.checkJwt, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
+app.put('/rechargeTokens',Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.query.email as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string);
     const result = await rechargeCredits(email, tokens_to_charge);
     res.json(result); 
 });
 
-app.get('/getAllTokens', Middleware.checkJwt, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/getAllTokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await visualizeCredits();
     res.json(result); 
 });
