@@ -1,6 +1,12 @@
 import { EnumError } from '../factory/errors';
 import Joi from 'joi';
 
+
+export const enum type{
+body = 'body',
+query = 'query',
+};
+
 export const rechargeTokensSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
     tokens_to_charge: Joi.number().required()
@@ -28,10 +34,12 @@ export const updateDatasetSchema = Joi.object({
 });
 
 // Funzione lambda per la validazione
-export const validateSchema = (schema: Joi.ObjectSchema<any>) =>  async (req: any, res: any, next: any): Promise<void> => {
-    const data = req.params || req.body;
+// Funzione lambda per la validazione
+export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {
+    const data = source === 'body' ? req.body : req.query;
+    console.log(`dataset_name from ${source}: `, data.dataset_name);
     try {
-        await schema.validateAsync(req.body);
+        await schema.validateAsync(data);
         next();
     } catch (error) {
         next(EnumError.IncorrectInputError);
@@ -41,13 +49,13 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>) =>  async (req: an
 export async function validateInsertVideo(req: any, res: any, next: any): Promise<void>{
     const insertVideoSchema = Joi.object({
         dataset_name: Joi.string().max(50).required(),
-        new_videos: Joi.array().items(Joi.string()).required()
+        new_videos: Joi.array().items(Joi.string()).min(1).required()
     });
 
     try{
-        const dataset_name: string = req.params.dataset_name;
-        const new_videos: string[] = req.body.new_videos;
-        insertVideoSchema.validateAsync({ dataset_name: dataset_name, new_videos: new_videos });
+        const dataset_name: string | undefined = req.query.dataset_name;
+        const new_videos: string[] | undefined = req.body.new_videos;
+        await insertVideoSchema.validateAsync({ dataset_name: dataset_name, new_videos: new_videos });
         next();
     }
     catch(error:any){

@@ -10,15 +10,13 @@ import * as InputMiddleware from './input_correcteness_middleware';
  */
 
 export const checkInsertUsers = [
-    InputMiddleware.validateSchema(InputMiddleware.createUserSchema),
+    InputMiddleware.validateSchema(InputMiddleware.createUserSchema, InputMiddleware.type.body),
     ReqMiddleware.checkAdminPermission,
     RouteMiddleware.checkResidualTokens,
     RouteMiddleware.checkUser
 ];
 
 export const checkGeneral = [
-    ReqMiddleware.checkPayloadHeader,
-    ReqMiddleware.checkAuthHeader,
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists,
@@ -26,12 +24,12 @@ export const checkGeneral = [
 ];
 
 export const createDataset = [
-    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema), 
+    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.body), 
     RouteMiddleware.checkDatasetExists
 ];
 
 export const updateDataset = [
-    InputMiddleware.validateSchema(InputMiddleware.updateDatasetSchema),
+    InputMiddleware.validateSchema(InputMiddleware.updateDatasetSchema, InputMiddleware.type.query),
     RouteMiddleware.checkDatasetAlreadyExist,
     RouteMiddleware.checkDatasetExists
 ];
@@ -44,7 +42,7 @@ export const insertVideo = [
 ];
 
 export const deleteDataset = [
-    InputMiddleware.validateSchema(InputMiddleware.newVideoSchema),
+    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.query),
     RouteMiddleware.checkDatasetAlreadyExist
 ];
 
@@ -53,8 +51,6 @@ export const checkPermission = [
 ];
 
 export const checkJwt = [
-    ReqMiddleware.checkPayloadHeader,
-    ReqMiddleware.checkAuthHeader,
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists
@@ -66,5 +62,13 @@ export const error_handling =[
 ];
 
 export const rechargeCredits = [
-    InputMiddleware.validateSchema(InputMiddleware.rechargeTokensSchema)
+    InputMiddleware.validateSchema(InputMiddleware.rechargeTokensSchema, InputMiddleware.type.query)
+];
+
+export const checkPayloadHeader = [
+    ReqMiddleware.checkPayloadHeader
+];
+
+export const checkAuthHeader = [
+    ReqMiddleware.checkAuthHeader
 ];
