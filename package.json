@@ -1,6 +1,11 @@
 {
   "dependencies": {
+    "bull": "^4.15.1",
+    "bullmq": "^5.8.4",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/bull": "^4.10.0"
   }
 }

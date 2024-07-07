@@ -6,9 +6,11 @@ WORKDIR /app
 
 # Copia il package.json e package-lock.json nella directory di lavoro
 COPY package*.json ./
+COPY yarn.lock ./
 
 # Installa TypeScript globalmente e ts-node localmente
 RUN npm install -g typescript && npm install ts-node
+RUN yarn install
 
 # Copia tutto il resto del codice sorgente nell'immagine Docker
 COPY . .

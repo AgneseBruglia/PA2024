@@ -5,3 +5,8 @@ npm install :
     @types/sequelize
     jsonwebtoken
     dotenv
+    bull --save
+    @types/bull --save-dev
+    --global yarn
+
+yarn add bullmq

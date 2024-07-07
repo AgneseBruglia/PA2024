@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start-worker": "node worker.js"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
@@ -16,6 +17,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.12.0",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "bullmq": "^1.8.4"
   }
 }
