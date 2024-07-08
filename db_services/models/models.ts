@@ -13,15 +13,15 @@ export const User = sequelize.define('users', {
         autoIncrement: true
     },
     name: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(50),
         allowNull: false
     },
     surname: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(50),
         allowNull: false
     },
     email: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(50),
         primaryKey: true,
         allowNull: false
     },
