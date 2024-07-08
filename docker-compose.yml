@@ -16,14 +16,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Servizio per Redis
-  redis:
-    container_name: redis
-    image: redis:latest
-    environment:
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-
   # Servizio per il server Express
   app:
     build: 
@@ -38,13 +30,20 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_HOST: ${POSTGRES_HOST}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       pgs:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./dataset_&_modelli:/app/dataset_&_modelli
       - ./.env:/app/.env
+
+  # Servizio per Redis
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: redis

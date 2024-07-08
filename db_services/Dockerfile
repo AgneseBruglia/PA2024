@@ -14,14 +14,14 @@ RUN yarn install
 
 # Copia tutto il resto del codice sorgente nell'immagine Docker
 COPY . .
-COPY entrypoint.sh /entrypoint.sh
+
 # Installa le dipendenze del progetto
 RUN npm install
 RUN npm run build
 
 
 # Espone la porta 3000 per essere raggiungibile da fuori del container
-EXPOSE 3000
+EXPOSE ${APP_PORT}
 
 # Comando per avviare l'applicazione quando il container è avviato
 CMD ["./entrypoint.sh"]
