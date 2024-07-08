@@ -48,15 +48,3 @@ services:
     volumes:
       - ./dataset_&_modelli:/app/dataset_&_modelli
       - ./.env:/app/.env
-
-  # Servizio per il worker BullMQ
-  worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./:/app
-    environment:
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-    command: npm run start-worker

@@ -4,8 +4,16 @@ import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, update
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
+import { Queue } from 'bullmq';
 
 dotenv.config(); 
+
+const jobQueue = new Queue('Job', {
+    connection: {
+      host: 'redis',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+    },
+  });
 
 const app = express();
 const port = process.env.APP_PORT || 3000;
@@ -93,8 +101,15 @@ app.get('/admin/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, M
 
 // Definizione della rotta per ottenere tutti gli utenti
 app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
-    const users = await getAllUsers(res);
+    await jobQueue.add('getAllUsers', {
+        type: 'getAllUsers',
+        data: { res }
+      });
+    res.json({ message: 'Job aggiunto alla coda per ottenere tutti gli utenti' });
+    /**
+     * const users = await getAllUsers(res);
     res.json(users);
+     */
 });
 
 
