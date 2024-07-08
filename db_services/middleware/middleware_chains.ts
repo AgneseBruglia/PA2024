@@ -72,3 +72,7 @@ export const checkPayloadHeader = [
 export const checkAuthHeader = [
     ReqMiddleware.checkAuthHeader
 ];
+
+export const other_route = [
+    ReqMiddleware.notFound
+]

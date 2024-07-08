@@ -144,3 +144,18 @@ export function checkPayloadHeader(req: any, res: any, next: any): void{
     if (req.headers["content-type"] == 'application/json') next();
     else next(EnumError.PayloadHeaderError);
 }
+
+
+
+/**
+ * Middleware 'notFound'
+ * 
+ * Si occupa delle richieste in cui viene specificata una rotta non predisposta dal servizio.
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
+export function notFound(req: any, res: any, next: any) {
+    next(EnumError.RouteNotFoundError);
+}

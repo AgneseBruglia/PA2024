@@ -272,6 +272,23 @@ export class AuthHeaderError implements IErrorObj {
     }
 }
 
+export class RouteNotFoundError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 404;
+        this.message = Message.notFound_message;
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
 export enum EnumError {
     ZeroTokensAvailable,
     NotEnoughTokens,
@@ -287,7 +304,8 @@ export enum EnumError {
     VerifyAndAuthenticateError,
     IncorrectInputError,
     PayloadHeaderError,
-    AuthHeaderError
+    AuthHeaderError,
+    RouteNotFoundError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -337,6 +355,9 @@ export function getError(type: EnumError): IErrorObj {
             break; 
         case EnumError.AuthHeaderError:
             val = new AuthHeaderError();
+            break;
+        case EnumError.RouteNotFoundError:
+            val = new RouteNotFoundError();
             break;
     }
     return val; 
