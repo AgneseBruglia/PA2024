@@ -42,8 +42,8 @@ export const insertVideo = [
 ];
 
 export const deleteDataset = [
-    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.query),
-    RouteMiddleware.checkDatasetAlreadyExist
+   InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.query),
+   RouteMiddleware.checkDatasetAlreadyExist
 ];
 
 export const checkPermission = [

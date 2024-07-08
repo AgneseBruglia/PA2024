@@ -25,7 +25,7 @@ app.post('/create-dataset', Middleware.checkPayloadHeader,Middleware.checkAuthHe
     console.log('dataset_name: ', dataset_name);
     const email: string = req.decodeJwt.email as string;
     console.log('Email: ', email);
-    const result = await addDataset(dataset_name, email);
+    const result = await addDataset(dataset_name, email, res);
     res.json(result);
 });
 
@@ -34,10 +34,10 @@ app.get('/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlew
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     if (email && dataset_name) {
-        const result = await getDatasets(email, dataset_name);
+        const result = await getDatasets(email, res, dataset_name);
         res.json(result);
     } else if (email) {
-        const result = await getDatasets(email);
+        const result = await getDatasets(email, res);
         res.json(result);
     }
 });
@@ -47,7 +47,7 @@ app.post('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral,
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     const new_dataset_name = req.query.new_dataset_name as string;
-    const result = await updateDataset(email, dataset_name, new_dataset_name);
+    const result = await updateDataset(email, dataset_name, new_dataset_name, res);
     res.json(result);
 });
 
@@ -57,7 +57,7 @@ app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.che
     const dataset_name = req.query.dataset_name as string;
     console.log("/inserVIdeoIntoDataset: ", dataset_name);
     const new_videos = req.body.new_videos;
-    const result = await insertVideoIntoDataset(email, dataset_name, new_videos);
+    const result = await insertVideoIntoDataset(email, dataset_name, new_videos, res);
     res.json(result);
 });
 
@@ -65,14 +65,14 @@ app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.che
 app.delete('/remove-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.deleteDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
-    const result = await deleteDataset(email, dataset_name);
+    const result = await deleteDataset(email, dataset_name, res);
     res.json(result);
 });
 
 // Definizione della rotta per ottenere il numero di token residui per un certo utente
 app.get('/tokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
-    const result = await visualizeCredits(email);
+    const result = await visualizeCredits(res, email);
     res.json(result); 
 });
 
@@ -87,13 +87,13 @@ app.post('/admin/create-user', Middleware.checkPayloadHeader, Middleware.checkAu
 
 // Definizione della rotta per ottenere tutti i dataset di tutti gli utenti
 app.get('/admin/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
-    const result = await getAllDataset();
+    const result = await getAllDataset(res);
     res.json(result);
 });
 
 // Definizione della rotta per ottenere tutti gli utenti
 app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
-    const users = await getAllUsers();
+    const users = await getAllUsers(res);
     res.json(users);
 });
 
@@ -103,12 +103,12 @@ app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Mid
 app.put('/admin/recharge-tokens',Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.query.email as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string);
-    const result = await rechargeCredits(email, tokens_to_charge);
+    const result = await rechargeCredits(email, tokens_to_charge, res);
     res.json(result); 
 });
 
 app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt,  Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
-    const result = await visualizeCredits();
+    const result = await visualizeCredits(res);
     res.json(result); 
 });
 

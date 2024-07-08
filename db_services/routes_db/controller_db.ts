@@ -1,7 +1,7 @@
 import {EmptyResultError, IntegerDataType } from 'sequelize';
 import { Dataset, User } from '../models/models';
 import { DatabaseError } from 'pg';
-
+import { EnumError, getError } from '../factory/errors';
 const fs = require('fs');
 const path = require('path');
 
@@ -25,6 +25,22 @@ export enum typeOfUser {
     USER = 'USER'
 }
 
+/**
+ * Funzione 'controllerErrors'
+ * 
+ * Funzione invocata dai metodi del Controller in caso di errori e che si occupa di invocare
+ * il metodo {@link getError} della Factory di errori per costruire oggetti da ritornare al client
+ * nel corpo della risposta.
+ * 
+ * @param enum_error Il tipo di errore da costruire
+ * @param err L'effettivo errore sollevato
+ * @param res La risposta da parte del server
+ */
+function controllerErrors(enum_error: EnumError, err: Error, res: any) {
+    const new_err = getError(enum_error).getErrorObj();
+    console.log(err);
+    res.status(new_err.status).json(new_err.message);
+}
 
 /*
 *
@@ -46,6 +62,7 @@ export async function createUser({
             type,
             residual_tokens
         });
+        if(newUser === null || newUser === undefined) throw new Error;
 
         return newUser.toJSON();
     } catch (error:any) {
@@ -59,40 +76,38 @@ export async function createUser({
  * @param id_user ID dell'utente associato al dataset.
  * @returns True se l'aggiunta è riuscita correttamente, altrimenti false.
  */
-export async function addDataset(dataset_name: string, email: string): Promise<any> {
+export async function addDataset(dataset_name: string, email: string, res: any): Promise<any> {
     try {
         // Creazione della tupla nel database
        
-        await Dataset.create({
+        const new_dataset = await Dataset.create({
             dataset_name: dataset_name,
             email: email  // Associa il dataset all'utente tramite la relazione definita
         });
-    // Todo LUCA: vedere di fare i controlli per assicurarsi che non esiste uno stesso user con uno stesso dataset
+        if(new_dataset === null || new_dataset === undefined) throw new Error;
+
         return dataset_name;
     } catch (error:any) {
-        console.log(error);
-        return error.message;
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
 
 
-export async function getAllUsers(): Promise<Json> {
+export async function getAllUsers(res: any): Promise<any> {
     try {
         // Esegui la query per recuperare tutti gli utenti
         const users = await User.findAll({
             attributes: ['user_id','name','surname','email','residual_tokens']
         });
+        if(users.length === 0) throw new Error;
    
         return {
             successo: true,
             data: users 
         }; 
     } catch (error:any) {
-        return {
-            successo: false,
-            errore: error.message 
-        }; 
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -102,7 +117,7 @@ export async function getAllUsers(): Promise<Json> {
  * @param dataset_name Nome del dataset (chiave primaria). Parametro facoltativo.
  * @returns Dataset specifico riferito ad uno utente oppure tutti i dataset di un'utente. Ritorna un eccezione in caso di errore
  */
-export async function getDatasets(email:String, dataset_name?: String) {
+export async function getDatasets(email:String, res: any, dataset_name?: String): Promise<any> {
     try {
         
 
@@ -113,6 +128,7 @@ export async function getDatasets(email:String, dataset_name?: String) {
                     email : email,
                 },
             });
+            if(result.length === 0) throw new Error;
             return {
                 successo: true,
                 data: result 
@@ -125,6 +141,7 @@ export async function getDatasets(email:String, dataset_name?: String) {
                     email : email,
                 },
             });
+            if(result.length === 0) throw new Error;
             return {
                 successo: true,
                 data: result 
@@ -132,10 +149,7 @@ export async function getDatasets(email:String, dataset_name?: String) {
         }
 
     } catch (error:any) {
-        return {
-            successo: false,
-            errore: error.message
-        };
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -145,19 +159,18 @@ export async function getDatasets(email:String, dataset_name?: String) {
  * Funzione per ritornare tutti i dataset presenti nel sistema.
  * @returns Tutti i dataset presenti nel DB.
  */
-export async function getAllDataset(): Promise<Json>{
+export async function getAllDataset(res:any): Promise<any>{
     try{
         const result = await Dataset.findAll();
+        if(result.length === 0) throw new Error;
         return {
             successo: true,
             data: result
         }
     }
+
     catch(error:any){
-        return{
-            successo: false,
-            errore: error.message
-        }
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -169,9 +182,9 @@ export async function getAllDataset(): Promise<Json>{
  * @param dataset_name Nome del dataset (chiave primaria).
  * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
  */
-export async function updateDataset(email:String, dataset_name: String, new_dataset_name: String): Promise<Json>{
+export async function updateDataset(email:String, dataset_name: String, new_dataset_name: String, res: any): Promise<any>{
     try{
-        await Dataset.update(
+        const [affectedCount] = await Dataset.update(
             { dataset_name: new_dataset_name},
             {
               where: {
@@ -180,6 +193,7 @@ export async function updateDataset(email:String, dataset_name: String, new_data
               },
             },
           );
+        if(affectedCount === 0) throw new Error;
         
         return {
             successo: true,
@@ -187,10 +201,7 @@ export async function updateDataset(email:String, dataset_name: String, new_data
         };
     }
     catch(error: any){
-        return {
-            successo: false,
-            data: error.message
-        };
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -202,7 +213,7 @@ export async function updateDataset(email:String, dataset_name: String, new_data
  * @param new_videos Nuovi video da aggiungere al dataset.
  * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
  */
-export async function insertVideoIntoDataset(email: String, dataset_name: String, new_videos: Array<String>): Promise<Json>{
+export async function insertVideoIntoDataset(email: String, dataset_name: String, new_videos: Array<String>, res: any): Promise<any>{
     try{
         const videos = await Dataset.findOne({
             where: {
@@ -225,18 +236,18 @@ export async function insertVideoIntoDataset(email: String, dataset_name: String
                   },
                 },
               );
+              return {
+                successo: true,
+                data: 'I video sono stati correttamente inseriti nel dataset'
+            }
         }
-        return {
-            successo: true,
-            data: 'I video sono stati correttamente inseriti nel dataset'
+        else{
+            throw new Error;
         }
         
     }
     catch(error:any){
-        return {
-            successo: false,
-            data: error.message
-        }
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -247,7 +258,7 @@ export async function insertVideoIntoDataset(email: String, dataset_name: String
  * @param dataset_name Nome del dataset (chiave primaria).
  * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
  */
-export async function deleteDataset(email: String, dataset_name: String): Promise<Json>{
+export async function deleteDataset(email: String, dataset_name: String, res: any): Promise<any>{
     try{
         const result = await Dataset.destroy({
                 where: {
@@ -255,16 +266,14 @@ export async function deleteDataset(email: String, dataset_name: String): Promis
                     dataset_name: dataset_name
                 }
         });
+        if(result === 0) throw new Error;
         return{
             successo: true,
             data: 'Dataset rimosso correttamente dal DB.'
         }
     }
     catch(error: any){
-        return{
-            successo: false,
-            errore: error.message
-        }
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -274,7 +283,7 @@ export async function deleteDataset(email: String, dataset_name: String): Promis
  * @param email Email dell'utente associato al dataset. Se non presente, restiuisce i crediti di tutti gli utenti
  * @returns Json contenente i crediti residui dell'utente/degli utenti oppure messaggio di errore.
  */
-export async function visualizeCredits(email?: String): Promise<Json>{
+export async function visualizeCredits(res:any, email?: String): Promise<any>{
     try{
         if(email !== undefined){
             const value = await User.findOne({
@@ -283,6 +292,8 @@ export async function visualizeCredits(email?: String): Promise<Json>{
                 },
                 attributes: ['residual_tokens']
             });
+
+            if(value === undefined) throw new Error;
             const tokens: number = value?.getDataValue('residual_tokens') as number;
             console.log('Tokens: ', tokens);
             return{
@@ -294,6 +305,7 @@ export async function visualizeCredits(email?: String): Promise<Json>{
             const value = await User.findAll({
                 attributes: ['email', 'residual_tokens']  
             });
+            if(value === undefined) throw new Error;
             return{
                 successo: true,
                 data: value
@@ -301,10 +313,7 @@ export async function visualizeCredits(email?: String): Promise<Json>{
         }
     }
     catch(error: any){
-        return{
-            successo: false,
-            errore: error.message
-        }
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
 
@@ -314,15 +323,12 @@ export async function visualizeCredits(email?: String): Promise<Json>{
  * @param email Email dell'utente a cui si vuole ricaricare il credito.
  * @returns Json contenente messaggio di buona riuscita oppure json contenente un errore.
  */
-export async function rechargeCredits(emailUser: string , tokens_to_charge: number): Promise<Json>{
+export async function rechargeCredits(emailUser: string , tokens_to_charge: number, res: any): Promise<any>{
     try{
 
-        visualizeCredits(emailUser).then(result => {
-            if(result.successo==false){
-                return result;
-            }
+        visualizeCredits(emailUser).then(async result => {
             const toAdd = result.data + tokens_to_charge;
-            User.update(
+            const [affectedCount] = await User.update(
                 { residual_tokens: toAdd},
                 {
                   where: {
@@ -330,6 +336,7 @@ export async function rechargeCredits(emailUser: string , tokens_to_charge: numb
                   },
                 },
               );
+            if(affectedCount === 0) throw new Error;
         })
         return{
             successo: true,
@@ -337,9 +344,6 @@ export async function rechargeCredits(emailUser: string , tokens_to_charge: numb
         }
     }
     catch(error:any){
-        return{
-            successo: false,
-            errore: error.message
-        }
+        controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
