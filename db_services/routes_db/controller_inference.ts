@@ -3,9 +3,8 @@ import { Dataset, User } from '../models/models';
 import { DatabaseError } from 'pg';
 import { EnumError, getError } from '../factory/errors';
 import * as childProcess from 'child_process';
-import * as ffmpeg from 'ffmpeg-static';
 import * as ControllerDb from './controller_db';
-import * as ffprobePath from 'ffprobe-static';
+import axios from 'axios';
 const fs = require('fs');
 const path = require('path');
 
@@ -48,8 +47,6 @@ export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     const new_err = getError(enum_error).getErrorObj();
     res.status(new_err.status).json(new_err.message);
 }
-
-export const res: any = null;
 
 
 
@@ -94,7 +91,7 @@ export async function doInference(dataset_name: String , model_name: string, res
  * @param res La risposta da parte del server
  */
 export async function checkTokensInference(dataset_name: string, email:  string, res: any): Promise<any>{
-    const videos_cost_inference: number = 1.25;
+  
     try{
         const dataset = await Dataset.findOne({
             where: {
@@ -109,19 +106,19 @@ export async function checkTokensInference(dataset_name: string, email:  string,
         // Se è presente il dataset ed i video: 
         if(dataset && (dataset.getDataValue('videos').length !== 0) && user){
             const videos: string[] = dataset.getDataValue('videos');
-            const remain_tokens: number = user.getDataValue('residual_tokens');
-            const total_frames: number = 
-            const cost_inference: number = total_frames*videos_cost_inference;
-            
+            const remain_tokens: number = user.getDataValue('residual_tokens') as number;
+            const cost_inference: number = await getVideoFrames(videos, res) as number;
+
             // Se i tokens bastano, allora ritorno true e aggiorno i tokens del dataset 
             if(remain_tokens >= cost_inference){
                 const new_credits: number = remain_tokens - cost_inference; 
                 const [numberOfAffectedRows] = await User.update(
-                    { residual_credits: new_credits },
+                    { residual_tokens: new_credits },
                     {
                       where: { email: email }
                     }
                   );
+
                 if(numberOfAffectedRows === 0 ) throw new Error;
                 return true;
             }
@@ -134,7 +131,31 @@ export async function checkTokensInference(dataset_name: string, email:  string,
         }
     }
     catch(error:any){
-        console.log('Dentro checkTokensInference: ', error.message);
         controllerErrors(EnumError.InternalServerError, error, res);
     }
 }
+
+
+const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
+    try {
+        // Converte l'array di video in una stringa di query parameter
+      
+        
+        const cost_services_host: string = process.env.COST_SERVICE_HOST || '';
+        const cost_services_port: number = parseInt(process.env.COST_SERVICE_PORT as string) || 0;
+        const body = {
+            video_paths: videos
+        };
+        console.log('body: ', body);
+        // http://${cost_services_host}:${cost_services_port}/cost
+        const response = await axios.post(`http://cost-services:5005/cost`, body);
+
+        if (response.status === 200) {
+            return response.data.total_frames as number;
+        } else {
+            throw new Error();
+        }
+    } catch (error:any) {
+        controllerErrors(EnumError.InternalServerError, error, res);
+    }
+};

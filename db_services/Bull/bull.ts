@@ -9,8 +9,8 @@ export const queue = new Queue('queue', { redis: { port: 6379, host: 'redis'} })
 queue.process(async function (job: any, done: any) {
 
   // Esegui il lavoro utilizzando i dati passati al job
-  const dataset_name: string = job.data.dataset.name;
-  const model_name: string = job.data.model.name;
+  const dataset_name: string = job.data.dataset_name;
+  const model_name: string = job.data.model_name;
   const res: any = job.data.res;
   // Chiamata alla funzione che utilizza res come parametro
   const result = await ControllerInference.doInference(dataset_name, model_name, res);

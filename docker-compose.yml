@@ -18,6 +18,7 @@ services:
 
   # Servizio per il server Express
   app:
+    container_name: app
     build: 
       context: ./db_services
       dockerfile: Dockerfile
@@ -52,3 +53,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+  # Servizio per i cost services
+  cost-services:
+    container_name: cost-services
+    build:
+      context: ./cost-services
+      dockerfile: Dockerfile
+    ports:
+      - "${COST_SERVICES_PORT}:${COST_SERVICES_PORT}"
+    depends_on:
+      - app
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
+    environment:
+      PYTHONUNBUFFERED: "1"
+      COST_SERVICES_PORT: ${COST_SERVICES_PORT}
+      COST_SERVICES_HOST: ${COST_SERVICES_HOST}
+    restart: unless-stopped
