@@ -47,3 +47,8 @@ services:
     ports:
       - "6379:6379"
     container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

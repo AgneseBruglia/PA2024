@@ -4,7 +4,7 @@ import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, update
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
-import { userQueue } from './queue/queue';
+import { queue, completedJobResults } from './Bull/bull'
 
 
 dotenv.config(); 
@@ -95,11 +95,48 @@ app.get('/admin/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, M
     res.json(result);
 });
 
+
+
 // Definizione della rotta per ottenere tutti gli utenti
 app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
 
-    await userQueue.add('getUsers', { res });
+    try {
+        console.log('PRIMA DELLA CODA');
+        const job = await queue.add({ result: 'res' });
+        console.log('DOPO LA CODA');
+        res.json({ id: job.id });
+    } catch (error:any) {
+        res.status(500).json({ error: error.message });
+    }
 });
+
+
+// Rotta per ottenere il risultato di un job completato
+app.get('/admin/job/:id', async (req: Request, res: Response) => {
+    try {
+        const jobId = req.params.id;
+
+        // Verifica se il job è stato completato
+        const result = await queue.getJob(jobId);
+        if (!result) {
+            return res.status(404).json({ error: 'Job non trovato' });
+        }
+
+        // Accedi al risultato memorizzato per l'ID del job
+        const jobResult = completedJobResults[jobId];
+        if (!jobResult) {
+            return res.status(404).json({ error: 'Risultato non disponibile' });
+        }
+
+        // Ritorna il risultato
+        res.json(jobResult);
+    } catch (error:any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 
 
 
