@@ -1,5 +1,6 @@
 # Usa un'immagine di Node.js come base
-FROM node:14
+FROM node:18
+# FROM node:14
 
 # Crea e imposta la directory di lavoro all'interno del container
 WORKDIR /app

@@ -289,6 +289,41 @@ export class RouteNotFoundError implements IErrorObj {
     }
 }
 
+export class NoTokensForInferenceError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 403;
+        this.message = Message.noTokensForInference_message;
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
+export class NoVideoError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 400;
+        this.message = Message.noVideoFoundDataset_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
 export enum EnumError {
     ZeroTokensAvailable,
     NotEnoughTokens,
@@ -305,7 +340,9 @@ export enum EnumError {
     IncorrectInputError,
     PayloadHeaderError,
     AuthHeaderError,
-    RouteNotFoundError
+    RouteNotFoundError,
+    NoTokensForInferenceError,
+    NoVideoError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -359,6 +396,12 @@ export function getError(type: EnumError): IErrorObj {
         case EnumError.RouteNotFoundError:
             val = new RouteNotFoundError();
             break;
+        case EnumError.NoTokensForInferenceError:
+            val = new NoTokensForInferenceError();
+            break; 
+        case EnumError.NoVideoError:
+            val = new NoVideoError();
+            break; 
     }
     return val; 
 }

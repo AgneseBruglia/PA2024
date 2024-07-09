@@ -55,6 +55,40 @@ app.post('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral,
     res.json(result);
 });
 
+
+// Definizione della rotta per aggiornare un dataset
+app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
+    const dataset_name: string = req.query.dataset_name;
+    const model_name: string = req.query.model_name;
+
+    const job = await queue.add({ dataset_name: dataset_name, model_name: model_name, res: 'res' });
+    res.json({ id: job.id });
+
+});
+
+// Definizione della rotta per aggiornare un dataset
+//  Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling
+app.get('/result', async (req: any, res: Response) => {
+    const jobId = req.params.id;
+
+    // Verifica se il job è stato completato
+    const result = await queue.getJob(jobId);
+    if (!result) {
+        return res.status(404).json({ error: 'Job non trovato' });
+    }
+
+    // Accedi al risultato memorizzato per l'ID del job
+    const jobResult = completedJobResults[jobId];
+    if (!jobResult) {
+        return res.status(404).json({ error: 'Risultato non disponibile' });
+    }
+
+    // Ritorna il risultato
+    res.json(jobResult);
+});
+
+
+
 // Definizione della rotta per aggiungere un contenuto a un dataset
 app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
@@ -99,15 +133,8 @@ app.get('/admin/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, M
 
 // Definizione della rotta per ottenere tutti gli utenti
 app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
-
-    try {
-        console.log('PRIMA DELLA CODA');
-        const job = await queue.add({ result: 'res' });
-        console.log('DOPO LA CODA');
-        res.json({ id: job.id });
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
+    const users = await getAllUsers(res);
+    res.json(users);
 });
 
 

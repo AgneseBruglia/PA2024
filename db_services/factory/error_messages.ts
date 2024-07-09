@@ -19,3 +19,5 @@ export const incorrectParameter_message: string = 'Parameters missing or incorre
 export const incorrectPayloadHeader_messsage: string = 'Header payload not present.';
 export const noAuthHeader_message: string = 'No authorization header in the request.';
 export const notFound_message: string = 'Route not found.';
+export const noTokensForInference_message: string = 'You do not have enough tokens to make the inference';
+export const noVideoFoundDataset_message: string = 'Empty dataset';

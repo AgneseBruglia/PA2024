@@ -75,4 +75,11 @@ export const checkAuthHeader = [
 
 export const other_route = [
     ReqMiddleware.notFound
-]
+];
+
+export const doInference = [
+    InputMiddleware.validateSchema(InputMiddleware.doInferenceSchema, InputMiddleware.type.query),
+    RouteMiddleware.checkDatasetAlreadyExist,
+    RouteMiddleware.checkNumberOfVideo,
+    RouteMiddleware.checkTokensForInference
+];

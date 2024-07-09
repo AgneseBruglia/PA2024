@@ -36,7 +36,7 @@ export enum typeOfUser {
  * @param err L'effettivo errore sollevato
  * @param res La risposta da parte del server
  */
-function controllerErrors(enum_error: EnumError, err: Error, res: any) {
+export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     const new_err = getError(enum_error).getErrorObj();
     console.log(err);
     res.status(new_err.status).json(new_err.message);

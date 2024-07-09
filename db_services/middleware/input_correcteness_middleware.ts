@@ -33,6 +33,11 @@ export const updateDatasetSchema = Joi.object({
     new_dataset_name: Joi.string().max(50).required(),
 });
 
+export const doInferenceSchema = Joi.object({
+    dataset_name: Joi.string().max(50).required(),
+    model_name: Joi.string().max(50).required().valid('model.tflite','model_8bit.tflite')
+});
+
 // Funzione lambda per la validazione
 // Funzione lambda per la validazione
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {

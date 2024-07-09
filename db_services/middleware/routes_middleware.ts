@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { User, Dataset } from '../models/models'
-import * as Controller from '../routes_db/controller_db';
+import * as ControllerInference from '../routes_db/controller_inference';
 import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
 import dotenv from 'dotenv';
@@ -43,8 +43,9 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
 *  Middleware 'checkEnoughTokens'
 *
 * Controlla che l'utente che sta effettuando le richieste 
-* abbia abbastanza token, altrimenti dà errore e 
-* rifiuta la richiesta.
+* abbia abbastanza token. Altrimenti dà errore e 
+* rifiuta la richiesta. Il numero di token necessari dipende dal numero di
+* video che devono essere caricati nel db.
 * 
 * @param req Richiesta del client
 * @param res Risposta del server
@@ -88,6 +89,41 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 }
 
 
+
+/**
+*  Middleware 'checkEnoughTokens'
+*
+*  Controlla che l'utente che sta effettuando la richiesta di inferenza abbia sufficiente
+*  crediti(tokens) per processare correttamente la richiesta. Se così non fosse, dà errore.
+* 
+* @param req Richiesta del client
+* @param res Risposta del server
+* @param next Riferimento al middleware successivo
+*/
+export async function checkTokensForInference(req: any, res: any, next: any): Promise<void> {
+    try{
+        const dataset_name: string = req.query.dataset_name;
+        const dataset = await Dataset.findByPk(dataset_name);
+        const email: string = req.decodeJwt.email;
+        
+        // Se è presente il dataset ed i video: 
+        if(dataset && dataset.getDataValue('videos')){
+            const videos: string[] = dataset.getDataValue('videos');
+            const result = await ControllerInference.checkTokensInference(dataset_name, email, res)
+            console.log('RISULTATO TOKENS: ', result)
+            if((typeof result === 'boolean') && result === true){
+                next();
+            }
+            else{
+                next(EnumError.NoTokensForInferenceError);
+            }
+            
+        }
+    }
+    catch(error:any){
+        next(EnumError.InternalServerError);
+    }
+}
 /**
  * Middleware 'checkUser'
 *
@@ -175,7 +211,7 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
             }
         });
 
-        console.log("lunghezza dataset: ", dataset.length)
+
         if (!dataset.length) {
             next();  // Procedi se il dataset non esiste
         } else {
@@ -269,6 +305,20 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
     catch(error: any){
         next(error);
     }
+}
+
+export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
+    const dataset = await Dataset.findOne({
+        where: {
+            dataset_name: req.query.dataset_name,
+            email: req.decodeJwt.email
+        },
+        attributes: ['videos']
+    });
+    const videos: string[] = dataset?.getDataValue('videos');
+
+    if(videos.length !== 0) next();
+    else next(EnumError.NoVideoError);
 }
 
 
