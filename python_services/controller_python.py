@@ -1,9 +1,10 @@
 import os
+from flask import jsonify
 import tensorflow as tf
 import numpy as np
 import cv2
 from collections import defaultdict
-from errors_factory import ErrorFactory
+from errors_factory import ErrorFactory, IncorrectFileError, ModelFileNotFoundError
 
 # Funzione per caricare il modello TensorFlow Lite
 def _load_tflite_model(model_path):
@@ -53,33 +54,40 @@ def _inferenceV3_ConvLSTM(videos, model_path):
     batch_size = 16
     video_results = {}
 
-    # Verifica che il modello sia uno dei due disponibili
-    if not os.path.exists(model_path):
-        raise ErrorFactory.create_error('ModelFileNotFoundError')
+    try:
+        # Verifica che il modello sia uno dei due disponibili
+        if not os.path.exists(model_path):
+            raise ErrorFactory.create_error('ModelFileNotFoundError', model_path=model_path)
 
-    model = _load_tflite_model(model_path)
+        model = _load_tflite_model(model_path)
 
-    # Itera su tutti i file nella cartella video_folder
-    for video in os.listdir(videos):
-        
-        # Verifica se il percorso è un file video
-        if not os.path.exists(video): 
-            raise ErrorFactory.create_error('FileNotFoundError')
-        elif not any(video.endswith(extension) for extension in ['.mp4', '.avi', '.mov']):
-            raise ErrorFactory.create_error('IncorrectFileError')
-        else:
-            results = []
-            for chunks in _preprocess_video(video, input_shape, batch_size):
-                result = _run_inference(model, chunks)
-                results.append(result)
+        # Itera su tutti i file nella cartella video_folder
+        for video in videos:
             
-            # Calcola la media dei risultati dei batch per il video corrente
-            average_result = np.mean(results)
-            
-            # Determina se è "Violento" o "Non Violento"
-            label = "Violento" if average_result > 0.5 else "Non Violento"
-            
-            # Memorizza il risultato nel dizionario video_results
-            video_results[video] = label
+            # Verifica se il percorso è un file video
+            if not os.path.exists(video): 
+                raise ErrorFactory.create_error('FileNotFoundError')
+            elif not any(video.endswith(extension) for extension in ['.mp4', '.avi', '.mov']):
+                raise ErrorFactory.create_error('IncorrectFileError')
+            else:
+                results = []
+                for chunks in _preprocess_video(video, input_shape, batch_size):
+                    result = _run_inference(model, chunks)
+                    results.append(result)
+                
+                # Calcola la media dei risultati dei batch per il video corrente
+                average_result = np.mean(results)
+                
+                # Determina se è "Violento" o "Non Violento"
+                label = "Violento" if average_result > 0.5 else "Non Violento"
+                
+                # Memorizza il risultato nel dizionario video_results
+                video_results[video] = label
+
+    except (ModelFileNotFoundError, FileNotFoundError, IncorrectFileError) as e:
+        return {"error": str(e.message), "status_code": e.status}
+    except Exception as e:
+        raise e
+
 
     return video_results
