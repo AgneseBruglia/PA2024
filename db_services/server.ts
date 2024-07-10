@@ -64,13 +64,13 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
 });
 
 // Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id
-app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.result, Middleware.error_handling, async (req: any, res: Response) => {
     const job_id = req.query.id;
     const jobResult = getResult(job_id, res);
     res.json(jobResult);
 });
 
-// Definizione della rotta per aggiungere un contenuto a un dataset
+// Definizione della rotta per aggiungere un contenuto a un dataset 
 app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;

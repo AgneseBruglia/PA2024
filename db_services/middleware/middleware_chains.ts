@@ -83,3 +83,8 @@ export const doInference = [
     RouteMiddleware.checkNumberOfVideo,
     RouteMiddleware.checkTokensForInference
 ];
+
+
+export const result = [
+    InputMiddleware.validateSchema(InputMiddleware.result, InputMiddleware.type.query)
+]

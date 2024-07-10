@@ -1,6 +1,6 @@
 import { EnumError } from '../factory/errors';
 import Joi from 'joi';
-
+import {completedJobResults} from '../Bull/bull'
 
 export const enum type{
 body = 'body',
@@ -37,6 +37,11 @@ export const doInferenceSchema = Joi.object({
     dataset_name: Joi.string().max(50).required(),
     model_name: Joi.string().max(50).required().valid('model.tflite','model_8bit.tflite')
 });
+
+export const result = Joi.object({
+    id: Joi.number().integer().valid(...Object.keys(completedJobResults)).required()
+});
+
 
 // Funzione lambda per la validazione
 // Funzione lambda per la validazione
