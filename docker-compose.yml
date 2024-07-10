@@ -1,7 +1,6 @@
 version: '3.8'
 services:
-
-  # Servizio per il database PostgreSQL
+    # Servizio per il database PostgreSQL
   pgs:
     container_name: pgs
     image: postgres:latest
@@ -66,7 +65,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./dataset_&_modelli:/app/dataset_&_modelli
+      - ./dataset_&modelli:/app/dataset&_modelli
     environment:
       PYTHONUNBUFFERED: "1"
       COST_SERVICES_PORT: ${COST_SERVICES_PORT}
@@ -90,7 +89,6 @@ services:
       - PYTHON_PORT=${PYTHON_PORT}
       - PYTHON_HOST=${PYTHON_HOST}
     restart: unless-stopped
-
 
     # Servizio per il server Express
   authentication-services:

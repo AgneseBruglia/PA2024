@@ -1,6 +1,5 @@
 # Usa un'immagine di Node.js come base
 FROM node:18
-# FROM node:14
 
 # Crea e imposta la directory di lavoro all'interno del container
 WORKDIR /app
@@ -21,8 +20,8 @@ RUN npm install
 RUN npm run build
 
 
-# Espone la porta 3000 per essere raggiungibile da fuori del container
-EXPOSE ${APP_PORT}
+# Espone la porta 3100 per essere raggiungibile da fuori del container
+EXPOSE ${AUTHENTICATION_SERVICES_PORT}
 
 # Comando per avviare l'applicazione quando il container è avviato
 CMD ["node", "server.js"]

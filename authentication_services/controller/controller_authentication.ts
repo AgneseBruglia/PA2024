@@ -35,11 +35,10 @@ export function controllerErrorsAuth(enum_error: EnumErrorAuth, err: Error, res:
  */
 export async function generateToken(req: any, res: any): Promise<any> {
     try{
-        console.log('Mi trovo qui');
         const typeOfuser: typeOfUser | undefined = stringToTypeOfUser(req.query.type as string);
         if(typeOfuser !== undefined) 
             return createJwt(req.query.email as string, 
-                            typeOfuser, req.query.expiration as number);
+                            typeOfuser, parseInt(req.query.expiration));
         else throw new Error;
     }
     catch(error:any){
