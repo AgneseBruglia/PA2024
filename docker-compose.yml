@@ -39,7 +39,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./dataset_&modelli:/app/dataset&_modelli
+      - ./dataset_&_modelli:/app/dataset_&_modelli
       - ./.env:/app/.env
 
   # Servizio per Redis
@@ -65,7 +65,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./dataset_&modelli:/app/dataset&_modelli
+      - ./dataset_&_modelli:/app/dataset_&_modelli
     environment:
       PYTHONUNBUFFERED: "1"
       COST_SERVICES_PORT: ${COST_SERVICES_PORT}
@@ -83,7 +83,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./dataset_&modelli:/app/dataset&_modelli
+      - ./dataset_&_modelli:/app/dataset_&_modelli
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHON_PORT=${PYTHON_PORT}

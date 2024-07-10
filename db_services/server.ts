@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { queue } from './Bull/bull'
 import { getUserJobs, getResult } from './routes_db/controller_jobs';
 import { completedJobResults } from './Bull/bull';
+import { generateJwt } from './routes_db/controller_authentication';
 
 dotenv.config(); 
 
@@ -21,6 +22,13 @@ app.use((err: Error, req: any, res: any, next: any) => {
     }
     next();
 });
+
+// Definizione della rotta per creare un nuovo dataset vuoto
+app.post('/generate-jwt', Middleware.error_handling, async (req: any, res: Response) => {
+    const result = await generateJwt(req, res);
+    res.json(result);
+});
+
 
 // Definizione della rotta per creare un nuovo dataset vuoto
 app.post('/create-dataset', Middleware.checkPayloadHeader,Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
