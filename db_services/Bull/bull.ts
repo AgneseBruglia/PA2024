@@ -1,6 +1,5 @@
 import * as ControllerDB from '../routes_db/controller_db'
 import * as ControllerInference from '../routes_db/controller_inference';
-
 const Queue = require('bull');
 
 export const completedJobResults: { [jobId: string]: any } = {};
@@ -9,6 +8,7 @@ export const queue = new Queue('queue', { redis: { port: 6379, host: 'redis'} })
 queue.process(async function (job: any, done: any) {
 
   // Esegui il lavoro utilizzando i dati passati al job
+  const id_user: number = job.data.id_user;
   const dataset_name: string = job.data.dataset_name;
   const model_name: string = job.data.model_name;
   const res: any = job.data.res;

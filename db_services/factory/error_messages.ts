@@ -2,7 +2,7 @@
 * File contenente i messaggi di errore personalizzati
 */
 
-export const zeroTokensAvailable_messagge: string = 'Unauthorized';
+export const zeroTokensAvailable_messagge: string = 'Unauthorized.';
 export const notEnoughTokens_message: string = 'Unauthorized.';
 export const userDoesNotExist_message: string = 'This user does not exist.';
 export const userAlreadyExists_message: string = 'This user already exists.';
@@ -15,9 +15,12 @@ export const videoAlreadyExist_message: string = 'Some of the videos you want to
 export const noJwtInTheHeader_message: string = 'The route requires the presence of a JWT in the header.'; 
 export const verifyAndAuthenticate_message: string = 'JWT token authentication failed.'
 export const checkPermission_message: string = 'Only admin can run the route.';
-export const incorrectParameter_message: string = 'Parameters missing or incorrectly entered';
+export const incorrectParameter_message: string = 'Parameters missing or incorrectly entered.';
 export const incorrectPayloadHeader_messsage: string = 'Header payload not present.';
 export const noAuthHeader_message: string = 'No authorization header in the request.';
 export const notFound_message: string = 'Route not found.';
-export const noTokensForInference_message: string = 'You do not have enough tokens to make the inference';
-export const noVideoFoundDataset_message: string = 'Empty dataset';
+export const noTokensForInference_message: string = 'You do not have enough tokens to make the inference.';
+export const noVideoFoundDataset_message: string = 'Empty dataset.';
+export const jobsFetchError_message: string = 'An error occurred while fetching user jobs.';
+export const jobNotFounderror_message: string = 'Job not found.';
+export const jobResultError_message: string = 'Job result is not available.';

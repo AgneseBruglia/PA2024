@@ -92,8 +92,6 @@ export async function addDataset(dataset_name: string, email: string, res: any):
     }
 }
 
-
-
 export async function getAllUsers(res: any): Promise<any> {
     try {
         // Esegui la query per recuperare tutti gli utenti

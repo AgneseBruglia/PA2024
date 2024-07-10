@@ -4,12 +4,11 @@ import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, update
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
-import { queue, completedJobResults } from './Bull/bull'
-
+import { queue } from './Bull/bull'
+import { getUserJobs, getResult } from './routes_db/controller_jobs';
+import { completedJobResults } from './Bull/bull';
 
 dotenv.config(); 
-
-
 
 const app = express();
 const port = process.env.APP_PORT || 3000;
@@ -55,39 +54,21 @@ app.post('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral,
     res.json(result);
 });
 
-
-// Definizione della rotta per aggiornare un dataset
+// Definizione della rotta per classificare i video di un dataset
 app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
     const dataset_name: string = req.query.dataset_name;
     const model_name: string = req.query.model_name;
-
-    const job = await queue.add({ dataset_name: dataset_name, model_name: model_name, res: 'res' });
+    const email = req.decodeJwt.email as string;
+    const job = await queue.add({ email: email, dataset_name: dataset_name, model_name: model_name, res: 'res' });
     res.json({ id: job.id });
-
 });
 
-// Definizione della rotta per aggiornare un dataset
-//  Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling
-app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral,async (req: any, res: Response) => {
-    const jobId = req.query.id;
-
-    // Verifica se il job è stato completato
-    const result = await queue.getJob(jobId);
-    if (!result) {
-        return res.status(404).json({ error: 'Job non trovato' });
-    }
-
-    // Accedi al risultato memorizzato per l'ID del job
-    const jobResult = completedJobResults[jobId];
-    if (!jobResult) {
-        return res.status(404).json({ error: 'Risultato non disponibile' });
-    }
-
-    // Ritorna il risultato
+// Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id
+app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
+    const job_id = req.query.id;
+    const jobResult = getResult(job_id, res);
     res.json(jobResult);
 });
-
-
 
 // Definizione della rotta per aggiungere un contenuto a un dataset
 app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
@@ -114,6 +95,13 @@ app.get('/tokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlewa
     res.json(result); 
 });
 
+// Definizione della rotta per restituire i processi di un utente
+app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
+    const email = req.decodeJwt.email as string;
+    const result = await getUserJobs(email, res);
+    res.json(result); 
+});
+
 /*********************************    AMMINISTRATORE    ************************************ */
 
 // Definizione della rotta per l'inserimento di un nuovo utente
@@ -129,43 +117,11 @@ app.get('/admin/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, M
     res.json(result);
 });
 
-
-
 // Definizione della rotta per ottenere tutti gli utenti
 app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const users = await getAllUsers(res);
     res.json(users);
 });
-
-
-// Rotta per ottenere il risultato di un job completato
-app.get('/admin/job/:id', async (req: Request, res: Response) => {
-    try {
-        const jobId = req.params.id;
-
-        // Verifica se il job è stato completato
-        const result = await queue.getJob(jobId);
-        if (!result) {
-            return res.status(404).json({ error: 'Job non trovato' });
-        }
-
-        // Accedi al risultato memorizzato per l'ID del job
-        const jobResult = completedJobResults[jobId];
-        if (!jobResult) {
-            return res.status(404).json({ error: 'Risultato non disponibile' });
-        }
-
-        // Ritorna il risultato
-        res.json(jobResult);
-    } catch (error:any) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-
-
-
-
 
 // Definizione della rotta per ricaricare i token di un utente
 app.put('/admin/recharge-tokens',Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
@@ -175,11 +131,11 @@ app.put('/admin/recharge-tokens',Middleware.checkAuthHeader, Middleware.checkJwt
     res.json(result); 
 });
 
+// Definizione della rotta per ottenere i tokens di tutti gli utenti
 app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt,  Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await visualizeCredits(res);
     res.json(result); 
 });
-
 
 /** 
  * Gestione delle rotte non previste

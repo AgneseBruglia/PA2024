@@ -306,6 +306,22 @@ export class NoTokensForInferenceError implements IErrorObj {
     }
 }
 
+export class JobsFetchError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 500;
+        this.message = Message.jobsFetchError_message;
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
 
 export class NoVideoError implements IErrorObj {
     status: number;
@@ -314,6 +330,40 @@ export class NoVideoError implements IErrorObj {
     constructor() {
         this.status = 400;
         this.message = Message.noVideoFoundDataset_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+export class JobNotFoundError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 404;
+        this.message = Message.jobNotFounderror_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+export class JobResultError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 404;
+        this.message = Message.jobResultError_message
     }
 
     getErrorObj(): { message: string; status: number } {
@@ -342,7 +392,10 @@ export enum EnumError {
     AuthHeaderError,
     RouteNotFoundError,
     NoTokensForInferenceError,
-    NoVideoError
+    NoVideoError,
+    JobsFetchError,
+    JobNotFoundError,
+    JobResultError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -402,6 +455,15 @@ export function getError(type: EnumError): IErrorObj {
         case EnumError.NoVideoError:
             val = new NoVideoError();
             break; 
+        case EnumError.JobsFetchError:
+            val = new JobsFetchError();
+            break;
+        case EnumError.JobNotFoundError:
+            val = new JobNotFoundError();
+            break;
+        case EnumError.JobResultError:
+            val = new JobResultError();
+            break;
     }
     return val; 
 }

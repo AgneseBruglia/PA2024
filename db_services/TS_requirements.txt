@@ -6,7 +6,7 @@ npm install :
     jsonwebtoken
     dotenv
     bull --save
-    @types/bull --save-dev
+    --save-dev @types/bull
     --global yarn
 
 yarn add bullmq
