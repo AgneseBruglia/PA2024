@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copia il codice dell'applicazione nell'immagine
 COPY requirements.txt .
-COPY python_services.py .
+COPY . .
 
 
 # Installa le dipendenze dell'applicazione
@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 
 
 # Espone la porta su cui l'applicazione Flask è in ascolto
-EXPOSE 5000
+EXPOSE ${PYTHON_PORT}
 
 # Comando per eseguire l'applicazione quando il container viene avviato
-CMD ["python", "python_services.py"]
+CMD ["python", "server_python.py"]
