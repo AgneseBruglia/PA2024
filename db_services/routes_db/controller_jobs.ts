@@ -30,6 +30,7 @@ export async function getResult(job_id: number, res: any): Promise<any> {
             let error = EnumError.JobResultError;
             return getError(error).getErrorObj();
         }
+        return jobResult;
     }
     catch(error:any) {
         console.error('Error fetching job result:', error);

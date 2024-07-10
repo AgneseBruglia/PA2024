@@ -18,10 +18,12 @@ def analyze_video():
 
         model = request.json['model_name']
         videos = request.json['videos']
+        print(f'MODEL: {model}; VIDEOS: {videos}')
         base_path = '/app/dataset_&_modelli/modelli/'
         model_path = os.path.join(base_path, model)
 
         predictions = _inferenceV3_ConvLSTM(videos, model_path)
+        print(predictions)
 
         if 'error' in predictions:
             return jsonify({"error": predictions['error']}), predictions['status_code']

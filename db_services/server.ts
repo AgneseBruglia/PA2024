@@ -67,7 +67,7 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
     const dataset_name: string = req.query.dataset_name;
     const model_name: string = req.query.model_name;
     const email = req.decodeJwt.email as string;
-    const job = await queue.add({ email: email, dataset_name: dataset_name, model_name: model_name});
+    const job = await queue.add({ email: email, dataset_name: dataset_name, model_name: model_name });
     res.json({ job_id: job.id });
 });
 
