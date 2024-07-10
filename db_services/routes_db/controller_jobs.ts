@@ -3,6 +3,7 @@ import { queue, completedJobResults } from '../Bull/bull'
 import { EnumError, getError } from '../factory/errors';
 import { controllerErrors } from './controller_db';
 
+
 export async function getUserJobs(email: string, res: any): Promise<any> {
     try {
         let jobStatuses: JobStatus[] = ['waiting', 'active', 'completed', 'failed', 'delayed'];
@@ -17,7 +18,7 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
     }
 }
 
-export async function getResult(job_id: number, res: any): Promise<any> {
+export async function getResult(job_id: number): Promise<any> {
     try {
         let job = await queue.getJob(job_id);
         if (!job) {
@@ -26,11 +27,13 @@ export async function getResult(job_id: number, res: any): Promise<any> {
         }
         // Accedi al risultato memorizzato per l'ID del job
         let jobResult = completedJobResults[job_id];
-        if (!jobResult) {
+        console.log('jobResult: ', jobResult);
+        if (jobResult.data.status !== 200) {
             let error = EnumError.JobResultError;
             return getError(error).getErrorObj();
         }
-        return jobResult;
+        console.log('jobResult: ', jobResult.data.data);
+        return jobResult.data.data;
     }
     catch(error:any) {
         console.error('Error fetching job result:', error);
