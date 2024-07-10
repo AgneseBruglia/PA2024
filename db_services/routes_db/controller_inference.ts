@@ -17,20 +17,18 @@ interface UserInput {
     residual_tokens: number;
 }
 
+// Interfaccia per descrivere la struttura della risposta al client
 interface Json {
     successo: boolean;
     data?: any; 
     errore?: string;
 }
 
+// Interfaccia per descrivere la tipologia di utente
 export enum typeOfUser {
     ADMIN = 'ADMIN',
     USER = 'USER'
 }
-
-
-
-
 
 /**
  * Funzione 'controllerErrors'
@@ -48,16 +46,13 @@ export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     res.status(new_err.status).json(new_err.message);
 }
 
-
-
 export async function doInference(dataset_name: String , model_name: string, res: any): Promise<any>{
     try{
         const dataset = await Dataset.findOne({
             where: {
               dataset_name: dataset_name
             },
-          })
-        
+          })        
         if(dataset === null) throw new Error;
         else{
             const videos: string[] = dataset.getDataValue('videos');
@@ -76,15 +71,6 @@ export async function doInference(dataset_name: String , model_name: string, res
     }
     
 }
-
-
-
-
-
-
-
-
-
 
 /**
  * Funzione 'checkTokensInference'
@@ -142,20 +128,17 @@ export async function checkTokensInference(dataset_name: string, email:  string,
     }
 }
 
-
 const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
     try {
-        // Converte l'array di video in una stringa di query parameter
-      
-        
+        // Converte l'array di video in una stringa di query parameter  
         const cost_services_host: string = process.env.COST_SERVICE_HOST || '';
         const cost_services_port: number = parseInt(process.env.COST_SERVICE_PORT as string) || 0;
         const body = {
             video_paths: videos
         };
         console.log('body: ', body);
-        // http://${cost_services_host}:${cost_services_port}/cost
         const response = await axios.post(`http://${cost_services_host}:${cost_services_port}/cost`, body);
+        console.log('RESPONSE: ', response);
 
         if (response.status === 200) {
             return response.data.total_frames as number;

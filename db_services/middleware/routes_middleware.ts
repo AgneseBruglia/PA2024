@@ -91,7 +91,7 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 
 
 /**
-*  Middleware 'checkEnoughTokens'
+*  Middleware 'checkTokensForInference'
 *
 *  Controlla che l'utente che sta effettuando la richiesta di inferenza abbia sufficiente
 *  crediti(tokens) per processare correttamente la richiesta. Se così non fosse, dà errore.

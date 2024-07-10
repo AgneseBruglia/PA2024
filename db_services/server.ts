@@ -60,7 +60,7 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
     const model_name: string = req.query.model_name;
     const email = req.decodeJwt.email as string;
     const job = await queue.add({ email: email, dataset_name: dataset_name, model_name: model_name, res: res });
-    res.json({ id: job.id });
+    res.json({ job_id: job.id });
 });
 
 // Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id

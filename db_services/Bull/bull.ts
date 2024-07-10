@@ -8,17 +8,13 @@ export const queue = new Queue('queue', { redis: { port: 6379, host: 'redis'} })
 queue.process(async function (job: any, done: any) {
 
   // Esegui il lavoro utilizzando i dati passati al job
-  const id_user: number = job.data.id_user;
+  const email_user: number = job.data.email;
   const dataset_name: string = job.data.dataset_name;
   const model_name: string = job.data.model_name;
   const res: any = job.data.res;
-  // Chiamata alla funzione che utilizza res come parametro
-  //const result = await ControllerInference.doInference(dataset_name, model_name, res);
-  waitFor15Seconds();
-  const result = {"PROVA: " : "OK"};
-  // Esempio di gestione della risposta
+  // Chiamata alla funzione per fare inferenza sul dataset
+  const result = await ControllerInference.doInference(dataset_name, model_name, res);
   completedJobResults[job.id] = result;
-
   done(); // Segnala il completamento del job
 });
 
@@ -27,8 +23,7 @@ async function waitFor15Seconds(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 15000));
 }
 
-
 queue.on('completed', function (job: any, result: any) {
     console.log('FINITO');
-    console.log('RISULTATO: ', result);
+    console.log('JOB: ', job.id, 'RISULTATO: ', result);
   })
