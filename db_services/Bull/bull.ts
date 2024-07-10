@@ -13,13 +13,19 @@ queue.process(async function (job: any, done: any) {
   const model_name: string = job.data.model_name;
   const res: any = job.data.res;
   // Chiamata alla funzione che utilizza res come parametro
-  const result = await ControllerInference.doInference(dataset_name, model_name, res);
-
+  //const result = await ControllerInference.doInference(dataset_name, model_name, res);
+  waitFor15Seconds();
+  const result = {"PROVA: " : "OK"};
   // Esempio di gestione della risposta
   completedJobResults[job.id] = result;
 
   done(); // Segnala il completamento del job
 });
+
+// Funzione asincrona per utilizzare await
+async function waitFor15Seconds(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 15000));
+}
 
 
 queue.on('completed', function (job: any, result: any) {

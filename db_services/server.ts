@@ -68,7 +68,7 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
 
 // Definizione della rotta per aggiornare un dataset
 //  Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling
-app.get('/result', async (req: any, res: Response) => {
+app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral,async (req: any, res: Response) => {
     const jobId = req.query.id;
 
     // Verifica se il job è stato completato
