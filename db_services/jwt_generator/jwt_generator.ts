@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config(); 
 const secretKey = process.env.JWT_SECRET_KEY || '';
-
 // I dati che vuoi inserire nel payload del JWT
 const payload_user = {
   id: "2",
