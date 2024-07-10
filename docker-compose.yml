@@ -72,3 +72,21 @@ services:
       COST_SERVICES_PORT: ${COST_SERVICES_PORT}
       COST_SERVICES_HOST: ${COST_SERVICES_HOST}
     restart: unless-stopped
+
+  # Servizio per python
+  py-services:
+    container_name: py-services
+    build:
+      context: ./python_services
+      dockerfile: Dockerfile
+    ports:
+      - "${PYTHON_PORT}:${PYTHON_PORT}"
+    depends_on:
+      - app
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHON_PORT=${PYTHON_PORT}
+      - PYTHON_HOST=${PYTHON_HOST}
+    restart: unless-stopped

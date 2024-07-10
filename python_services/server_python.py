@@ -11,38 +11,28 @@ from controller_python import _load_tflite_model, _inferenceV3_ConvLSTM
 app = Flask(__name__)
 
 @app.route('/inference', methods=['POST'])
-def analize_video():
+def analyze_video():
     try:
-        # Verifica se è stato specificato il modello con cui fare inferenza
-        if 'model_name' not in request.json:
+        if 'model_name' not in request.json or 'videos' not in request.json:
             raise ErrorFactory.create_error('ModelMissingError')
-        
+
         model = request.json['model_name']
-        videos = request.args.get('videos')
+        videos = request.json['videos']
         base_path = '/app/dataset_&_modelli/modelli/'
         model_path = os.path.join(base_path, model)
-        print(model_path)
-    
+
         predictions = _inferenceV3_ConvLSTM(videos, model_path)
 
-        return jsonify(predictions)
+        if 'error' in predictions:
+            return jsonify({"error": predictions['error']}), predictions['status_code']
+        else:
+            return jsonify(predictions), 200
 
     except ModelMissingError as mpme:
-        return jsonify({str(mpme)}), 400
-    except ModelFileNotFoundError as mfne:
-        return jsonify({str(mfne)}), 404
-    except FileNotFoundError as mfne:
-        return jsonify({str(mfne)}), 404
-    except IncorrectFileError as mfne:
-        return jsonify({str(mfne)}), 404
-    except CustomError as ce:
-        return jsonify({str(ce)}), 500
-    except Exception as e:
-        unexpected_error = ErrorFactory.create_error('UnexpectedError', message=str(e))
-        return jsonify({"Errore": str(unexpected_error)}), 500
-
-
+        return jsonify({"error": str(mpme)}), 400
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='py-services', port=port, debug=True)
+    port = int(os.environ.get('PYTHON_PORT'))
+    server_python_host = os.environ.get('PYTHON_HOST')
+    app.run(host=server_python_host, port=port, debug=False)
+    
