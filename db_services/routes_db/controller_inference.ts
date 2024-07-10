@@ -61,18 +61,25 @@ export async function doInference(dataset_name: String , model_name: string, res
         if(dataset === null) throw new Error;
         else{
             const videos: string[] = dataset.getDataValue('videos');
+            const python_inference_host: string = process.env.PYTHON_HOST || '';
+            const python_inference_port: number = (process.env.PYTHON_PORT || 0) as number;
+            const body = {"model_name": model_name, "videos": videos};
+            const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`,body);
             return{
                 successo: true,
-                data: videos
+                data: result
             }
         }
     }
     catch(error:any){
-        console.log('Dentro doInference: ', error.message);
         controllerErrors(EnumError.InternalServerError, error, res);
     }
     
 }
+
+
+
+
 
 
 
@@ -148,7 +155,7 @@ const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
         };
         console.log('body: ', body);
         // http://${cost_services_host}:${cost_services_port}/cost
-        const response = await axios.post(`http://cost-services:5005/cost`, body);
+        const response = await axios.post(`http://${cost_services_host}:${cost_services_port}/cost`, body);
 
         if (response.status === 200) {
             return response.data.total_frames as number;
