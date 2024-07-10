@@ -56,6 +56,8 @@ def _inferenceV3_ConvLSTM(videos, model_path):
 
     try:
         # Verifica che il modello sia uno dei due disponibili
+        print(f"MODEL path: {model_path}")
+
         if not os.path.exists(model_path):
             raise ErrorFactory.create_error('ModelFileNotFoundError', model_path=model_path)
 
@@ -88,6 +90,5 @@ def _inferenceV3_ConvLSTM(videos, model_path):
         return {"error": str(e.message), "status_code": e.status}
     except Exception as e:
         raise e
-
 
     return video_results

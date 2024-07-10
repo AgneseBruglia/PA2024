@@ -46,7 +46,7 @@ export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     res.status(new_err.status).json(new_err.message);
 }
 
-export async function doInference(dataset_name: String , model_name: string, res: any): Promise<any>{
+export async function doInference(dataset_name: String , model_name: string): Promise<any>{
     try{
         const dataset = await Dataset.findOne({
             where: {
@@ -55,21 +55,44 @@ export async function doInference(dataset_name: String , model_name: string, res
           })        
         if(dataset === null) throw new Error;
         else{
+            console.log('DATASET NAME: ', dataset_name);
             const videos: string[] = dataset.getDataValue('videos');
             const python_inference_host: string = process.env.PYTHON_HOST || '';
             const python_inference_port: number = (process.env.PYTHON_PORT || 0) as number;
+            console.log('MODEL NAME: ', model_name);
+            console.log('VIDEOS: ', videos);
             const body = {"model_name": model_name, "videos": videos};
-            const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`,body);
+            const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`, body);
             return{
                 successo: true,
                 data: result
             }
         }
     }
-    catch(error:any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+    catch (error: any) {
+        let errorMessage = 'An error occurred during inference';
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                errorMessage = `Inference service responded with status ${error.response.status}: ${error.response.data}`;
+            } else if (error.request) {
+                errorMessage = 'No response received from inference service';
+            } else {
+                errorMessage = `Error setting up request to inference service: ${error.message}`;
+            }
+        } else if (error.message === 'Dataset not found') {
+            errorMessage = 'The specified dataset was not found';
+        } else if (error.message === 'Python inference host or port is not set') {
+            errorMessage = 'Python inference host or port environment variables are not set';
+        } else {
+            errorMessage = `Unexpected error: ${error.message}`;
+        }
+
+        console.error(errorMessage);
+        return {
+            successo: false,
+            error: errorMessage
+        };
     }
-    
 }
 
 /**
