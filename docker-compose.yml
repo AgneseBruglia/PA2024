@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+
   # Servizio per il database PostgreSQL
   pgs:
     container_name: pgs
@@ -52,3 +53,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+  # Servizio per python
+  python-app:
+    container_name: py-services
+    build:
+      context: ./python_services
+      dockerfile: Dockerfile
+    ports:
+      - "${PYTHON_PORT}:${PYTHON_PORT}"
+    volumes:
+      - ./dataset_&modelli:/app/dataset&_modelli
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHON_PORT=${PYTHON_PORT}
+    restart: unless-stopped

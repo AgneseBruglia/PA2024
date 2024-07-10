@@ -10,16 +10,18 @@ from controller_python import _load_tflite_model, _inferenceV3_ConvLSTM
 
 app = Flask(__name__)
 
-@app.route('inference', methods=['POST'])
+@app.route('/inference', methods=['POST'])
 def analize_video():
     try:
         # Verifica se è stato specificato il modello con cui fare inferenza
         if 'model_name' not in request.json:
             raise ErrorFactory.create_error('ModelMissingError')
         
-        model = request.args.get('model_name')
+        model = request.json['model_name']
         videos = request.args.get('videos')
-        model_path = '/app/dataset_&_modelli/modelli/' + model
+        base_path = '/app/dataset_&_modelli/modelli/'
+        model_path = os.path.join(base_path, model)
+        print(model_path)
     
         predictions = _inferenceV3_ConvLSTM(videos, model_path)
 
