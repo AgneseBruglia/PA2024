@@ -11,9 +11,9 @@ queue.process(async function (job: any, done: any) {
   const email_user: number = job.data.email;
   const dataset_name: string = job.data.dataset_name;
   const model_name: string = job.data.model_name;
-  const res: any = job.data.res;
+  //const res: any = job.data.res;
   // Chiamata alla funzione per fare inferenza sul dataset
-  const result = await ControllerInference.doInference(dataset_name, model_name, res);
+  const result = await ControllerInference.doInference(dataset_name, model_name, 'res');
   completedJobResults[job.id] = result;
   done(); // Segnala il completamento del job
 });

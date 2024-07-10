@@ -131,15 +131,13 @@ export async function checkTokensInference(dataset_name: string, email:  string,
 const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
     try {
         // Converte l'array di video in una stringa di query parameter  
-        const cost_services_host: string = process.env.COST_SERVICE_HOST || '';
-        const cost_services_port: number = parseInt(process.env.COST_SERVICE_PORT as string) || 0;
+        const cost_services_host: string = process.env.COST_SERVICES_HOST || '';
+        const cost_services_port: number = parseInt(process.env.COST_SERVICES_PORT as string) || 0;
         const body = {
             video_paths: videos
         };
-        console.log('body: ', body);
-        const response = await axios.post(`http://${cost_services_host}:${cost_services_port}/cost`, body);
-        console.log('RESPONSE: ', response);
 
+        const response = await axios.post(`http://${cost_services_host}:${cost_services_port}/cost`, body);
         if (response.status === 200) {
             return response.data.total_frames as number;
         } else {

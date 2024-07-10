@@ -1,0 +1,109 @@
+version: '3.8'
+services:
+
+  # Servizio per il database PostgreSQL
+  pgs:
+    container_name: pgs
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Servizio per il server Express
+  app:
+    container_name: app
+    build: 
+      context: ./db_services
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    environment:
+      APP_PORT: ${APP_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      pgs:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./dataset_&modelli:/app/dataset&_modelli
+      - ./.env:/app/.env
+
+  # Servizio per Redis
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Servizio per i cost services
+  cost-services:
+    container_name: cost-services
+    build:
+      context: ./cost-services
+      dockerfile: Dockerfile
+    ports:
+      - "${COST_SERVICES_PORT}:${COST_SERVICES_PORT}"
+    depends_on:
+      - app
+    volumes:
+      - ./dataset_&_modelli:/app/dataset_&_modelli
+    environment:
+      PYTHONUNBUFFERED: "1"
+      COST_SERVICES_PORT: ${COST_SERVICES_PORT}
+      COST_SERVICES_HOST: ${COST_SERVICES_HOST}
+    restart: unless-stopped
+
+  # Servizio per python
+  py-services:
+    container_name: py-services
+    build:
+      context: ./python_services
+      dockerfile: Dockerfile
+    ports:
+      - "${PYTHON_PORT}:${PYTHON_PORT}"
+    depends_on:
+      - app
+    volumes:
+      - ./dataset_&modelli:/app/dataset&_modelli
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHON_PORT=${PYTHON_PORT}
+      - PYTHON_HOST=${PYTHON_HOST}
+    restart: unless-stopped
+
+
+    # Servizio per il server Express
+  authentication-services:
+    container_name: authentication-services
+    build: 
+      context: ./authentication_services
+      dockerfile: Dockerfile
+    ports:
+      - "${AUTHENTICATION_SERVICES_PORT}:${AUTHENTICATION_SERVICES_PORT}"
+    environment:
+      AUTHENTICATION_SERVICES_PORT: ${AUTHENTICATION_SERVICES_PORT}
+      AUTHENTICATION_SERVICES_HOST: ${AUTHENTICATION_SERVICES_HOST}
+    depends_on:
+      - app
+    volumes:
+      - ./.env:/app/.env
