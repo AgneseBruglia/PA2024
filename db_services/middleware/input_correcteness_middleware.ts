@@ -16,7 +16,6 @@ export const createDatasetSchema = Joi.object({
     dataset_name: Joi.string().max(50).required()
 });
 
-
 export const newVideoSchema = Joi.object({
     new_dataset_name: Joi.string().max(50).required()
 });
@@ -42,8 +41,6 @@ export const result = Joi.object({
     id: Joi.number().integer().valid(...Object.keys(completedJobResults)).required()
 });
 
-
-// Funzione lambda per la validazione
 // Funzione lambda per la validazione
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;
@@ -61,7 +58,6 @@ export async function validateInsertVideo(req: any, res: any, next: any): Promis
         dataset_name: Joi.string().max(50).required(),
         new_videos: Joi.array().items(Joi.string()).min(1).required()
     });
-
     try{
         const dataset_name: string | undefined = req.query.dataset_name;
         const new_videos: string[] | undefined = req.body.new_videos;
