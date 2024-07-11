@@ -8,13 +8,15 @@ interface Result {
     process_id: number;
     status: string; 
     error?: string;
+    data?: any;
 }
 
 export async function getUserJobs(email: string, res: any): Promise<any> {
     try {
         let jobs: Job[] = await queue.getJobs();
         let userJobs: Job[] = jobs.filter((job: Job) => job.data.email == email);
-        console.log('userJobs: ', userJobs);
+        
+        if (userJobs.length === 0) throw new Error;
       
         let resultsPromise: Promise<Result[]> = Promise.all(userJobs.map(async (job: Job) => {
             const status = await job.getState();
@@ -24,11 +26,9 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
                 status: status as string,
             };
             
-            if (status === 'failed') {
-                //console.log('RETURN VALUE FAILED: ', job.returnvalue);
-                result.error = job.failedReason;
-                //console.log('RESUL FAILED PROCESS: ', result);
-            }
+            if (status === 'failed') result.error = job.failedReason;
+
+            if(status === 'completed') result.data = job.returnvalue;
 
             return result;
         }));
@@ -54,15 +54,12 @@ export async function getResult(job_id: number, res: any): Promise<any> {
         }
     }
     catch(error:any) {
-
         controllerErrors(EnumError.JobResultError, error, res);
     }
 }
 
 
 
-function getMessageStatusError(jobResult: any): any {
-    const status_code: number = parseInt(jobResult.data.status);
-    const error_message: string = jobResult.data.data as string;
-    return {status_code, error_message};
+export async function resetBull(): Promise<void>{
+    await queue.obliterate({ force: true });
 }

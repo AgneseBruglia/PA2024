@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
     visualizeCredits, rechargeCredits } from './routes_db/controller_db';
+import {resetBull} from './routes_db/controller_jobs'
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
@@ -158,5 +159,6 @@ app.put('*', Middleware.other_route, Middleware.error_handling);
 app.delete('*', Middleware.other_route, Middleware.error_handling);
 
 app.listen(port, () => {
+    resetBull();
     console.log(`Server running at http://localhost:${port}`);
 });

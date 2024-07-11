@@ -31,8 +31,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_HOST: ${POSTGRES_HOST}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       pgs:
         condition: service_healthy
@@ -46,7 +46,10 @@ services:
   redis:
     image: redis:latest
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     container_name: redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
