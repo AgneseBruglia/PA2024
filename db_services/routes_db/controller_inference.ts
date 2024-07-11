@@ -46,14 +46,14 @@ export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     res.status(new_err.status).json(new_err.message);
 }
 
-export async function doInference(dataset_name: string, model_name: string): Promise<any> {
+export async function doInference(email: string, dataset_name: string, model_name: string): Promise<any> {
     try {
         const dataset = await Dataset.findOne({
             where: {
+                email: email,
                 dataset_name: dataset_name
-            },
+            }
         });
-
         if (dataset === null) {
             throw new Error('Dataset not found');
         } else {
@@ -104,12 +104,12 @@ export async function doInference(dataset_name: string, model_name: string): Pro
  * @param res La risposta da parte del server
  */
 export async function checkTokensInference(dataset_name: string, email:  string, res: any): Promise<any>{
-  
     try{
-        const dataset = await Dataset.findOne({
+        const videosData = await Dataset.findOne({
             where: {
               dataset_name: dataset_name
             },
+            attributes: [ 'videos' ]
           })
         const user = await User.findOne({
             where: {
@@ -117,11 +117,12 @@ export async function checkTokensInference(dataset_name: string, email:  string,
             },
           })
         // Se è presente il dataset ed i video: 
-        if(dataset && (dataset.getDataValue('videos').length !== 0) && user){
-            const videos: string[] = dataset.getDataValue('videos');
+        if((videosData !== null) && (user !== null)){
+            console.log('CHECK TOKENS OK');
+            const videos: string[] = videosData.getDataValue('videos');
+            console.log('VIDEOS: ', videos);
             const remain_tokens: number = user.getDataValue('residual_tokens') as number;
             const cost_inference: number = await getVideoFrames(videos, res) as number;
-
             // Se i tokens bastano, allora ritorno true e aggiorno i tokens del dataset 
             if(remain_tokens >= cost_inference){
                 const new_credits: number = remain_tokens - cost_inference; 
@@ -151,12 +152,12 @@ export async function checkTokensInference(dataset_name: string, email:  string,
 const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
     try {
         // Converte l'array di video in una stringa di query parameter  
+        console.log('OK FRAMES');
         const cost_services_host: string = process.env.COST_SERVICES_HOST || '';
         const cost_services_port: number = parseInt(process.env.COST_SERVICES_PORT as string) || 0;
         const body = {
             video_paths: videos
         };
-
         const response = await axios.post(`http://${cost_services_host}:${cost_services_port}/cost`, body);
         if (response.status === 200) {
             return response.data.total_frames as number;

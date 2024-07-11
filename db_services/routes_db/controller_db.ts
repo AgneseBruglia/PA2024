@@ -96,7 +96,7 @@ export async function getAllUsers(res: any): Promise<any> {
     try {
         // Esegui la query per recuperare tutti gli utenti
         const users = await User.findAll({
-            attributes: ['user_id','name','surname','email','residual_tokens']
+            attributes: [ 'user_id','name','surname','email','residual_tokens' ]
         });
         if(users.length === 0) throw new Error;
    
@@ -138,6 +138,7 @@ export async function getDatasets(email:String, res: any, dataset_name?: String)
                 where: {
                     email : email,
                 },
+                attributes: [ 'dataset_name', 'videos', 'email' ]
             });
             if(result.length === 0) throw new Error;
             return {

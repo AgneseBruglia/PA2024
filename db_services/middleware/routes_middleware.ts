@@ -83,14 +83,15 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 export async function checkTokensForInference(req: any, res: any, next: any): Promise<void> {
     try{
         const dataset_name: string = req.query.dataset_name;
-        const dataset = await Controller.getDataset(dataset_name, false);
         const email: string = req.decodeJwt.email;
+        const dataset = await Controller.getDataset(dataset_name, false, email);
         // Se è presente il dataset ed i video: 
-        if(dataset && dataset.getDataValue('videos')){
+        if((dataset !== null) && (dataset.getDataValue('videos') !== null)){
             const videos: string[] = dataset.getDataValue('videos');
             const result = await ControllerInference.checkTokensInference(dataset_name, email, res)
             console.log('RISULTATO TOKENS: ', result)
             if((typeof result === 'boolean') && result === true){
+                console.log('TOKENS OK');
                 next();
             }
             else{
@@ -205,6 +206,7 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
             next(EnumError.DatasetNotExitsError)
         }
         if(dataset !== null){
+            console.log('DATASET OK');
             next();
         }
     }
@@ -261,6 +263,9 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 */
 export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
     const videos: string[] = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
-    if(videos !== null) next();
+    if(videos !== null) {
+        console.log('VIDEO OK');
+        next();
+    }
     else next(EnumError.NoVideoError);
 }

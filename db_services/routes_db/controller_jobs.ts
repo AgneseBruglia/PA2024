@@ -13,7 +13,7 @@ interface Result {
 export async function getUserJobs(email: string, res: any): Promise<any> {
     try {
         let jobs: Job[] = await queue.getJobs();
-        let userJobs: Job[] = jobs.filter((job: Job) => job.data.email === email);
+        let userJobs: Job[] = jobs.filter((job: Job) => job.data.email == email);
         console.log('userJobs: ', userJobs);
       
         let resultsPromise: Promise<Result[]> = Promise.all(userJobs.map(async (job: Job) => {
@@ -50,7 +50,7 @@ export async function getResult(job_id: number, res: any): Promise<any> {
       
         return {
             successo: true,
-            data: jobResult.returnvalue
+            data: jobResult.returnvalue.data
         }
     }
     catch(error:any) {

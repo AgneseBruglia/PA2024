@@ -7,7 +7,7 @@ import Database from '../sequelize';
 const sequelize: Sequelize = Database.getInstance();
 
 export const User = sequelize.define('users', {
-    user_id: {  // Modificato da 'id' a 'user_id'
+    user_id: { 
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true

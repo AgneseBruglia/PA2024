@@ -53,7 +53,11 @@ export async function getDataset(dataset_name: any, videos: boolean, email?: any
             return result;
         }   
     } else {
-        const result = await Dataset.findByPk(dataset_name);
+        const result = await Dataset.findOne({
+            where: {
+                dataset_name: dataset_name
+            }
+        });
         return result;
     }
 }

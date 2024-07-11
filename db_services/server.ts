@@ -64,6 +64,7 @@ app.post('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral,
 
 // Definizione della rotta per classificare i video di un dataset
 app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
+    console.log('soreta');
     const dataset_name: string = req.query.dataset_name;
     const model_name: string = req.query.model_name;
     const email = req.decodeJwt.email as string;

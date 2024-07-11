@@ -11,18 +11,19 @@ queue.process(async function (job: any, done: any) {
 
   const dataset_name: string = job.data.dataset_name;
   const model_name: string = job.data.model_name;
+  const email: string = job.data.email;
 
   try {
     
-    const result = await ControllerInference.doInference(dataset_name, model_name);
-    console.log('STATUS CODE: ', result.data.data.statusCode)
-    if (result.data.data.statusCode as number !== 200) {   // CAPIRE COSA SUCCEDE NELLO STATUS FAILED  
-      const status: number = result.data.data.status as number;
-      const errMessage: string = result.data.data.errMessage as string;;
+    const result = await ControllerInference.doInference(email, dataset_name, model_name);
+    console.log('RESULT: ', result);
+    if (('status' in result.data) && ('message' in result.data)) {   // CAPIRE COSA SUCCEDE NELLO STATUS FAILED  
+      const status: number = result.status as number;
+      const errMessage: string = result.errMessage as string;;
       done(new Error(`Status code: ${status}. ${errMessage}`));
     }
 
-    done(null, result.data.data); 
+    done(null, result); 
   } catch (error) {
     done(error); 
   }

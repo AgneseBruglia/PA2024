@@ -1,6 +1,6 @@
 import { EnumError } from '../factory/errors';
 import Joi from 'joi';
-import {completedJobResults} from '../Bull/bull'
+import { completedJobResults } from '../Bull/bull'
 
 export const enum type{
 body = 'body',
@@ -51,6 +51,7 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | '
     console.log(`dataset_name from ${source}: `, data.dataset_name);
     try {
         await schema.validateAsync(data);
+        console.log('SCHEMA OK');
         next();
     } catch (error) {
         next(EnumError.IncorrectInputError);
