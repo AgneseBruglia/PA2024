@@ -4,7 +4,7 @@ import * as ControllerInference from '../routes_db/controller_inference';
 import { EnumError, getError } from '../factory/errors';
 const Queue = require('bull');
 
-export const completedJobResults: { [job_id: string]: any } = {};
+export const completedJobResults: number[] = [];
 export const queue = new Queue('queue', { redis: { port: 6379, host: 'redis'} });
 
 queue.process(async function (job: any, done: any) {
@@ -15,25 +15,26 @@ queue.process(async function (job: any, done: any) {
 
   try {
     
-    const result = await ControllerInference.doInference(email, dataset_name, model_name);
-    console.log('RESULT: ', result);
-    if (('status' in result.data) && ('message' in result.data)) {   // CAPIRE COSA SUCCEDE NELLO STATUS FAILED  
+    const result = await ControllerInference.doInference(dataset_name, model_name);
+    if (result.status as number !== 200) {   
       const status: number = result.status as number;
-      const errMessage: string = result.errMessage as string;;
-      done(new Error(`Status code: ${status}. ${errMessage}`));
+      const errMessage: string = result.message as string;;
+      done(new Error(`Status code: ${status}. ${errMessage}`), result);
     }
 
     done(null, result); 
   } catch (error) {
-    done(error); 
+    console.log('Dentro il catch: ', error);
+    done(error);
   }
 });
 
 queue.on('completed', function (job: Job) {
-  completedJobResults[job.id] = job.returnvalue;
+  completedJobResults.push(parseInt(job.id as string));
 });
 
 queue.on('failed', function (job: any, error: any) {
-  console.log(`Job ${job.id} failed with error: ${error.message}`);
-  job.returnvalue = error.message;
+  //console.log(`Job ${job.id} failed with error: ${error.message}`);
+  //console.log('JOB FALLITO: ', job.failedReason);
+  //console.log('JOB FALLITO COMPLETO: ', job);
 });

@@ -38,7 +38,7 @@ export const doInferenceSchema = Joi.object({
 });
 
 export const result = Joi.object({
-    id: Joi.number().integer().valid(...Object.keys(completedJobResults)).required()
+    id: Joi.number().integer().valid(...completedJobResults).required()
 });
 
 export const getDataset = Joi.object({

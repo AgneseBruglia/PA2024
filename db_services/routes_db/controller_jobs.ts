@@ -18,16 +18,16 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
       
         let resultsPromise: Promise<Result[]> = Promise.all(userJobs.map(async (job: Job) => {
             const status = await job.getState();
-            console.log('id: ' + job.id + ' STATUS: ' + status);
+            //console.log('id: ' + job.id + ' STATUS: ' + status);
             let result: Result = {
                 process_id: job.id as number,
                 status: status as string,
             };
             
             if (status === 'failed') {
-                console.log('RETURN VALUE FAILED: ', job.returnvalue);
-                result.error = job.returnvalue;
-                console.log('RESUL FAILED PROCESS: ', result);
+                //console.log('RETURN VALUE FAILED: ', job.returnvalue);
+                result.error = job.failedReason;
+                //console.log('RESUL FAILED PROCESS: ', result);
             }
 
             return result;
