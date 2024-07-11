@@ -31,28 +31,35 @@ export async function userUpdate(tokensRemains: number, email: any): Promise<any
 }
 
 // TODO commento
-export async function getDataset(dataset_name: any, email?: any, attributes?: string[]): Promise<any> {
+export async function getDataset(dataset_name: any, videos: boolean, email?: any): Promise<any> {
     if (email !== undefined) {
-        const options: any = {
-            where: {
-                dataset_name: dataset_name,
-                email: email,
-            }
-        };
-        if (attributes !== undefined) {
-            options.attributes = attributes;
+        if(videos) {
+            const result = Dataset.findOne({
+                where: {
+                    dataset_name: dataset_name,
+                    email: email
+                },
+                attributes: ['videos']
+            });
+            return result;
         }
-        const result = await Dataset.findOne(options);
-        return result;
+        else {
+            const result = await Dataset.findOne({
+                where: {
+                    dataset_name: dataset_name,
+                    email: email,
+                }
+            });
+            return result;
+        }   
     } else {
-        const options: any = {};
-
-        if (attributes !== undefined) {
-            options.attributes = attributes;
-        }
-        const result = await Dataset.findByPk(dataset_name, options);
+        const result = await Dataset.findByPk(dataset_name);
         return result;
     }
+}
+
+export async function getDataset2(dataset_name: any, email: any): Promise<any> {
+    
 }
 
 // TODO commento

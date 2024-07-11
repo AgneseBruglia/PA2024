@@ -66,8 +66,7 @@ export async function validateInsertVideo(req: any, res: any, next: any): Promis
     }
     catch(error:any){
         next(EnumError.IncorrectInputError);
-    }
-    
+    } 
 }
 // Utilizzo della funzione lambda con lo schema desiderato
 //const checkInputBody = validateSchema(rechargeTokensSchema);  // Puoi passare qualsiasi schema qui

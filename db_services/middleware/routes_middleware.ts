@@ -5,6 +5,7 @@ import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
 import dotenv from 'dotenv';
 import * as Controller from '../routes_db/controller_middleware';
+import { stringify } from 'querystring';
 
 dotenv.config();
 
@@ -82,7 +83,7 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 export async function checkTokensForInference(req: any, res: any, next: any): Promise<void> {
     try{
         const dataset_name: string = req.query.dataset_name;
-        const dataset = await Controller.getDataset(dataset_name);
+        const dataset = await Controller.getDataset(dataset_name, false);
         const email: string = req.decodeJwt.email;
         // Se è presente il dataset ed i video: 
         if(dataset && dataset.getDataValue('videos')){
@@ -172,7 +173,7 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
             datasetName = req.body.new_dataset_name as string;
         }
         email = req.decodeJwt.email;
-        const dataset = await Controller.getDataset(datasetName, email);
+        const dataset = await Controller.getDataset(datasetName, false, email);
         if (!dataset.length) {
             next();
         } else {
@@ -199,11 +200,11 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
     const dataset_name = req.query.dataset_name as string;
     try{
         // Cerco se il dataset esiste 
-        const dataset = await Controller.getDataset(dataset_name, email);
-        if(!dataset.length){
+        const dataset = await Controller.getDataset(dataset_name, false, email);
+        if(dataset === null){
             next(EnumError.DatasetNotExitsError)
         }
-        if(dataset.length){
+        if(dataset !== null){
             next();
         }
     }
@@ -226,12 +227,12 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
 export async function checkSameVideo(req: any, res: any, next: any): Promise<void>{
     try{
         const new_videos = req.body.new_videos;
-        const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email, ['videos']);
+        const videos = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
         // All'inizio i videos sono settati di default a []
-        if(dataset?.getDataValue('videos').length != 0){
-            console.log('lunghezza VIDEOS: ', dataset?.getDataValue('videos').length);
+        if(videos.length != 0){
+            console.log('lunghezza VIDEOS: ', videos.length);
             const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName)
-            const existingVideos: string[] = dataset?.getDataValue('videos');
+            const existingVideos: string[] = videos;
             console.log("VIdeo gia esistenti: ", existingVideos);
             console.log("NEW VIDEOS: ", new_videos_complete);
             const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
@@ -260,8 +261,7 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 * @param next Riferimento al middleware successivo
 */
 export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
-    const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email, ['videos']);
-    const videos: string[] = dataset?.getDataValue('videos');
+    const videos: string[] = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
     if(videos.length !== 0) next();
     else next(EnumError.NoVideoError);
 }
