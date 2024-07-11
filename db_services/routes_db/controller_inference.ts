@@ -19,7 +19,7 @@ interface UserInput {
 
 // Interfaccia per descrivere la struttura della risposta al client
 interface Json {
-    successo: boolean;
+    status: number;
     data?: any; 
     errore?: string;
 }
@@ -57,32 +57,32 @@ export async function doInference(dataset_name: string, model_name: string): Pro
         if (dataset === null) {
             throw new Error('Dataset not found');
         } else {
-            console.log('DATASET NAME: ', dataset_name);
+            //console.log('DATASET NAME: ', dataset_name);
             const videos: string[] = dataset.getDataValue('videos');
             const python_inference_host: string = process.env.PYTHON_HOST || '';
             const python_inference_port: number = parseInt(process.env.PYTHON_PORT || '0', 10);
-            console.log('MODEL NAME: ', model_name);
-            console.log('VIDEOS: ', videos);
+            //console.log('MODEL NAME: ', model_name);
+            //console.log('VIDEOS: ', videos);
 
             const body = { "model_name": model_name, "videos": videos };
             const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`, body);
 
             return {
-                successo: true,
-                data: result.data // Restituisci solo i dati del risultato
+                status: 200,
+                message: result.data 
             };
         }
     } catch (error: any) {
 
 
         if (axios.isAxiosError(error)) {
-            console.log("ERRORE: ", error);
+            //console.log("ERRORE: ", error);
             if (error.response && error.response.data) {
                 // Verifica se la risposta dell'errore contiene `error` e `status_code`
                 const statusCode = error.response.data.status_code || error.response.status;
                 const errorMessage = error.response.data.error || error.response.statusText;
-                console.log('statusCode: ', statusCode);
-                console.log('errorMessage: ', errorMessage);
+                //console.log('statusCode: ', statusCode);
+                //console.log('errorMessage: ', errorMessage);
                 return {
                         status: statusCode,
                         message: errorMessage
