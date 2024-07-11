@@ -4,9 +4,10 @@ import * as ControllerInference from '../routes_db/controller_inference';
 import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
 import dotenv from 'dotenv';
+import * as Controller from '../routes_db/controller_middleware';
 
+dotenv.config();
 
-dotenv.config(); 
 /**
 * Middleware 'checkResidualTokens'
 *
@@ -20,14 +21,7 @@ dotenv.config();
 */
 export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
     try {
-        
-        let tokens = await User.findOne({
-            attributes: ['residual_tokens'],
-            where: {
-                email: req.decodeJwt.email,
-                residual_tokens: { [Op.gt]: 0 }
-            }
-        })
+        let tokens = await Controller.getTokens(req, true);
         if (tokens !== null) {
                 next();
         } else {
@@ -53,28 +47,15 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
 */
 export async function checkEnoughTokens(req: any, res: any, next: any): Promise<void> {
     try {
-        const email: string = req.decodeJwt.email;
-
-        // Usa findOne per trovare l'utente con email corrispondente
-        const user = await User.findOne({
-            attributes: ['residual_tokens'],
-            where: {
-                email: email
-            }
-        });
-
-        if (user) {
-            console.log('sono quii');
-            const tokens: number = user.getDataValue('residual_tokens'); // Accedi al valore di residual_tokens
+        const tokens = await Controller.getTokens(req);
+        if (tokens) {
             const new_videos: string[] = req.body.new_videos;
             const COST: number = 0.5;
             const tokensRequired: number = new_videos.length * COST;
             const tokensRemains: number = tokens - tokensRequired;
-
-
             if (tokensRequired <= tokens) {
                 // Aggiorna residual_tokens per l'utente
-                await User.update({ residual_tokens: tokensRemains }, { where: { email: email } });
+                await Controller.userUpdate(tokensRemains, req.decodeJwt.emailS);
                 next();
             } else {
                 next(EnumError.NotEnoughTokens);
@@ -84,17 +65,15 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
         }
     } catch (error) {
         console.error('Errore durante il controllo dei tokens:', error);
-        next(EnumError.InternalServerError); // Gestisci l'errore in modo appropriato
+        next(EnumError.InternalServerError);
     }
 }
 
-
-
 /**
-*  Middleware 'checkTokensForInference'
+* Middleware 'checkTokensForInference'
 *
-*  Controlla che l'utente che sta effettuando la richiesta di inferenza abbia sufficiente
-*  crediti(tokens) per processare correttamente la richiesta. Se così non fosse, dà errore.
+* Controlla che l'utente che sta effettuando la richiesta di inferenza abbia sufficiente
+* crediti (tokens) per processare correttamente la richiesta. Se così non è, dà errore.
 * 
 * @param req Richiesta del client
 * @param res Risposta del server
@@ -103,9 +82,8 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 export async function checkTokensForInference(req: any, res: any, next: any): Promise<void> {
     try{
         const dataset_name: string = req.query.dataset_name;
-        const dataset = await Dataset.findByPk(dataset_name);
+        const dataset = await Controller.getDataset(dataset_name);
         const email: string = req.decodeJwt.email;
-        
         // Se è presente il dataset ed i video: 
         if(dataset && dataset.getDataValue('videos')){
             const videos: string[] = dataset.getDataValue('videos');
@@ -117,13 +95,13 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
             else{
                 next(EnumError.NoTokensForInferenceError);
             }
-            
         }
     }
     catch(error:any){
         next(EnumError.InternalServerError);
     }
 }
+
 /**
  * Middleware 'checkUser'
 *
@@ -137,11 +115,7 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
 */
 export async function checkUser(req: any, res: any, next: any): Promise<void> {
     try {
-        let users = await User.findAll({
-            where: {
-                email: req.body.email
-            }
-        })
+        let users = await Controller.getUser(req, true);
         if (users.length == 0) {
                 next();
         } else {
@@ -166,11 +140,7 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
 export async function checkUserExists(req: any, res: any, next: any): Promise<void> {
     try {
         console.log('JWT dentro checkUserExits: ', req.decodeJwt);
-        let user = await User.findOne({
-            where: {
-                email: req.decodeJwt.email
-            }
-        })
+        const user = await Controller.getUser(req);
         if (user !== null) {
                 next();
         } else {
@@ -196,24 +166,15 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
     try {
         let datasetName: string | undefined;
         let email: string | undefined;
-     
         if (req.body.dataset_name) {
             datasetName = req.body.dataset_name as string;
         } else if (req.body.new_dataset_name) {
             datasetName = req.body.new_dataset_name as string;
         }
-        
         email = req.decodeJwt.email;
-        const dataset = await Dataset.findAll({
-            where: {
-                dataset_name: datasetName as string,
-                email: email as string,
-            }
-        });
-
-
+        const dataset = await Controller.getDataset(datasetName, email);
         if (!dataset.length) {
-            next();  // Procedi se il dataset non esiste
+            next();
         } else {
             next(EnumError.DatasetAlreadyExists); 
         }
@@ -222,8 +183,6 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         next(error);  // Passa l'errore al gestore degli errori
     }
 }
-
-
 
 /**
 * Middleware 'checkDatasetAlreadyExist'
@@ -240,27 +199,18 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
     const dataset_name = req.query.dataset_name as string;
     try{
         // Cerco se il dataset esiste 
-        const dataset = await Dataset.findAll({
-            where: {
-                email: email,
-                dataset_name: dataset_name
-            }
-        })
-        if(dataset.length == 0){
+        const dataset = await Controller.getDataset(dataset_name, email);
+        if(!dataset.length){
             next(EnumError.DatasetNotExitsError)
         }
-
-        if(dataset.length !== 0){
+        if(dataset.length){
             next();
         }
-
     }
     catch(error:any){
         next(error);
     }
 }
-
-
 
 /**
 * Middleware 'checkSameVideo'
@@ -276,13 +226,7 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
 export async function checkSameVideo(req: any, res: any, next: any): Promise<void>{
     try{
         const new_videos = req.body.new_videos;
-        const dataset = await Dataset.findOne({
-            where: {
-                dataset_name: req.query.dataset_name,
-                email: req.decodeJwt.email
-            },
-            attributes: ['videos']
-        });
+        const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email, ['videos']);
         // All'inizio i videos sono settati di default a []
         if(dataset?.getDataValue('videos').length != 0){
             console.log('lunghezza VIDEOS: ', dataset?.getDataValue('videos').length);
@@ -291,34 +235,33 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
             console.log("VIdeo gia esistenti: ", existingVideos);
             console.log("NEW VIDEOS: ", new_videos_complete);
             const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
-            
             if(isSameVideoPresent){
                 next(EnumError.VideosAlreadyExitError);
-            } else next();
-            
+            } else next(); 
         }
         else{
             next();
         }
-    
     }
     catch(error: any){
         next(error);
     }
 }
 
+/**
+* Middleware 'checkNumberOfVideo'
+*
+* Controlla che i video da passare non siano uguali ai video già presenti nel dataset. Nel caso 
+* in cui anche solo un nuovo video fosse uguale a quelli già presenti nel dataset allora lancia
+* l'errore.
+* 
+* @param req Richiesta del client
+* @param res Risposta del server
+* @param next Riferimento al middleware successivo
+*/
 export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
-    const dataset = await Dataset.findOne({
-        where: {
-            dataset_name: req.query.dataset_name,
-            email: req.decodeJwt.email
-        },
-        attributes: ['videos']
-    });
+    const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email, ['videos']);
     const videos: string[] = dataset?.getDataValue('videos');
-
     if(videos.length !== 0) next();
     else next(EnumError.NoVideoError);
 }
-
-

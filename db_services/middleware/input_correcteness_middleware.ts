@@ -16,7 +16,6 @@ export const createDatasetSchema = Joi.object({
     dataset_name: Joi.string().max(50).required()
 });
 
-
 export const newVideoSchema = Joi.object({
     new_dataset_name: Joi.string().max(50).required()
 });
@@ -63,7 +62,6 @@ export async function validateInsertVideo(req: any, res: any, next: any): Promis
         dataset_name: Joi.string().max(50).required(),
         new_videos: Joi.array().items(Joi.string()).min(1).required()
     });
-
     try{
         const dataset_name: string | undefined = req.query.dataset_name;
         const new_videos: string[] | undefined = req.body.new_videos;

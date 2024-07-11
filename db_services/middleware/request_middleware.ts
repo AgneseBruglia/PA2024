@@ -3,11 +3,6 @@ import { JwtPayload, Secret } from 'jsonwebtoken';
 import {typeOfUser} from '../routes_db/controller_db';
 import * as jwt from 'jsonwebtoken';
 import { EnumError } from '../factory/errors';
-// Rotta non prevista
-
-// Controlla se nel body della richiesta c'è un JWT
-
-// Controlla se il JWT corrisponde a uno nel .env
 
 /**
  * Middleware 'logErrors'
@@ -28,7 +23,6 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
     else {
         next();
     }
-    
 }
 
 /**
@@ -52,7 +46,6 @@ export function errorHandler(err: any, req: any, res: any, next: any): void {
     }
 }
 
-
 /**
  * Middleware 'checkJwt'
  * 
@@ -62,7 +55,7 @@ export function errorHandler(err: any, req: any, res: any, next: any): void {
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export  function checkJwt(req: any, res: any, next: any): void{
+export function checkJwt(req: any, res: any, next: any): void{
     const bearerHeader: string = req.headers.authorization;
     if (typeof bearerHeader !== 'undefined'){
         const bearerToken: string = bearerHeader.split(' ')[1];
@@ -96,8 +89,15 @@ export function verifyAndAuthenticate(req: any, res: any, next: any): void {
     }
 }
 
-
-
+/**
+ * Middleware 'checkAdminPermission'
+ * 
+ * Verifica che l'utente che fa la richiesta sia di tipo 'ADMIN'.
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
 export function checkAdminPermission(req: any, res: any, next: any): void{
     try{
         console.log('Ruolo: ', req.decodeJwt.role as string);
@@ -108,7 +108,6 @@ export function checkAdminPermission(req: any, res: any, next: any): void{
         next(error);
     }
 }
-
 
 /**
  * Middleware 'checkAuthHeader'
@@ -138,8 +137,6 @@ export function checkPayloadHeader(req: any, res: any, next: any): void{
     if (req.headers["content-type"] == 'application/json') next();
     else next(EnumError.PayloadHeaderError);
 }
-
-
 
 /**
  * Middleware 'notFound'

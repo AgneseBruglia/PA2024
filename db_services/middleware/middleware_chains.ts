@@ -1,6 +1,7 @@
 import * as ReqMiddleware from './request_middleware';
 import * as RouteMiddleware from './routes_middleware';
 import * as InputMiddleware from './input_correcteness_middleware';
+
 /**
  * 'Middleware chain' 
  * 
@@ -58,7 +59,7 @@ export const checkJwt = [
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists
-]
+];
 
 export const error_handling =[
     ReqMiddleware.logErrors,
@@ -88,7 +89,6 @@ export const doInference = [
     RouteMiddleware.checkTokensForInference
 ];
 
-
 export const result = [
     InputMiddleware.validateSchema(InputMiddleware.result, InputMiddleware.type.query)
-]
+];
