@@ -1,6 +1,7 @@
 import { Job } from 'bull';
 import * as ControllerDB from '../routes_db/controller_db';
 import * as ControllerInference from '../routes_db/controller_inference';
+import { EnumError, getError } from '../factory/errors';
 const Queue = require('bull');
 
 export const completedJobResults: { [job_id: string]: any } = {};
@@ -14,9 +15,10 @@ queue.process(async function (job: any, done: any) {
   try {
     
     const result = await ControllerInference.doInference(dataset_name, model_name);
-    console.log('RISULTATO doInference: ', result);
-    if (result.data.status !== 200) {   // CAPIRE COSA SUCCEDE NELLO STATUS FAILED  
-      return done(new Error(`Job failed with status code: ${result.data.status}`));
+    if (result.data.data.statusCode as number !== 200) {   // CAPIRE COSA SUCCEDE NELLO STATUS FAILED  
+      const status: number = result.data.data.status as number;
+      const errMessage: string = result.data.data.errMessage as string;;
+      done(new Error(`Status code: ${status}. ${errMessage}`));
     }
 
     done(null, result.data.data); 
@@ -31,4 +33,5 @@ queue.on('completed', function (job: Job) {
 
 queue.on('failed', function (job: any, error: any) {
   console.log(`Job ${job.id} failed with error: ${error.message}`);
+  job.returnvalue = error.message;
 });

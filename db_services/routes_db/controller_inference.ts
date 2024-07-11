@@ -46,54 +46,51 @@ export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     res.status(new_err.status).json(new_err.message);
 }
 
-export async function doInference(dataset_name: String , model_name: string): Promise<any>{
-    try{
+export async function doInference(dataset_name: string, model_name: string): Promise<any> {
+    try {
         const dataset = await Dataset.findOne({
             where: {
-              dataset_name: dataset_name
+                dataset_name: dataset_name
             },
-          })        
-        if(dataset === null) throw new Error;
-        else{
+        });
+
+        if (dataset === null) {
+            throw new Error('Dataset not found');
+        } else {
             console.log('DATASET NAME: ', dataset_name);
             const videos: string[] = dataset.getDataValue('videos');
             const python_inference_host: string = process.env.PYTHON_HOST || '';
-            const python_inference_port: number = (process.env.PYTHON_PORT || 0) as number;
+            const python_inference_port: number = parseInt(process.env.PYTHON_PORT || '0', 10);
             console.log('MODEL NAME: ', model_name);
             console.log('VIDEOS: ', videos);
-            const body = {"model_name": model_name, "videos": videos};
-            const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`, body);
-            return{
-                successo: true,
-                data: result
-            }
-        }
-    }
-    catch (error: any) {
-        let errorMessage = 'An error occurred during inference';
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                errorMessage = `Inference service responded with status ${error.response.status}: ${error.response.data}`;
-            } else if (error.request) {
-                errorMessage = 'No response received from inference service';
-            } else {
-                errorMessage = `Error setting up request to inference service: ${error.message}`;
-            }
-        } else if (error.message === 'Dataset not found') {
-            errorMessage = 'The specified dataset was not found';
-        } else if (error.message === 'Python inference host or port is not set') {
-            errorMessage = 'Python inference host or port environment variables are not set';
-        } else {
-            errorMessage = `Unexpected error: ${error.message}`;
-        }
 
-        console.error(errorMessage);
-        return {
-            successo: false,
-            error: errorMessage
-        };
+            const body = { "model_name": model_name, "videos": videos };
+            const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`, body);
+
+            return {
+                successo: true,
+                data: result.data // Restituisci solo i dati del risultato
+            };
+        }
+    } catch (error: any) {
+
+
+        if (axios.isAxiosError(error)) {
+            console.log("ERRORE: ", error);
+            if (error.response && error.response.data) {
+                // Verifica se la risposta dell'errore contiene `error` e `status_code`
+                const statusCode = error.response.data.status_code || error.response.status;
+                const errorMessage = error.response.data.error || error.response.statusText;
+                console.log('statusCode: ', statusCode);
+                console.log('errorMessage: ', errorMessage);
+                return {
+                        status: statusCode,
+                        message: errorMessage
+                    }
+                };
+            }
+        }
     }
-}
 
 /**
  * Funzione 'checkTokensInference'

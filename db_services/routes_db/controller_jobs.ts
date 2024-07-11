@@ -7,7 +7,7 @@ import { controllerErrors } from './controller_db';
 interface Result {
     process_id: number;
     status: string; 
-    errore?: string;
+    error?: string;
 }
 
 export async function getUserJobs(email: string, res: any): Promise<any> {
@@ -18,13 +18,16 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
       
         let resultsPromise: Promise<Result[]> = Promise.all(userJobs.map(async (job: Job) => {
             const status = await job.getState();
+            console.log('id: ' + job.id + ' STATUS: ' + status);
             let result: Result = {
                 process_id: job.id as number,
                 status: status as string,
             };
             
             if (status === 'failed') {
-                result.errore = `Error: ${job.data.status}: ${job.data.data}`;
+                console.log('RETURN VALUE FAILED: ', job.returnvalue);
+                result.error = job.returnvalue;
+                console.log('RESUL FAILED PROCESS: ', result);
             }
 
             return result;
@@ -51,6 +54,7 @@ export async function getResult(job_id: number, res: any): Promise<any> {
         }
     }
     catch(error:any) {
+
         controllerErrors(EnumError.JobResultError, error, res);
     }
 }
