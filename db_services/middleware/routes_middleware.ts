@@ -174,14 +174,14 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         }
         email = req.decodeJwt.email;
         const dataset = await Controller.getDataset(datasetName, false, email);
-        if (!dataset.length) {
+        if (dataset === null) {
             next();
         } else {
             next(EnumError.DatasetAlreadyExists); 
         }
     } catch (error) {
         console.log(error);
-        next(error);  // Passa l'errore al gestore degli errori
+        next(error);
     }
 }
 
@@ -229,8 +229,7 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
         const new_videos = req.body.new_videos;
         const videos = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
         // All'inizio i videos sono settati di default a []
-        if(videos.length != 0){
-            console.log('lunghezza VIDEOS: ', videos.length);
+        if(videos !== null){
             const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName)
             const existingVideos: string[] = videos;
             console.log("VIdeo gia esistenti: ", existingVideos);
@@ -262,6 +261,6 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 */
 export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
     const videos: string[] = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
-    if(videos.length !== 0) next();
+    if(videos !== null) next();
     else next(EnumError.NoVideoError);
 }

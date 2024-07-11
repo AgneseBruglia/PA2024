@@ -42,7 +42,7 @@ export const User = sequelize.define('users', {
 export const Dataset = sequelize.define('dataset', {
     dataset_name: {
         type: DataTypes.STRING(50),
-        primaryKey: true
+        // primaryKey: true
     },
     videos: {
         type: DataTypes.ARRAY(DataTypes.STRING),

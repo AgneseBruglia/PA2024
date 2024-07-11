@@ -15,6 +15,7 @@ queue.process(async function (job: any, done: any) {
   try {
     
     const result = await ControllerInference.doInference(dataset_name, model_name);
+    console.log('STATUS CODE: ', result.data.data.statusCode)
     if (result.data.data.statusCode as number !== 200) {   // CAPIRE COSA SUCCEDE NELLO STATUS FAILED  
       const status: number = result.data.data.status as number;
       const errMessage: string = result.data.data.errMessage as string;;

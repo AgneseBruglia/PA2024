@@ -324,7 +324,7 @@ export async function visualizeCredits(res:any, email?: String): Promise<any>{
 export async function rechargeCredits(emailUser: string , tokens_to_charge: number, res: any): Promise<any>{
     try{
 
-        visualizeCredits(emailUser).then(async result => {
+        visualizeCredits(res, emailUser).then(async result => {
             const toAdd = result.data + tokens_to_charge;
             const [affectedCount] = await User.update(
                 { residual_tokens: toAdd},
