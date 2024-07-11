@@ -4,42 +4,61 @@ import { EnumError, getError } from '../factory/errors';
 import { controllerErrors } from './controller_db';
 
 
+interface Result {
+    process_id: number;
+    status: string; 
+    errore?: string;
+}
+
 export async function getUserJobs(email: string, res: any): Promise<any> {
     try {
-        let jobStatuses: JobStatus[] = ['waiting', 'active', 'completed', 'failed', 'delayed'];
-        let jobs: Job[] = await queue.getJobs(jobStatuses);
+        let jobs: Job[] = await queue.getJobs();
         let userJobs: Job[] = jobs.filter((job: Job) => job.data.email === email);
-        let userJobsJSON = userJobs.map((job: Job) => job.toJSON());
-        return userJobsJSON;
-    }
-    catch(error:any) {
+        console.log('userJobs: ', userJobs);
+      
+        let resultsPromise: Promise<Result[]> = Promise.all(userJobs.map(async (job: Job) => {
+            const status = await job.getState();
+            let result: Result = {
+                process_id: job.id as number,
+                status: status as string,
+            };
+            
+            if (status === 'failed') {
+                result.errore = `Error: ${job.data.status}: ${job.data.data}`;
+            }
+
+            return result;
+        }));
+
+        return resultsPromise;
+
+    } catch (error: any) {
         controllerErrors(EnumError.JobsFetchError, error, res);
-        return error.toJSON();
     }
 }
 
-export async function getResult(job_id: number): Promise<any> {
+export async function getResult(job_id: number, res: any): Promise<any> {
     try {
-        let job = await queue.getJob(job_id);
-        if (!job) {
-            let error = EnumError.JobNotFoundError;
-            return getError(error).getErrorObj();
+        const jobs: Job[] = await queue.getJobs(['completed']);
+        const jobResult = jobs.find(job => job.id === `${job_id}`);
+        if (jobResult?.returnvalue===undefined || jobResult?.returnvalue===null) {
+            throw new Error;
         }
-        // Accedi al risultato memorizzato per l'ID del job
-        let jobResult = completedJobResults[job_id];
-        console.log('jobResult: ', jobResult);
-        if (jobResult.data.status !== 200) {
-            let error = EnumError.JobResultError;
-            return getError(error).getErrorObj();
+      
+        return {
+            successo: true,
+            data: jobResult.returnvalue
         }
-        console.log('jobResult: ', jobResult.data.data);
-        return jobResult.data.data;
     }
     catch(error:any) {
-        console.error('Error fetching job result:', error);
-        return {
-            status: 500,
-            error: 'An error occurred while fetching the job result' 
-        }
+        controllerErrors(EnumError.JobResultError, error, res);
     }
+}
+
+
+
+function getMessageStatusError(jobResult: any): any {
+    const status_code: number = parseInt(jobResult.data.status);
+    const error_message: string = jobResult.data.data as string;
+    return {status_code, error_message};
 }

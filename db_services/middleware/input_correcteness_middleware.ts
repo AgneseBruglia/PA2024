@@ -42,7 +42,9 @@ export const result = Joi.object({
     id: Joi.number().integer().valid(...Object.keys(completedJobResults)).required()
 });
 
-
+export const getDataset = Joi.object({
+    dataset_name: Joi.string().max(50)
+});
 // Funzione lambda per la validazione
 // Funzione lambda per la validazione
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {
@@ -73,5 +75,3 @@ export async function validateInsertVideo(req: any, res: any, next: any): Promis
     }
     
 }
-// Utilizzo della funzione lambda con lo schema desiderato
-//const checkInputBody = validateSchema(rechargeTokensSchema);  // Puoi passare qualsiasi schema qui

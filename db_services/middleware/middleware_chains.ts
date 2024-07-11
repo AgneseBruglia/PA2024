@@ -23,6 +23,10 @@ export const checkGeneral = [
     RouteMiddleware.checkResidualTokens
 ];
 
+export const getDataset = [
+    InputMiddleware.validateSchema(InputMiddleware.getDataset, InputMiddleware.type.query)
+];
+
 export const createDataset = [
     InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.body), 
     RouteMiddleware.checkDatasetExists

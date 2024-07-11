@@ -41,7 +41,7 @@ app.post('/create-dataset', Middleware.checkPayloadHeader,Middleware.checkAuthHe
 });
 
 // Definizione della rotta per recuperare tutti i dataset di un utente
-app.get('/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.getDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     if (email && dataset_name) {
@@ -74,7 +74,7 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
 // Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id
 app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.result, Middleware.error_handling, async (req: any, res: Response) => {
     const job_id = req.query.id;
-    const jobResult = await getResult(job_id);
+    const jobResult = await getResult(job_id, res);
     res.json(jobResult);
 });
 
@@ -106,9 +106,12 @@ app.get('/tokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlewa
 // Definizione della rotta per restituire i processi di un utente
 app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
+    console.log('/user-jobs');
     const result = await getUserJobs(email, res);
     res.json(result); 
 });
+
+
 
 /*********************************    AMMINISTRATORE    ************************************ */
 
