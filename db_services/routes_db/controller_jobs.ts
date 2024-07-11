@@ -50,7 +50,7 @@ export async function getResult(job_id: number, res: any): Promise<any> {
       
         return {
             successo: true,
-            data: jobResult.returnvalue.data
+            data: jobResult.returnvalue
         }
     }
     catch(error:any) {

@@ -15,7 +15,7 @@ queue.process(async function (job: any, done: any) {
 
   try {
     
-    const result = await ControllerInference.doInference(dataset_name, model_name);
+    const result = await ControllerInference.doInference(email, dataset_name, model_name);
     if (result.status as number !== 200) {   
       const status: number = result.status as number;
       const errMessage: string = result.message as string;;
