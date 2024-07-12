@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { User, Dataset } from '../models/models'
-import * as ControllerInference from '../routes_db/controller_inference';
+import * as ControllerInference from '../controller/controller_inference';
 import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
 import dotenv from 'dotenv';
-import * as Controller from '../routes_db/controller_middleware';
+import * as Controller from '../controller/controller_middleware';
 import { stringify } from 'querystring';
 
 dotenv.config();

@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
 import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
-    visualizeCredits, rechargeCredits } from './routes_db/controller_db';
-import {resetBull} from './routes_db/controller_jobs'
+    visualizeCredits, rechargeCredits } from './controller/controller_db';
+import {resetBull} from './controller/controller_jobs'
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
 import { queue } from './Bull/bull'
-import { getUserJobs, getResult } from './routes_db/controller_jobs';
+import { getUserJobs, getResult } from './controller/controller_jobs';
 import { completedJobResults } from './Bull/bull';
-import { generateJwt } from './routes_db/controller_authentication';
+import { generateJwt } from './controller/controller_authentication';
 
 dotenv.config(); 
 

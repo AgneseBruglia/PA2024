@@ -1,5 +1,5 @@
 import { Job } from 'bull';
-import * as ControllerInference from '../routes_db/controller_inference';
+import * as ControllerInference from '../controller/controller_inference';
 const Queue = require('bull');
 
 // Definisci un tipo per l'oggetto che mappa email a array di number

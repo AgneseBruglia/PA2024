@@ -1,6 +1,6 @@
 import { getError } from "../factory/errors";
 import { JwtPayload, Secret } from 'jsonwebtoken';
-import {typeOfUser} from '../routes_db/controller_db';
+import {typeOfUser} from '../controller/controller_db';
 import * as jwt from 'jsonwebtoken';
 import { EnumError } from '../factory/errors';
 
