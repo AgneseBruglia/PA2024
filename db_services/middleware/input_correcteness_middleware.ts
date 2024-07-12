@@ -9,7 +9,7 @@ query = 'query',
 
 export const rechargeTokensSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
-    tokens_to_charge: Joi.number().required()
+    tokens_to_charge: Joi.number().required().min(1)
 });
 
 export const createDatasetSchema = Joi.object({

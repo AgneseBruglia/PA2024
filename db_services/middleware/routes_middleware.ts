@@ -253,9 +253,7 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 /**
 * Middleware 'checkNumberOfVideo'
 *
-* Controlla che i video da passare non siano uguali ai video già presenti nel dataset. Nel caso 
-* in cui anche solo un nuovo video fosse uguale a quelli già presenti nel dataset allora lancia
-* l'errore.
+* Controlla che il dataset selezionato dall'utente contenga almeno un video.
 * 
 * @param req Richiesta del client
 * @param res Risposta del server

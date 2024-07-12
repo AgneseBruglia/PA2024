@@ -34,7 +34,7 @@ export async function userUpdate(tokensRemains: number, email: any): Promise<any
 export async function getDataset(dataset_name: any, videos: boolean, email?: any): Promise<any> {
     if (email !== undefined) {
         if(videos) {
-            const result = Dataset.findOne({
+            const result = await Dataset.findOne({
                 where: {
                     dataset_name: dataset_name,
                     email: email
