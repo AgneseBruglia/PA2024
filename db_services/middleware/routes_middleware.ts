@@ -277,7 +277,7 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
     const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
     const videos: string[] = dataset.getDataValue('videos');
-    if(videos !== null) {
+    if(videos.length > 0) {
         console.log('VIDEO OK');
         next();
     }
