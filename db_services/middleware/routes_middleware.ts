@@ -145,22 +145,24 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
 * @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkUserExists(req: any, res: any, next: any): Promise<void> {
-    try {
-        console.log('JWT dentro checkUserExits: ', req.decodeJwt);
-        const email: string = req.decodeJwt.email;
-        const user = await Controller.getUser(email, req);
-        console.log('USER: ', user);
-        if (user !== null) {
+export function checkUserExists(getEmail: (req: any) => string) {
+    return async (req: any, res: any, next: any): Promise<void> => {
+        try {
+            console.log('JWT dentro checkUserExits: ', req.decodeJwt);
+            const email: string = getEmail(req);
+            const user = await Controller.getUser(email, req);
+            console.log('USER: ', user);
+            if (user !== null) {
                 next();
-        } else {
-            next(EnumError.UserDoesNotExist);
+            } else {
+                next(EnumError.UserDoesNotExist);
+            }
+        } catch (error) {
+            next(error);
         }
     }
-    catch(error){
-        next(error);
-    }
 }
+
 
 /**
 * Middleware 'checkDatasetExists'

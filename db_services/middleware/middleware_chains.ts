@@ -20,8 +20,9 @@ export const checkInsertUsers = [
 export const checkGeneral = [
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
-    RouteMiddleware.checkUserExists,
-    RouteMiddleware.checkResidualTokens
+    RouteMiddleware.checkUserExists((req) => req.decodeJwt.email),
+    RouteMiddleware.checkResidualTokens,
+    
 ];
 
 export const getDataset = [
@@ -58,7 +59,7 @@ export const checkPermission = [
 export const checkJwt = [
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
-    RouteMiddleware.checkUserExists
+    RouteMiddleware.checkUserExists((req) => req.decodeJwt.email)
 ];
 
 export const error_handling =[
@@ -67,7 +68,8 @@ export const error_handling =[
 ];
 
 export const rechargeCredits = [
-    InputMiddleware.validateSchema(InputMiddleware.rechargeTokensSchema, InputMiddleware.type.query)
+    InputMiddleware.validateSchema(InputMiddleware.rechargeTokensSchema, InputMiddleware.type.query),
+    RouteMiddleware.checkUserExists((req) => req.query.email)
 ];
 
 export const checkPayloadHeader = [
