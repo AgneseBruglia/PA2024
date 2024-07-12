@@ -12,7 +12,7 @@ let email: string | undefined = undefined;
 
 export const rechargeTokensSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
-    tokens_to_charge: Joi.number().greater(0).required()
+    tokens_to_charge: Joi.number().integer().greater(0).required()
 });
 
 export const createDatasetSchema = Joi.object({
@@ -28,7 +28,7 @@ export const createUserSchema = Joi.object({
     surname: Joi.string().max(50).required(),
     email: Joi.string().email().max(50).required(),
     type: Joi.string().max(50).required().valid('USER','ADMIN'),
-    residual_tokens: Joi.number().greater(0).required()
+    residual_tokens: Joi.number().integer().greater(0).required()
 });
 
 export const updateDatasetSchema = Joi.object({

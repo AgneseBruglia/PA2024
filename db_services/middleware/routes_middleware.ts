@@ -114,7 +114,7 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
  * Middleware 'checkUser'
 *
 * Controlla che nel database non esista già un utente
-* con quel nome e cognome, altrimenti dà errore e 
+* con quella email, altrimenti dà errore e 
 * rifiuta la richiesta.
 * 
 * @param req Richiesta del client
