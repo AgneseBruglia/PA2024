@@ -14,22 +14,6 @@ interface IErrorObj {
     getErrorObj(): {message:string, status:number}
 }
 
-export class ZeroTokensAvailable implements IErrorObj {
-    status: number;
-    message: string;
-
-    constructor() {
-        this.status = 401;
-        this.message = Message.zeroTokensAvailable_messagge;
-    }
-
-    getErrorObj(): { message: string; status: number } {
-        return { 
-            status: this.status,
-            message: this.message
-        }
-    }
-}
 
 export class NotEnoughTokens implements IErrorObj {
     status: number;
@@ -374,8 +358,26 @@ export class JobResultError implements IErrorObj {
     }
 }
 
+export class ZeroTokensAvailableError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 401;
+        this.message = Message.zeroTokensAvailable_messagge
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
 export enum EnumError {
-    ZeroTokensAvailable,
+    ZeroTokensAvailableError,
     NotEnoughTokens,
     UserDoesNotExist,
     UserAlreadyExists,
@@ -401,8 +403,8 @@ export enum EnumError {
 export function getError(type: EnumError): IErrorObj {
     let val: IErrorObj | null = null;
     switch (type){
-        case EnumError.ZeroTokensAvailable:
-            val = new ZeroTokensAvailable();
+        case EnumError.ZeroTokensAvailableError:
+            val = new ZeroTokensAvailableError();
             break;
         case EnumError.NotEnoughTokens:
             val = new NotEnoughTokens();

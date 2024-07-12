@@ -19,9 +19,15 @@ export async function getTokens(email: any, checkResidual: boolean = false): Pro
                 ['residual_tokens']: { [Op.gt]: 0 }
             }
         });
-        const tokens: number = parseInt(user?.getDataValue('residual_tokens'));
-        console.log('TOKENS :', tokens);
-        return tokens;
+        //if(user === null || user === undefined) return 0;
+        if(user !== null){
+            const tokens: number = user?.getDataValue('residual_tokens');
+            console.log('TOKENS :', tokens);
+            console.log('residual_tokens: ', tokens);
+            return tokens;
+        }
+        console.log('USER: ', user);
+        return null;
     }
     else {
         const user = await User.findOne({
@@ -57,12 +63,12 @@ export async function getDataset(dataset_name: any, email: any): Promise<any> {
 export async function getUser(email: any, req: any, findAll: boolean = false): Promise<any> {
     if (findAll) {
         const result = await User.findAll({
-            where: req.body.email
+            where: { email: req.body.email as string}
         });
         return result;
     } else {
         const result = await User.findOne({
-            where: email
+             where: { email: email as string }
         });
         return result;
     }

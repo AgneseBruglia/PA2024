@@ -22,15 +22,20 @@ dotenv.config();
 */
 export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
     try {
-        let tokens = await Controller.getTokens(req, true);
+        const email: string = req.decodeJwt.email as string;
+        console.log('email dentro checkResidualTokens: ', email);
+        const tokens: number | null = await Controller.getTokens(email);
         if (tokens !== null) {
-                next();
-        } else {
-            next(EnumError.ZeroTokensAvailable);
+                console.log("ABBASTANZA TOKEN!");
+                next(); //ZeroTokensAvailable
+        } 
+        else{
+            console.log('DENTRO BLOCCO ELSE');
+            next(EnumError.NotEnoughTokens); 
         }
     }
     catch(error){
-        next(EnumError.UserDoesNotExist);
+        next(EnumError.NotEnoughTokens);
     }
 }
 
@@ -145,6 +150,7 @@ export async function checkUserExists(req: any, res: any, next: any): Promise<vo
         console.log('JWT dentro checkUserExits: ', req.decodeJwt);
         const email: string = req.decodeJwt.email;
         const user = await Controller.getUser(email, req);
+        console.log('USER: ', user);
         if (user !== null) {
                 next();
         } else {
@@ -168,6 +174,7 @@ export async function checkUserExists(req: any, res: any, next: any): Promise<vo
 */
 export async function checkDatasetExists(req: any, res: any, next: any): Promise<void> {
     try {
+        console.log('ciaooooo mondoooooo');
         let datasetName: string | undefined;
         let email: string | undefined;
         if (req.body.dataset_name) {
@@ -177,6 +184,7 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         }
         email = req.decodeJwt.email;
         const dataset = await Controller.getDataset(datasetName, email);
+        console.log('checkDatasetExists: ', dataset);
         if (dataset === null) {
             next();
         } else {
@@ -204,6 +212,7 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
     try{
         // Cerco se il dataset esiste 
         const dataset = await Controller.getDataset(dataset_name, email);
+        console.log('DATASET DENTRO checkDatasetAlreadyExist');
         if(dataset === null){
             next(EnumError.DatasetNotExitsError)
         }
@@ -232,7 +241,7 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
     try{
         const new_videos = req.body.new_videos;
         const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
-        // All'inizio i videos sono settati di default a []
+        console.log('DATASET: ', dataset);
         if(dataset !== null){
             const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName)
             console.log('OKAY');
