@@ -10,18 +10,30 @@ import dotenv from 'dotenv';
  */
 
 // TODO commento
-export async function getTokens(req: any, checkResidual: boolean = false): Promise<any> {
-    const whereClause: any = {
-        email: req.decodeJwt.email
-    };
-    if (checkResidual) {
-        whereClause['residual_tokens'] = { [Op.gt]: 0 };
+export async function getTokens(email: any, checkResidual: boolean = false): Promise<any> {
+    if (!checkResidual) {
+        const user = await User.findOne({
+            attributes: ['residual_tokens'],
+            where: {
+                email: email,
+                ['residual_tokens']: { [Op.gt]: 0 }
+            }
+        });
+        const tokens: number = parseInt(user?.getDataValue('residual_tokens'));
+        console.log('TOKENS :', tokens);
+        return tokens;
     }
-    const tokens = await User.findOne({
-        attributes: ['residual_tokens'],
-        where: whereClause
-    });
-    return tokens;
+    else {
+        const user = await User.findOne({
+            attributes: ['residual_tokens'],
+            where: {
+                email: email
+            }
+        });
+        const tokens: number = parseInt(user?.getDataValue('residual_tokens'));
+        console.log('TOKENS :', tokens);
+        return tokens;
+    }
 }
 
 // TODO commento
@@ -31,52 +43,26 @@ export async function userUpdate(tokensRemains: number, email: any): Promise<any
 }
 
 // TODO commento
-export async function getDataset(dataset_name: any, videos: boolean, email?: any): Promise<any> {
-    if (email !== undefined) {
-        if(videos) {
-            const result = await Dataset.findOne({
-                where: {
-                    dataset_name: dataset_name,
-                    email: email
-                },
-                attributes: ['videos']
-            });
-            return result;
+export async function getDataset(dataset_name: any, email: any): Promise<any> {
+    const result = await Dataset.findOne({
+        where: {
+            dataset_name: dataset_name,
+            email: email
         }
-        else {
-            const result = await Dataset.findOne({
-                where: {
-                    dataset_name: dataset_name,
-                    email: email,
-                }
-            });
-            return result;
-        }   
-    } else {
-        const result = await Dataset.findOne({
-            where: {
-                dataset_name: dataset_name
-            }
-        });
-        return result;
-    }
-}
-
-export async function getDataset2(dataset_name: any, email: any): Promise<any> {
-    
-}
+    });
+    return result;
+} 
 
 // TODO commento
-export async function getUser(req: any, findAll: boolean = false): Promise<any> {
-    const whereClause = { email: findAll ? req.body.email : req.decodeJwt.email };
+export async function getUser(email: any, req: any, findAll: boolean = false): Promise<any> {
     if (findAll) {
         const result = await User.findAll({
-            where: whereClause
+            where: req.body.email
         });
         return result;
     } else {
         const result = await User.findOne({
-            where: whereClause
+            where: email
         });
         return result;
     }

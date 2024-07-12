@@ -113,8 +113,6 @@ app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middl
     res.json(result); 
 });
 
-
-
 /*********************************    AMMINISTRATORE    ************************************ */
 
 // Definizione della rotta per l'inserimento di un nuovo utente

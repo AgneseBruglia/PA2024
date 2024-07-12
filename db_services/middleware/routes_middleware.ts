@@ -48,7 +48,8 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
 */
 export async function checkEnoughTokens(req: any, res: any, next: any): Promise<void> {
     try {
-        const tokens = await Controller.getTokens(req);
+        const email: string = req.decodeJwt.email;
+        const tokens = await Controller.getTokens(email);
         if (tokens) {
             const new_videos: string[] = req.body.new_videos;
             const COST: number = 0.5;
@@ -84,7 +85,7 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
     try{
         const dataset_name: string = req.query.dataset_name;
         const email: string = req.decodeJwt.email;
-        const dataset = await Controller.getDataset(dataset_name, false, email);
+        const dataset = await Controller.getDataset(dataset_name, email);
         // Se è presente il dataset ed i video: 
         if((dataset !== null) && (dataset.getDataValue('videos') !== null)){
             const videos: string[] = dataset.getDataValue('videos');
@@ -142,7 +143,8 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
 export async function checkUserExists(req: any, res: any, next: any): Promise<void> {
     try {
         console.log('JWT dentro checkUserExits: ', req.decodeJwt);
-        const user = await Controller.getUser(req);
+        const email: string = req.decodeJwt.email;
+        const user = await Controller.getUser(email, req);
         if (user !== null) {
                 next();
         } else {
@@ -174,7 +176,7 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
             datasetName = req.body.new_dataset_name as string;
         }
         email = req.decodeJwt.email;
-        const dataset = await Controller.getDataset(datasetName, false, email);
+        const dataset = await Controller.getDataset(datasetName, email);
         if (dataset === null) {
             next();
         } else {
@@ -201,7 +203,7 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
     const dataset_name = req.query.dataset_name as string;
     try{
         // Cerco se il dataset esiste 
-        const dataset = await Controller.getDataset(dataset_name, false, email);
+        const dataset = await Controller.getDataset(dataset_name, email);
         if(dataset === null){
             next(EnumError.DatasetNotExitsError)
         }
@@ -229,14 +231,16 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
 export async function checkSameVideo(req: any, res: any, next: any): Promise<void>{
     try{
         const new_videos = req.body.new_videos;
-        const videos = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
+        const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
         // All'inizio i videos sono settati di default a []
-        if(videos !== null){
+        if(dataset !== null){
             const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName)
-            const existingVideos: string[] = videos;
+            console.log('OKAY');
+            const existingVideos: string[] = dataset.getDataValue('videos');
             console.log("VIdeo gia esistenti: ", existingVideos);
             console.log("NEW VIDEOS: ", new_videos_complete);
             const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
+            console.log('SAME VIDEO: ', isSameVideoPresent);
             if(isSameVideoPresent){
                 next(EnumError.VideosAlreadyExitError);
             } else next(); 
@@ -260,7 +264,8 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 * @param next Riferimento al middleware successivo
 */
 export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
-    const videos: string[] = await Controller.getDataset(req.query.dataset_name, true, req.decodeJwt.email);
+    const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
+    const videos: string[] = dataset.getDataValue('videos');
     if(videos !== null) {
         console.log('VIDEO OK');
         next();
