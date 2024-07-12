@@ -16,7 +16,7 @@ export async function getTokens(email: any, checkResidual: boolean = false): Pro
             attributes: ['residual_tokens'],
             where: {
                 email: email,
-                ['residual_tokens']: { [Op.gt]: 0 }
+                residual_tokens: { [Op.gt]: 0 }
             }
         });
         //if(user === null || user === undefined) return 0;

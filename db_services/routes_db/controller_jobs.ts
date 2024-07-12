@@ -40,10 +40,10 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
     }
 }
 
-export async function getResult(job_id: number, res: any): Promise<any> {
+export async function getResult(job_id: number, res: any, email: string): Promise<any> {
     try {
         const jobs: Job[] = await queue.getJobs(['completed']);
-        const jobResult = jobs.find(job => job.id === `${job_id}`);
+        const jobResult = jobs.find(job => job.id === `${job_id}` && job.data.email === email);
         if (jobResult?.returnvalue===undefined || jobResult?.returnvalue===null) {
             throw new Error;
         }
@@ -63,3 +63,5 @@ export async function getResult(job_id: number, res: any): Promise<any> {
 export async function resetBull(): Promise<void>{
     await queue.obliterate({ force: true });
 }
+
+

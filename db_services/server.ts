@@ -76,7 +76,7 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
 // Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id
 app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.result, Middleware.error_handling, async (req: any, res: Response) => {
     const job_id = req.query.id;
-    const jobResult = await getResult(job_id, res);
+    const jobResult = await getResult(job_id, res, req.decodeJwt.email);
     res.json(jobResult);
 });
 

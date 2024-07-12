@@ -7,9 +7,12 @@ body = 'body',
 query = 'query',
 };
 
+
+let email: string | undefined = undefined;
+
 export const rechargeTokensSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
-    tokens_to_charge: Joi.number().required().min(1)
+    tokens_to_charge: Joi.number().greater(0).required()
 });
 
 export const createDatasetSchema = Joi.object({
@@ -24,7 +27,8 @@ export const createUserSchema = Joi.object({
     name: Joi.string().max(50).required(),
     surname: Joi.string().max(50).required(),
     email: Joi.string().email().max(50).required(),
-    type: Joi.string().max(50).required().valid('USER','ADMIN')
+    type: Joi.string().max(50).required().valid('USER','ADMIN'),
+    residual_tokens: Joi.number().greater(0).required()
 });
 
 export const updateDatasetSchema = Joi.object({
@@ -38,7 +42,7 @@ export const doInferenceSchema = Joi.object({
 });
 
 export const result = Joi.object({
-    id: Joi.number().integer().valid(...completedJobResults).required()
+    id: Joi.number().integer().positive().required()
 });
 
 export const getDataset = Joi.object({
@@ -48,6 +52,7 @@ export const getDataset = Joi.object({
 // Funzione lambda per la validazione
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;
+    email = req.decodeJwt.email;
     console.log(`dataset_name from ${source}: `, data.dataset_name);
     try {
         await schema.validateAsync(data);

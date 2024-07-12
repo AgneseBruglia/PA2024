@@ -62,7 +62,7 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
             const tokensRemains: number = tokens - tokensRequired;
             if (tokensRequired <= tokens) {
                 // Aggiorna residual_tokens per l'utente
-                await Controller.userUpdate(tokensRemains, req.decodeJwt.emailS);
+                await Controller.userUpdate(tokensRemains, req.decodeJwt.email);
                 next();
             } else {
                 next(EnumError.NotEnoughTokens);
