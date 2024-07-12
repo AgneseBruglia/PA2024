@@ -123,7 +123,8 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
 */
 export async function checkUser(req: any, res: any, next: any): Promise<void> {
     try {
-        let users = await Controller.getUser(req, true);
+        let users = await Controller.getUser(null, req, true);
+
         if (users.length == 0) {
                 next();
         } else {
@@ -138,8 +139,8 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
 /**
 * Middleware 'checkUserExists'
 *
-* Controlla che nel database esista un utente con quel nome
-* e cognome, altrimenti dà errore e rifiuta la richiesta.
+* Controlla che nel database esista un utente con quella
+* email, altrimenti dà errore e rifiuta la richiesta.
 * 
 * @param req Richiesta del client
 * @param res Risposta del server
@@ -151,7 +152,6 @@ export function checkUserExists(getEmail: (req: any) => string) {
             console.log('JWT dentro checkUserExits: ', req.decodeJwt);
             const email: string = getEmail(req);
             const user = await Controller.getUser(email, req);
-            console.log('USER: ', user);
             if (user !== null) {
                 next();
             } else {

@@ -1,9 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
 import { User, Dataset } from '../models/models'
-import * as ControllerInference from './controller_inference';
-import { EnumError } from '../factory/errors';
 import { Op } from 'sequelize'
-import dotenv from 'dotenv';
 
 /**
  * Controller per le funzioni di Middleware per interfacciarsi con il Model
