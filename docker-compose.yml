@@ -1,6 +1,7 @@
 version: '3.8'
+
 services:
-    # Servizio per il database PostgreSQL
+  # Servizio per il database PostgreSQL
   pgs:
     container_name: pgs
     image: postgres:latest
@@ -80,7 +81,7 @@ services:
   py-services:
     container_name: py-services
     build:
-      context: ./python_services
+      context: ./python-services
       dockerfile: Dockerfile
     ports:
       - "${PYTHON_PORT}:${PYTHON_PORT}"
@@ -94,11 +95,11 @@ services:
       - PYTHON_HOST=${PYTHON_HOST}
     restart: unless-stopped
 
-    # Servizio per il server Express
+  # Servizio per il server Express
   authentication-services:
     container_name: authentication-services
     build: 
-      context: ./authentication_services
+      context: ./authentication-services
       dockerfile: Dockerfile
     ports:
       - "${AUTHENTICATION_SERVICES_PORT}:${AUTHENTICATION_SERVICES_PORT}"

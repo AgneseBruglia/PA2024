@@ -18,6 +18,6 @@ export async function generateJwt(req: any, res: any): Promise<any> {
         if (result.status === 200) return result.data;
     }
     catch (error: any) {
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }

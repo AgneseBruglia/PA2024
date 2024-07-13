@@ -79,8 +79,6 @@ const syncModels = async () => {
     }
 };
 
-syncModels();
-
 /*
 *
 * Funzione per la creazione degli utenti nel database
@@ -101,7 +99,7 @@ async function createUsers() {
             surname: 'Bellante',
             email: 'lubells@gmail.com',
             type: 'USER',
-            residual_tokens: 200000000000
+            residual_tokens: 50
         });
 
         const newUser2 = await User.create({
@@ -116,3 +114,5 @@ async function createUsers() {
         console.error('Errore durante la creazione dell\'utente:', error);
     }
 }
+
+syncModels();
