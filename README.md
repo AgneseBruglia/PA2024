@@ -66,7 +66,7 @@ graph LR;
     AppController.ts --- redis
     AppController.ts --- Cost_services.py
      
-
+    linkDistance 180;
     
 ```
 
