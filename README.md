@@ -64,6 +64,7 @@ graph LR;
     AppController.ts --- postgress
     AppController.ts --- Server.py
     AppController.ts --- redis
+    AppController.ts --- Cost_services.py
      
 
     
