@@ -1,28 +1,7 @@
-import {EmptyResultError, IntegerDataType } from 'sequelize';
 import { Dataset, User } from '../models/models';
-import { DatabaseError } from 'pg';
 import { EnumError, getError } from '../factory/errors';
-import * as childProcess from 'child_process';
-import * as ControllerDb from './controller_db';
 import axios from 'axios';
-const fs = require('fs');
-const path = require('path');
 
-// Interfaccia per descrivere la struttura dell'utente
-interface UserInput {
-    name: string;
-    surname: string;
-    email: string;
-    type: string;
-    residual_tokens: number;
-}
-
-// Interfaccia per descrivere la struttura della risposta al client
-interface Json {
-    status: number;
-    data?: any; 
-    errore?: string;
-}
 
 // Interfaccia per descrivere la tipologia di utente
 export enum typeOfUser {
@@ -41,7 +20,7 @@ export enum typeOfUser {
  * @param err L'effettivo errore sollevato
  * @param res La risposta da parte del server
  */
-export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
+export function controllerErrors(enum_error: EnumError, res: any) {
     const new_err = getError(enum_error).getErrorObj();
     res.status(new_err.status).json(new_err.message);
 }
@@ -139,7 +118,7 @@ export async function checkTokensInference(dataset_name: string, email:  string,
         }
     }
     catch(error:any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -157,6 +136,6 @@ const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
             throw new Error();
         }
     } catch (error:any) {
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 };

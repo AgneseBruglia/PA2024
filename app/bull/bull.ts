@@ -43,5 +43,5 @@ queue.on('completed', function (job: Job) {
 });
 
 queue.on('failed', function (job: any, error: any) {
-  // Gestisci i job falliti se necessario
+
 });

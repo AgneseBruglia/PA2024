@@ -1,7 +1,9 @@
 import express, { Request, Response } from 'express';
-import { createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
-    visualizeCredits, rechargeCredits } from './controller/controller_db';
-import {resetBull} from './controller/controller_jobs'
+import {
+    createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
+    visualizeCredits, rechargeCredits
+} from './controller/controller_db';
+import { resetBull } from './controller/controller_jobs'
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
@@ -9,7 +11,7 @@ import { queue } from './bull/bull'
 import { getUserJobs, getResult } from './controller/controller_jobs';
 import { generateJwt } from './controller/controller_authentication';
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 const port = process.env.APP_PORT;
@@ -33,7 +35,7 @@ app.post('/generate-jwt', Middleware.generateJwt, Middleware.error_handling, asy
 
 
 // Definizione della rotta per creare un nuovo dataset vuoto
-app.post('/create-dataset', Middleware.checkPayloadHeader,Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
+app.post('/create-dataset', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const dataset_name = req.body.dataset_name;
     const email: string = req.decodeJwt.email as string;
     const result = await addDataset(dataset_name, email, res);
@@ -79,7 +81,7 @@ app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlewa
 });
 
 // Definizione della rotta per aggiungere un contenuto a un dataset 
-app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
+app.put('/dataset/insert-videos', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     const new_videos = req.body.new_videos;
@@ -99,14 +101,14 @@ app.delete('/remove-dataset', Middleware.checkAuthHeader, Middleware.checkGenera
 app.get('/tokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const result = await visualizeCredits(res, email);
-    res.json(result); 
+    res.json(result);
 });
 
 // Definizione della rotta per restituire i processi di un utente
 app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const result = await getUserJobs(email, res);
-    res.json(result); 
+    res.json(result);
 });
 
 /*********************************    AMMINISTRATORE    ************************************ */
@@ -131,22 +133,22 @@ app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Mid
 });
 
 // Definizione della rotta per ricaricare i token di un utente
-app.put('/admin/recharge-tokens',Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
+app.put('/admin/recharge-tokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.query.email as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string);
     const result = await rechargeCredits(email, tokens_to_charge, res);
-    res.json(result); 
+    res.json(result);
 });
 
 // Definizione della rotta per ottenere i tokens di tutti gli utenti
-app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt,  Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await visualizeCredits(res);
-    res.json(result); 
+    res.json(result);
 });
 
 /** 
  * Gestione delle rotte non previste
- */ 
+ */
 app.get('*', Middleware.other_route, Middleware.error_handling);
 app.post('*', Middleware.other_route, Middleware.error_handling);
 app.put('*', Middleware.other_route, Middleware.error_handling);

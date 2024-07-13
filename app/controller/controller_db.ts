@@ -14,11 +14,7 @@ interface UserInput {
     residual_tokens: number;
 }
 
-interface Json {
-    successo: boolean;
-    data?: any; 
-    errore?: string;
-}
+
 
 export enum typeOfUser {
     ADMIN = 'ADMIN',
@@ -36,7 +32,7 @@ export enum typeOfUser {
  * @param err L'effettivo errore sollevato
  * @param res La risposta da parte del server
  */
-export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
+export function controllerErrors(enum_error: EnumError, res: any) {
     const new_err = getError(enum_error).getErrorObj();
     res.status(new_err.status).json(new_err.message);
 }
@@ -87,7 +83,7 @@ export async function addDataset(dataset_name: string, email: string, res: any):
 
         return dataset_name;
     } catch (error:any) {
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -104,7 +100,7 @@ export async function getAllUsers(res: any): Promise<any> {
             data: users 
         }; 
     } catch (error:any) {
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -147,7 +143,7 @@ export async function getDatasets(email:String, res: any, dataset_name?: String)
         }
 
     } catch (error:any) {
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -168,7 +164,7 @@ export async function getAllDataset(res:any): Promise<any>{
     }
 
     catch(error:any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -199,7 +195,7 @@ export async function updateDataset(email:String, dataset_name: String, new_data
         };
     }
     catch(error: any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -245,7 +241,7 @@ export async function insertVideoIntoDataset(email: String, dataset_name: String
         
     }
     catch(error:any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -271,7 +267,7 @@ export async function deleteDataset(email: String, dataset_name: String, res: an
         }
     }
     catch(error: any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -310,7 +306,7 @@ export async function visualizeCredits(res:any, email?: String): Promise<any>{
         }
     }
     catch(error: any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
@@ -341,6 +337,6 @@ export async function rechargeCredits(emailUser: string , tokens_to_charge: numb
         }
     }
     catch(error:any){
-        controllerErrors(EnumError.InternalServerError, error, res);
+        controllerErrors(EnumError.InternalServerError, res);
     }
 }

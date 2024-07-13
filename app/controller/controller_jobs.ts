@@ -1,6 +1,6 @@
-import { Job, JobStatus } from 'bull';
-import { queue, completedJobResults } from '../bull/bull'
-import { EnumError, getError } from '../factory/errors';
+import { Job} from 'bull';
+import { queue } from '../bull/bull'
+import { EnumError } from '../factory/errors';
 import { controllerErrors } from './controller_db';
 
 
@@ -35,7 +35,7 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
         return resultsPromise;
 
     } catch (error: any) {
-        controllerErrors(EnumError.JobsFetchError, error, res);
+        controllerErrors(EnumError.JobsFetchError, res);
     }
 }
 
@@ -53,7 +53,7 @@ export async function getResult(job_id: number, res: any, email: string): Promis
         }
     }
     catch(error:any) {
-        controllerErrors(EnumError.JobResultError, error, res);
+        controllerErrors(EnumError.JobResultError, res);
     }
 }
 
