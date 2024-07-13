@@ -13,6 +13,8 @@ dotenv.config();
 
 const app = express();
 const port = process.env.APP_PORT;
+const host = process.env.APP_HOST;
+
 
 app.use(express.json());
 app.use((err: Error, req: any, res: any, next: any) => {
@@ -64,7 +66,6 @@ app.post('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral,
 
 // Definizione della rotta per classificare i video di un dataset
 app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
-    console.log('soreta');
     const dataset_name: string = req.query.dataset_name;
     const model_name: string = req.query.model_name;
     const email = req.decodeJwt.email as string;
@@ -157,5 +158,5 @@ app.delete('*', Middleware.other_route, Middleware.error_handling);
 
 app.listen(port, () => {
     resetBull();
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://${host}:${port}`);
 });

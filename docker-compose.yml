@@ -20,12 +20,13 @@ services:
   app:
     container_name: app
     build: 
-      context: ./db_services
+      context: ./app
       dockerfile: Dockerfile
     ports:
       - "${APP_PORT}:${APP_PORT}"
     environment:
       APP_PORT: ${APP_PORT}
+      APP_HOST: ${APP_HOST}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

@@ -54,7 +54,7 @@ export class UserAlreadyExists implements IErrorObj {
     message: string;
 
     constructor() {
-        this.status = 402;
+        this.status = 400;
         this.message = Message.userAlreadyExists_message;
     }
 
@@ -71,7 +71,7 @@ export class DatasetAlreadyExists implements IErrorObj {
     message: string;
 
     constructor() {
-        this.status = 402;
+        this.status = 400;
         this.message = Message.datasetAlreadyExists_message;
     }
 
@@ -358,26 +358,10 @@ export class JobResultError implements IErrorObj {
     }
 }
 
-export class ZeroTokensAvailableError implements IErrorObj {
-    status: number;
-    message: string;
 
-    constructor() {
-        this.status = 401;
-        this.message = Message.zeroTokensAvailable_messagge
-    }
-
-    getErrorObj(): { message: string; status: number } {
-        return { 
-            status: this.status,
-            message: this.message
-        }
-    }
-}
 
 
 export enum EnumError {
-    ZeroTokensAvailableError,
     NotEnoughTokens,
     UserDoesNotExist,
     UserAlreadyExists,
@@ -403,9 +387,6 @@ export enum EnumError {
 export function getError(type: EnumError): IErrorObj {
     let val: IErrorObj | null = null;
     switch (type){
-        case EnumError.ZeroTokensAvailableError:
-            val = new ZeroTokensAvailableError();
-            break;
         case EnumError.NotEnoughTokens:
             val = new NotEnoughTokens();
             break;

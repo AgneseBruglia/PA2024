@@ -5,8 +5,8 @@ import * as Middleware from './middleware/middleware_chain';
 dotenv.config(); 
 
 const app = express();
-const port = parseInt(process.env.AUTHENTICATION_SERVICES_PORT as string) || 0;
-const host = process.env.AUTHENTICATION_SERVICES_HOST || '';
+const port = parseInt(process.env.AUTHENTICATION_SERVICES_PORT as string);
+const host = process.env.AUTHENTICATION_SERVICES_HOST;
 
 app.use(express.json());
 

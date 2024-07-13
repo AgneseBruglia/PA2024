@@ -2,9 +2,8 @@
 * File contenente i messaggi di errore personalizzati
 */
 
-export const zeroTokensAvailable_messagge: string = 'Insufficient credit to execute the request.';
+
 export const notEnoughTokens_message: string = 'Insufficient credit to execute the request.';
-//export const notEnoughTokens_message: string = 'Insufficient credit to execute the request.';
 export const userDoesNotExist_message: string = 'This user does not exist.';
 export const userAlreadyExists_message: string = 'This user already exists.';
 export const datasetAlreadyExists_message: string = 'This user already has a dataset with the same name.';
