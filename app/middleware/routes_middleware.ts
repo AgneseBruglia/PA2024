@@ -23,16 +23,18 @@ dotenv.config();
 export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
     try {
         const email: string = req.decodeJwt.email as string;
-        const tokens: number | null = await Controller.getTokens(email);
-        if (tokens !== null) {
+        const tokens: number = await Controller.getTokens(email);
+        console.log("CONDIZIONE SUI TOKENS: checkResidualTokens", tokens>0);
+        if (tokens > 0) {
                 next();
         } 
         else{
-            next(EnumError.NotEnoughTokens); 
+            console.log('Errore !');
+            next(EnumError.ZeroTokensError); 
         }
     }
     catch(error){
-        next(EnumError.NotEnoughTokens);
+        next(EnumError.InternalServerError);
     }
 }
 
@@ -52,7 +54,9 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
     try {
         const email: string = req.decodeJwt.email;
         const tokens = await Controller.getTokens(email);
-        if (tokens) {
+        console.log("CONDIZIONE SUI TOKENS: checkEnoughTokens", tokens>0);
+        if (tokens > 0) {
+            console.log('Tokens: ', tokens);
             const new_videos: string[] = req.body.new_videos;
             const COST: number = 0.5;
             const tokensRequired: number = new_videos.length * COST;
@@ -65,7 +69,7 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
                 next(EnumError.NotEnoughTokens);
             }
         } else {
-            next(EnumError.UserDoesNotExist);
+            next(EnumError.NotEnoughTokens);
         }
     } catch (error) {
         next(EnumError.InternalServerError);
@@ -234,11 +238,15 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
         if(dataset !== null){
             const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName);
             const existingVideos: string[] = dataset.getDataValue('videos');
+            const hasDuplicate = (arr: string[]): boolean => arr.some((val, index) => arr.indexOf(val) !== index);
             const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
 
-            if(isSameVideoPresent){
-                next(EnumError.VideosAlreadyExitError);
-            } else next(); 
+            if(!hasDuplicate(new_videos_complete)){
+                if(isSameVideoPresent){
+                    next(EnumError.VideosAlreadyExitError);
+                } else next(); 
+            }
+            else next(EnumError.VideosAlreadyExitArrayError);
         }
         else{
             next();

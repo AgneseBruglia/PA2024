@@ -6,7 +6,7 @@ import { Op } from 'sequelize'
  */
 
 // TODO commento
-export async function getTokens(email: any, checkResidual: boolean = false): Promise<any> {
+export async function getTokens(email: any, checkResidual: boolean = false): Promise<number> {
     if (!checkResidual) {
         const user = await User.findOne({
             attributes: ['residual_tokens'],
@@ -15,12 +15,16 @@ export async function getTokens(email: any, checkResidual: boolean = false): Pro
                 residual_tokens: { [Op.gt]: 0 }
             }
         });
+        console.log('USER uguale a NULL : ', user===null );
         //if(user === null || user === undefined) return 0;
         if(user !== null){
-            const tokens: number = user?.getDataValue('residual_tokens');
-            return tokens;
+            console.log('USER dentro getTokens: ', user);
+            const tokens = user?.getDataValue('residual_tokens');
+            console.log('Tokens dentro getTokens: ', tokens)
+            return tokens as number;
         }
-        return null;
+        console.log('PRIMA DELLO ZEROOOOOOOO');
+        return 0;
     }
     else {
         const user = await User.findOne({

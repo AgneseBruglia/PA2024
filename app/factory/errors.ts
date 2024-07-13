@@ -170,6 +170,24 @@ export class VideosAlreadyExitError implements IErrorObj {
 }
 
 
+export class VideosAlreadyExitArrayError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 400;
+        this.message = Message.videoAlreadyExitsArray_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
 export class NoJwtInTheHeaderError implements IErrorObj {
     status: number;
     message: string;
@@ -359,6 +377,24 @@ export class JobResultError implements IErrorObj {
 }
 
 
+export class ZeroTokensError implements IErrorObj {
+    status: number;
+    message: string;
+
+    constructor() {
+        this.status = 401;
+        this.message = Message.zeroTokens_message
+    }
+
+    getErrorObj(): { message: string; status: number } {
+        return { 
+            status: this.status,
+            message: this.message
+        }
+    }
+}
+
+
 
 
 export enum EnumError {
@@ -381,7 +417,9 @@ export enum EnumError {
     NoVideoError,
     JobsFetchError,
     JobNotFoundError,
-    JobResultError
+    JobResultError,
+    VideosAlreadyExitArrayError,
+    ZeroTokensError
 }
 
 export function getError(type: EnumError): IErrorObj {
@@ -446,6 +484,12 @@ export function getError(type: EnumError): IErrorObj {
             break;
         case EnumError.JobResultError:
             val = new JobResultError();
+            break;
+        case EnumError.VideosAlreadyExitArrayError:
+            val = new VideosAlreadyExitArrayError();
+            break;
+        case EnumError.ZeroTokensError:
+            val = new ZeroTokensError();
             break;
     }
     return val; 

@@ -99,7 +99,7 @@ async function createUsers() {
             surname: 'Bellante',
             email: 'lubells@gmail.com',
             type: 'USER',
-            residual_tokens: 50
+            residual_tokens: 100000000000
         });
 
         const newUser2 = await User.create({

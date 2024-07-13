@@ -19,7 +19,7 @@ export async function createJwt(email: String, type: typeOfUser, expirationTime:
 
   const options: jwt.SignOptions = {
     algorithm: 'HS256',  
-    expiresIn: expirationTime + 'h'       
+    expiresIn: expirationTime + 'd'       
   };
   return {
     successo: true,
