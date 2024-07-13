@@ -28,7 +28,7 @@ graph TD;
 L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e che prevede l'utilizzo di `docker-compose` per la sua gestione, è la segunte:
 
 ```mermaid
-graph TD;
+graph LR;
     subgraph App
     Server.ts --- AppController.ts 
     AppController.ts 
