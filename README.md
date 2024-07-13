@@ -84,12 +84,10 @@ User --- Visione crediti residui
 
 ### Diagramma E-R
 
-Come Database per il progetto abbiamo deciso di utilizzare MongoDB, un database NoSQL (Not Only SQL) open-source orientato ai documenti. È progettato per essere scalabile, flessibile e adatto a una vasta gamma di applicazioni. Segue una rappresentazione dello schema utilizzando la notazione del diagramma ER.
-In MongoDB i dati vengono organizzati all'interno di "collezioni", quelle che siamo andati a realizzare sono le seguenti:
+Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale (RDBMS) open-source che supporta lo standard SQL, progettato per essere robusto e flessibile. Di seguito si riporta una rappresentazione dello schema del database tramite diagramma ER.
 
-- `Clients`
-- `Employees`
-- ...
+- `User`
+- `Dataset`
 
 ```mermaid
     erDiagram
