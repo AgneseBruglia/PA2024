@@ -30,10 +30,10 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e c
 ```mermaid
 graph LR;
     subgraph App
-    Server.ts --- Controller 
-    Controller --- Server.ts
-    Model --- Controller
-    Controller --- Mode
+    Server.ts --- Controller.ts 
+    Controller.ts --- Server.ts
+    Model.ts --- Controller.ts
+    Controller.ts --- Model.ts
     end
 
     subgraph Redis
@@ -41,15 +41,15 @@ graph LR;
     end
 
     subgraph Authentication
-    Server.ts --- Controller
-    Controller --- Server
-    Model --- Controller
-    Controller --- Model
+    Server.ts --- Controller.ts
+    Controller.ts --- Server.ts
+    Model.ts --- Controller.ts
+    Controller.ts --- Model.ts
     end
 
     subgraph Inference
-    Server.py --- Controller
-    Controller --- Server.py
+    Server.py --- Controller.py
+    Controller.py --- Server.py
     end
 
     subgraph Bull
