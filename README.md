@@ -102,8 +102,8 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
     }
     DATASET {
         string dataset_name PK
+        string email PK, FK
         string[] videos
-        string email PK
     }
 
 ```
