@@ -5,15 +5,14 @@ import {resetBull} from './controller/controller_jobs'
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
 import dotenv from 'dotenv';
-import { queue } from './Bull/bull'
+import { queue } from './bull/bull'
 import { getUserJobs, getResult } from './controller/controller_jobs';
-import { completedJobResults } from './Bull/bull';
 import { generateJwt } from './controller/controller_authentication';
 
 dotenv.config(); 
 
 const app = express();
-const port = process.env.APP_PORT || 3000;
+const port = process.env.APP_PORT;
 
 app.use(express.json());
 app.use((err: Error, req: any, res: any, next: any) => {

@@ -26,7 +26,6 @@ queue.process(async function (job: any, done: any) {
 
     done(null, result); 
   } catch (error) {
-    console.log('Errore nel processo di inferenza: ', error);
     done(error);
   }
 });

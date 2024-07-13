@@ -1,6 +1,6 @@
 import { EnumError } from '../factory/errors';
 import Joi from 'joi';
-import { completedJobResults } from '../Bull/bull'
+import { completedJobResults } from '../bull/bull'
 
 export const enum type{
 body = 'body',

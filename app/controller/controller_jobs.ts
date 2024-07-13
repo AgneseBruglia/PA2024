@@ -1,5 +1,5 @@
 import { Job, JobStatus } from 'bull';
-import { queue, completedJobResults } from '../Bull/bull'
+import { queue, completedJobResults } from '../bull/bull'
 import { EnumError, getError } from '../factory/errors';
 import { controllerErrors } from './controller_db';
 
