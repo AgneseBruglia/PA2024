@@ -31,8 +31,8 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e c
 graph LR;
     subgraph App
     Server.ts --- Controller.ts 
-    Controller.ts --- Server.ts
-    Model.ts --- Controller.ts
+    Controller.ts 
+    Model.ts 
     Controller.ts --- Model.ts
     end
 
@@ -42,14 +42,14 @@ graph LR;
 
     subgraph Authentication
     Server.ts --- Controller.ts
-    Controller.ts --- Server.ts
-    Model.ts --- Controller.ts
+    Controller.ts 
+    Model.ts 
     Controller.ts --- Model.ts
     end
 
     subgraph Inference
     Server.py --- Controller.py
-    Controller.py --- Server.py
+    Controller.py
     end
 
     subgraph Bull
