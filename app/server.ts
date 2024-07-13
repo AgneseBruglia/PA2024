@@ -26,7 +26,7 @@ app.use((err: Error, req: any, res: any, next: any) => {
 });
 
 // Definizione della rotta per creare un nuovo dataset vuoto
-app.post('/generate-jwt', Middleware.error_handling, async (req: any, res: Response) => {
+app.post('/generate-jwt', Middleware.generateJwt, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await generateJwt(req, res);
     res.json(result);
 });
@@ -35,9 +35,7 @@ app.post('/generate-jwt', Middleware.error_handling, async (req: any, res: Respo
 // Definizione della rotta per creare un nuovo dataset vuoto
 app.post('/create-dataset', Middleware.checkPayloadHeader,Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const dataset_name = req.body.dataset_name;
-    console.log('dataset_name: ', dataset_name);
     const email: string = req.decodeJwt.email as string;
-    console.log('Email: ', email);
     const result = await addDataset(dataset_name, email, res);
     res.json(result);
 });
@@ -84,7 +82,6 @@ app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlewa
 app.put('/dataset/insert-videos', Middleware.checkPayloadHeader , Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
-    console.log("/inserVIdeoIntoDataset: ", dataset_name);
     const new_videos = req.body.new_videos;
     const result = await insertVideoIntoDataset(email, dataset_name, new_videos, res);
     res.json(result);
@@ -108,7 +105,6 @@ app.get('/tokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlewa
 // Definizione della rotta per restituire i processi di un utente
 app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
-    console.log('/user-jobs');
     const result = await getUserJobs(email, res);
     res.json(result); 
 });

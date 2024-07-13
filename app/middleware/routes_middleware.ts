@@ -181,8 +181,8 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         let email: string | undefined;
         if (req.body.dataset_name) {
             datasetName = req.body.dataset_name as string;
-        } else if (req.body.new_dataset_name) {
-            datasetName = req.body.new_dataset_name as string;
+        } else if (req.query.new_dataset_name  && req.query.dataset_name) {
+            datasetName = req.query.new_dataset_name as string;
         }
         email = req.decodeJwt.email;
         const dataset = await Controller.getDataset(datasetName, email);
@@ -214,7 +214,6 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
     try{
         // Cerco se il dataset esiste 
         const dataset = await Controller.getDataset(dataset_name, email);
-        console.log('DATASET DENTRO checkDatasetAlreadyExist');
         if(dataset === null){
             next(EnumError.DatasetNotExitsError)
         }

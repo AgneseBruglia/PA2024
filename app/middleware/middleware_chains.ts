@@ -26,7 +26,7 @@ export const checkGeneral = [
 ];
 
 export const getDataset = [
-    InputMiddleware.validateSchema(InputMiddleware.getDataset, InputMiddleware.type.query)
+    InputMiddleware.validateSchema(InputMiddleware.getDatasetSchema, InputMiddleware.type.query)
 ];
 
 export const createDataset = [
@@ -92,5 +92,10 @@ export const doInference = [
 ];
 
 export const result = [
-    InputMiddleware.validateSchema(InputMiddleware.result, InputMiddleware.type.query)
+    InputMiddleware.validateSchema(InputMiddleware.resultSchema, InputMiddleware.type.query)
+];
+
+
+export const generateJwt = [
+    InputMiddleware.validateSchema(InputMiddleware.generateJwtSchema, InputMiddleware.type.query, false)
 ];

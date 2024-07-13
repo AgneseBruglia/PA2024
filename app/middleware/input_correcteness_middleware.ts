@@ -41,19 +41,32 @@ export const doInferenceSchema = Joi.object({
     model_name: Joi.string().max(50).required().valid('model.tflite','model_8bit.tflite')
 });
 
-export const result = Joi.object({
+export const resultSchema = Joi.object({
     id: Joi.number().integer().positive().required()
 });
 
-export const getDataset = Joi.object({
+export const getDatasetSchema = Joi.object({
     dataset_name: Joi.string().max(50)
 });
-// Funzione lambda per la validazione
-// Funzione lambda per la validazione
-export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {
+
+
+export const generateJwtSchema = Joi.object({
+    email: Joi.string().email().max(50).required(),
+    type: Joi.string().max(50).required().valid('USER','ADMIN'),
+    expiration: Joi.number().integer().positive().min(1).max(48).required()
+});
+
+
+export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query', includeEmail: boolean = true) => async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;
-    email = req.decodeJwt.email;
+
+    if (includeEmail) {
+        email = req.decodeJwt.email;
+        console.log(`Email: ${email}`);
+    }
+    
     console.log(`dataset_name from ${source}: `, data.dataset_name);
+    
     try {
         await schema.validateAsync(data);
         console.log('SCHEMA OK');
