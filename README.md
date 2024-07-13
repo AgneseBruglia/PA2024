@@ -36,7 +36,7 @@ graph LR;
     end
 
     subgraph Redis
-    Redis
+    redis
     end
 
     subgraph Authentication
