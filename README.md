@@ -60,8 +60,8 @@ graph LR;
     Cost_services.py
     end
 
-    AppModel.ts --->| redis
-    AppController.ts --->| postgress
+    AppModel.ts <---> redis
+    AppController.ts <---> postgress
     AppController.ts --->| Server.py
     AppController.ts --->| redis
      
