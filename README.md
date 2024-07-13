@@ -90,7 +90,6 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
 - `Dataset`
 
 ```mermaid
-    erDiagram
     USER ||--o{ DATASET : owns
     USER {
         string email PK
@@ -103,7 +102,7 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
     DATASET {
         string dataset_name PK
         string[] videos
-        string email FK PK
+        string email FK, PK
     }
 
 ```
