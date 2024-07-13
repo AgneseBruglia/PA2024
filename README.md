@@ -90,19 +90,20 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
 - `Dataset`
 
 ```mermaid
+    erDiagram
     USER ||--o{ DATASET : owns
     USER {
         string email PK
-        number id
+        int id
         string name
         string surname
-        enum type
-        number residual_tokens
+        string type
+        int residual_tokens
     }
     DATASET {
         string dataset_name PK
         string[] videos
-        string email FK, PK
+        string email PK
     }
 
 ```
