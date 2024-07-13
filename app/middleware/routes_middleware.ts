@@ -1,11 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { User, Dataset } from '../models/models'
 import * as ControllerInference from '../controller/controller_inference';
 import { EnumError } from '../factory/errors';
-import { Op } from 'sequelize'
 import dotenv from 'dotenv';
 import * as Controller from '../controller/controller_middleware';
-import { stringify } from 'querystring';
 
 dotenv.config();
 
@@ -24,12 +20,10 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
     try {
         const email: string = req.decodeJwt.email as string;
         const tokens: number = await Controller.getTokens(email);
-        console.log("CONDIZIONE SUI TOKENS: checkResidualTokens", tokens>0);
         if (tokens > 0) {
                 next();
         } 
         else{
-            console.log('Errore !');
             next(EnumError.ZeroTokensError); 
         }
     }
@@ -54,15 +48,12 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
     try {
         const email: string = req.decodeJwt.email;
         const tokens = await Controller.getTokens(email);
-        console.log("CONDIZIONE SUI TOKENS: checkEnoughTokens", tokens>0);
         if (tokens > 0) {
-            console.log('Tokens: ', tokens);
             const new_videos: string[] = req.body.new_videos;
             const COST: number = 0.5;
             const tokensRequired: number = new_videos.length * COST;
             const tokensRemains: number = tokens - tokensRequired;
             if (tokensRequired <= tokens) {
-                // Aggiorna residual_tokens per l'utente
                 await Controller.userUpdate(tokensRemains, req.decodeJwt.email);
                 next();
             } else {
@@ -91,7 +82,6 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
         const dataset_name: string = req.query.dataset_name;
         const email: string = req.decodeJwt.email;
         const dataset = await Controller.getDataset(dataset_name, email);
-        // Se è presente il dataset ed i video: 
         if((dataset !== null) && (dataset.getDataValue('videos') !== null)){
             const videos: string[] = dataset.getDataValue('videos');
             const result = await ControllerInference.checkTokensInference(dataset_name, email, res)

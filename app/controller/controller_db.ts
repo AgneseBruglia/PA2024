@@ -1,6 +1,4 @@
-import {EmptyResultError, IntegerDataType } from 'sequelize';
 import { Dataset, User } from '../models/models';
-import { DatabaseError } from 'pg';
 import { EnumError, getError } from '../factory/errors';
 const fs = require('fs');
 const path = require('path');
@@ -14,8 +12,7 @@ interface UserInput {
     residual_tokens: number;
 }
 
-
-
+// Interfaccia per descrivere la tipologia dell'utente
 export enum typeOfUser {
     ADMIN = 'ADMIN',
     USER = 'USER'
@@ -37,10 +34,16 @@ export function controllerErrors(enum_error: EnumError, res: any) {
     res.status(new_err.status).json(new_err.message);
 }
 
-/*
-*
-* Funzione per l'inserimento di un nuovo utente nel DB
+/**
+* Funzione 'createUser'
 * 
+* Funzione per l'inserimento di un nuovo utente nel DB.
+* 
+* @param name Nome dell'utente da inserire nel DB
+* @param surname Cognome dell'utente da inserire nel DB
+* @param email Email dell'utente da inserire nel DB
+* @param type Tipo dell'utente da inserire nel DB
+* @param residual_tokens Tokens associati all'utente da inserire nel DB
 */
 export async function createUser({
     name,
@@ -57,286 +60,302 @@ export async function createUser({
             type,
             residual_tokens
         });
-        if(newUser === null || newUser === undefined) throw new Error;
+        if (newUser === null || newUser === undefined) throw new Error;
 
         return newUser.toJSON();
-    } catch (error:any) {
+    } catch (error: any) {
         return error.toJSON();
-    }}
+    }
+}
 
 /**
+ * Funzione 'addDataset'
+ * 
  * Funzione per aggiungere un nuovo dataset e creare la relativa cartella.
+ * 
  * @param dataset_name Nome del dataset (chiave primaria).
  * @param dataset_path Percorso del dataset.
  * @param id_user ID dell'utente associato al dataset.
- * @returns True se l'aggiunta è riuscita correttamente, altrimenti false.
  */
 export async function addDataset(dataset_name: string, email: string, res: any): Promise<any> {
     try {
-        // Creazione della tupla nel database
-       
         const new_dataset = await Dataset.create({
             dataset_name: dataset_name,
-            email: email  // Associa il dataset all'utente tramite la relazione definita
+            email: email
         });
-        if(new_dataset === null || new_dataset === undefined) throw new Error;
+        if (new_dataset === null || new_dataset === undefined) throw new Error;
 
         return dataset_name;
-    } catch (error:any) {
-        controllerErrors(EnumError.InternalServerError, res);
-    }
-}
-
-export async function getAllUsers(res: any): Promise<any> {
-    try {
-        // Esegui la query per recuperare tutti gli utenti
-        const users = await User.findAll({
-            attributes: [ 'user_id','name','surname','email','residual_tokens' ]
-        });
-        if(users.length === 0) throw new Error;
-   
-        return {
-            successo: true,
-            data: users 
-        }; 
-    } catch (error:any) {
+    } catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
 /**
- * Funzione per ritornare dataset.
- * @param email Email dell'utente associato al dataset.
- * @param dataset_name Nome del dataset (chiave primaria). Parametro facoltativo.
- * @returns Dataset specifico riferito ad uno utente oppure tutti i dataset di un'utente. Ritorna un eccezione in caso di errore
+ * Funzione 'getAllUsers'
+ * 
+ * Funzione per tornare gli utentipresenti nel DB con degli specifici valori di attributi.
+ * 
+ * @param res Risposta del server
  */
-export async function getDatasets(email:String, res: any, dataset_name?: String): Promise<any> {
+export async function getAllUsers(res: any): Promise<any> {
     try {
-        
+        const users = await User.findAll({
+            attributes: ['user_id', 'name', 'surname', 'email', 'residual_tokens']
+        });
+        if (users.length === 0) throw new Error;
 
+        return {
+            successo: true,
+            data: users
+        };
+    } catch (error: any) {
+        controllerErrors(EnumError.InternalServerError, res);
+    }
+}
+
+/**
+ * Funzione 'getDataset'
+ * 
+ * Funzione per ritornare un dataset con dei specifici valori di attributi.
+ * 
+ * @param email Email dell'utente associato al dataset
+ * @param dataset_name Nome del dataset (chiave primaria). Parametro facoltativo
+ */
+export async function getDatasets(email: String, res: any, dataset_name?: String): Promise<any> {
+    try {
         if (dataset_name) {
             const result = await Dataset.findAll({
                 where: {
-                    dataset_name : dataset_name,
-                    email : email,
+                    dataset_name: dataset_name,
+                    email: email,
                 },
             });
-            if(result.length === 0) throw new Error;
+            if (result.length === 0) throw new Error;
             return {
                 successo: true,
-                data: result 
-            }; 
+                data: result
+            };
         }
 
-        else{
+        else {
             const result = await Dataset.findAll({
                 where: {
-                    email : email,
+                    email: email,
                 },
-                attributes: [ 'dataset_name', 'videos', 'email' ]
+                attributes: ['dataset_name', 'videos', 'email']
             });
-            if(result.length === 0) throw new Error;
+            if (result.length === 0) throw new Error;
             return {
                 successo: true,
-                data: result 
-            }; 
+                data: result
+            };
         }
 
-    } catch (error:any) {
+    } catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
-
-
 /**
+ * Funzione 'getAllDataset'
+ * 
  * Funzione per ritornare tutti i dataset presenti nel sistema.
- * @returns Tutti i dataset presenti nel DB.
+ * 
+ * @param res Risposta del server
  */
-export async function getAllDataset(res:any): Promise<any>{
-    try{
+export async function getAllDataset(res: any): Promise<any> {
+    try {
         const result = await Dataset.findAll();
-        if(result.length === 0) throw new Error;
+        if (result.length === 0) throw new Error;
         return {
             successo: true,
             data: result
         }
     }
 
-    catch(error:any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
-
-
 /**
- * Funzione per ritornare dataset.
- * @param email Email dell'utente associato al dataset.
- * @param dataset_name Nome del dataset (chiave primaria).
- * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
+ * Funzione 'updateDataset'
+ * 
+ * Funzione per aggiornare il nome di un dataset.
+ * 
+ * @param email Email dell'utente associato al dataset
+ * @param dataset_name Nome del dataset originale (chiave primaria)
+ * @param new_dataset_name Nome finale del dataset
+ * @param res Risposta del server
  */
-export async function updateDataset(email:String, dataset_name: String, new_dataset_name: String, res: any): Promise<any>{
-    try{
+export async function updateDataset(email: String, dataset_name: String, new_dataset_name: String, res: any): Promise<any> {
+    try {
         const [affectedCount] = await Dataset.update(
-            { dataset_name: new_dataset_name},
+            { dataset_name: new_dataset_name },
             {
-              where: {
-                email: email,
-                dataset_name: dataset_name
-              },
+                where: {
+                    email: email,
+                    dataset_name: dataset_name
+                },
             },
-          );
-        if(affectedCount === 0) throw new Error;
-        
+        );
+        if (affectedCount === 0) throw new Error;
+
         return {
             successo: true,
             data: "Modifica del dataset avvenuta correttamente."
         };
     }
-    catch(error: any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
-
 /**
- * Funzione per aggiungere nuovi video al dataset dello user.
- * @param email Email dell'utente associato al dataset.
- * @param dataset_name Nome del dataset (chiave primaria).
- * @param new_videos Nuovi video da aggiungere al dataset.
- * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
+ * Funzione 'insertVideoIntoDataset'
+ * 
+ * Funzione per aggiungere nuovi video a un certo dataset dello user.
+ * 
+ * @param email Email dell'utente associato al dataset
+ * @param dataset_name Nome del dataset (chiave primaria)
+ * @param new_videos Nuovi video da aggiungere al dataset
  */
-export async function insertVideoIntoDataset(email: String, dataset_name: String, new_videos: Array<String>, res: any): Promise<any>{
-    try{
+export async function insertVideoIntoDataset(email: String, dataset_name: String, new_videos: Array<String>, res: any): Promise<any> {
+    try {
         const videos = await Dataset.findOne({
             where: {
-                email : email,
+                email: email,
                 dataset_name: dataset_name,
             },
             attributes: ['videos']
-        }); 
+        });
 
-        if(videos != null){
+        if (videos != null) {
             const old_videos: Array<String> = videos.getDataValue('videos');
             const videos_path_complete: Array<String> = new_videos.map(fileName => '/app/dataset_&_modelli/dataset/' + fileName);
             const video: Array<String> = old_videos.concat(videos_path_complete);
             await Dataset.update(
-                { videos: video},
+                { videos: video },
                 {
-                  where: {
-                    email: email,
-                    dataset_name: dataset_name
-                  },
+                    where: {
+                        email: email,
+                        dataset_name: dataset_name
+                    },
                 },
-              );
-              return {
+            );
+            return {
                 successo: true,
                 data: 'I video sono stati correttamente inseriti nel dataset'
             }
         }
-        else{
+        else {
             throw new Error;
         }
-        
+
     }
-    catch(error:any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
-
 /**
+ * Funzione 'deleteDataset' 
+ * 
  * Funzione per rimuovere un dataset dal DB.
- * @param email Email dell'utente associato al dataset.
- * @param dataset_name Nome del dataset (chiave primaria).
- * @returns Messaggio di buona riuscita oppure messaggio di errore in forma Json.
+ * 
+ * @param email Email dell'utente associato al dataset
+ * @param res Risposta del server
  */
-export async function deleteDataset(email: String, dataset_name: String, res: any): Promise<any>{
-    try{
+export async function deleteDataset(email: String, dataset_name: String, res: any): Promise<any> {
+    try {
         const result = await Dataset.destroy({
-                where: {
-                    email: email,
-                    dataset_name: dataset_name
-                }
+            where: {
+                email: email,
+                dataset_name: dataset_name
+            }
         });
-        if(result === 0) throw new Error;
-        return{
+        if (result === 0) throw new Error;
+        return {
             successo: true,
             data: 'Dataset rimosso correttamente dal DB.'
         }
     }
-    catch(error: any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
-
 /**
- * Funzione per visualizzare i crediti di un dato utente
+ * Funzione 'visualizeCredits'
+ * 
+ * Funzione per visualizzare i crediti di un dato utente.
+ * 
+ * @param res Risposta del server
  * @param email Email dell'utente associato al dataset. Se non presente, restiuisce i crediti di tutti gli utenti
- * @returns Json contenente i crediti residui dell'utente/degli utenti oppure messaggio di errore.
  */
-export async function visualizeCredits(res:any, email?: String): Promise<any>{
-    try{
-        if(email !== undefined){
+export async function visualizeCredits(res: any, email?: String): Promise<any> {
+    try {
+        if (email !== undefined) {
             const value = await User.findOne({
                 where: {
-                    email : email as string,
+                    email: email as string,
                 },
                 attributes: ['residual_tokens']
             });
 
-            if(value === undefined) throw new Error;
+            if (value === undefined) throw new Error;
             const tokens: number = value?.getDataValue('residual_tokens') as number;
-            return{
+            return {
                 successo: true,
                 data: tokens
             }
         }
         else {
             const value = await User.findAll({
-                attributes: ['email', 'residual_tokens']  
+                attributes: ['email', 'residual_tokens']
             });
-            if(value === undefined) throw new Error;
-            return{
+            if (value === undefined) throw new Error;
+            return {
                 successo: true,
                 data: value
             }
         }
     }
-    catch(error: any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
 
-
 /**
- * Funzione per ricaricare i crediti di un utente
- * @param email Email dell'utente a cui si vuole ricaricare il credito.
- * @returns Json contenente messaggio di buona riuscita oppure json contenente un errore.
+ * Funzione 'rechargeCredits'
+ * 
+ * Funzione per ricaricare i crediti di un utente.
+ * 
+ * @param email Email dell'utente a cui si vuole ricaricare il credito
+ * @param tokens_to_charge Numero di tokens da ricaricare all'utente
+ * @param res Risposta del server
  */
-export async function rechargeCredits(emailUser: string , tokens_to_charge: number, res: any): Promise<any>{
-    try{
-
-        visualizeCredits(res, emailUser).then(async result => {
+export async function rechargeCredits(email: string, tokens_to_charge: number, res: any): Promise<any> {
+    try {
+        visualizeCredits(res, email).then(async result => {
             const toAdd = result.data + tokens_to_charge;
             const [affectedCount] = await User.update(
-                { residual_tokens: toAdd},
+                { residual_tokens: toAdd },
                 {
-                  where: {
-                    email: emailUser,
-                  },
+                    where: {
+                        email: email,
+                    },
                 },
-              );
-            if(affectedCount === 0) throw new Error;
+            );
+            if (affectedCount === 0) throw new Error;
         })
-        return{
+        return {
             successo: true,
             data: 'Credito correttamente aggiornato.'
         }
     }
-    catch(error:any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }

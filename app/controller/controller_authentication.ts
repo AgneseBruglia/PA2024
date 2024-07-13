@@ -2,7 +2,14 @@ import axios from 'axios';
 import { EnumError } from '../factory/errors';
 import { controllerErrors } from './controller_db';
 
-
+/**
+ * Funzione 'generateJwt'
+ * 
+ * Funzione per la generazione dei jwt per gli utenti.
+ * 
+ * @param req Richiesta del client
+ * @param res Risposta del server
+ */
 export async function generateJwt(req: any, res: any): Promise<any> {
     try {
         const authentication_services_host: string = process.env.AUTHENTICATION_SERVICES_HOST as string;

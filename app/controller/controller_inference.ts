@@ -2,7 +2,6 @@ import { Dataset, User } from '../models/models';
 import { EnumError, getError } from '../factory/errors';
 import axios from 'axios';
 
-
 // Interfaccia per descrivere la tipologia di utente
 export enum typeOfUser {
     ADMIN = 'ADMIN',
@@ -17,7 +16,6 @@ export enum typeOfUser {
  * nel corpo della risposta.
  * 
  * @param enum_error Il tipo di errore da costruire
- * @param err L'effettivo errore sollevato
  * @param res La risposta da parte del server
  */
 export function controllerErrors(enum_error: EnumError, res: any) {
@@ -25,6 +23,15 @@ export function controllerErrors(enum_error: EnumError, res: any) {
     res.status(new_err.status).json(new_err.message);
 }
 
+/**
+ * Funzione 'doInference'
+ * 
+ * Funzione per eseguire inferenza con un certo modello su un certo dataset.
+ * 
+ * @param email Email dell'utente che effettua la richiesta
+ * @param dataset_name Nome del dataset su cui eseguire l'inferenza
+ * @param model_name Modello da utilizzare
+ */
 export async function doInference(email: string, dataset_name: string, model_name: string): Promise<any> {
     try {
         const dataset = await Dataset.findOne({
@@ -76,7 +83,7 @@ export async function doInference(email: string, dataset_name: string, model_nam
  * 
  * @param dataset_name Nome del dataset che si vuole utilizzare per l'inferenza
  * @param email Email dell'utente 
- * @param res La risposta da parte del server
+ * @param res La risposta del server
  */
 export async function checkTokensInference(dataset_name: string, email:  string, res: any): Promise<any>{
     try{
@@ -91,12 +98,10 @@ export async function checkTokensInference(dataset_name: string, email:  string,
               email: email
             },
           })
-        // Se è presente il dataset ed i video: 
         if((videosData !== null) && (user !== null)){
             const videos: string[] = videosData.getDataValue('videos');
             const remain_tokens: number = user.getDataValue('residual_tokens') as number;
             const cost_inference: number = await getVideoFrames(videos, res) as number;
-            // Se i tokens bastano, allora ritorno true e aggiorno i tokens del dataset 
             if(remain_tokens >= cost_inference){
                 const new_credits: number = remain_tokens - cost_inference; 
                 const [numberOfAffectedRows] = await User.update(
@@ -122,6 +127,14 @@ export async function checkTokensInference(dataset_name: string, email:  string,
     }
 }
 
+/**
+ * Funzione 'getVideoFrames'
+ * 
+ * Funzione per contare il numero di frame che compongono i video di un dataset.
+ * 
+ * @param videos Video di cui contare i frame
+ * @param res Risposta del server
+ */
 const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
     try {
         const cost_services_host: string = process.env.COST_SERVICES_HOST || '';
