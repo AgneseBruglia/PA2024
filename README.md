@@ -17,10 +17,10 @@ Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Co
 
 ```mermaid
 graph TD;
-    View --- Controller;
-    Controller --- View;
-    Controller --- Model;
-    Model --- Controller
+    View ---> Controller;
+    Controller ---> View;
+    Controller ---> Model;
+    Model ---> Controller
 ```
 
 ###  :whale: Architettura Docker 
