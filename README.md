@@ -63,7 +63,7 @@ graph LR;
     AppModel.ts --->| redis
     AppController.ts --->| postgress
     AppController.ts --->| Server.py
-    AppController.ts --->| bull
+    AppController.ts --->| redis
      
 
     
