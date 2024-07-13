@@ -9,10 +9,10 @@ L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ al
 
 ### :electric_plug: Pattern Architetturale MVC 
 
-Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare ed implementare ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, con il modello, ovvero il database. La struttura da noi progettata ed implementata è quindi composta da: 
+Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare ed implementare ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, e il modello, ovvero il database. La struttura da noi progettata e implementata è quindi composta da: 
 
-- **Model**: Logica di Business e accesso ai database.
-- **View**: Vista nel quale l'utente si interfaccia con il software.
+- **Model**: Logica di Business e accesso al database.
+- **View**: Vista grazie alla quale l'utente si interfaccia con il software.
 - **Controller**
 
 ```mermaid
@@ -25,7 +25,7 @@ graph TD;
 
 ###  :whale: Architettura Docker 
 
-L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e che prevede l'utilizzo di `docker-compose` per la sua gestione, è la segunte:
+L'infrastruttura `Docker` che si è implementata per realizzare il progetto e che prevede l'utilizzo di `docker-compose` per la sua gestione è la seguente:
 
 ```mermaid
 graph LR;
@@ -73,99 +73,39 @@ graph LR;
 
 ```mermaid
 graph TD
-Admin ---|CRUD| Clients
+User ---|CRUD| Tabella Dataset
+Admin ---|CRUD generale| Tabella Dataset
+User ---|CRUD| Tabella User
+User --- Valutazione processo avanzamento
+User --- Ritorno risultato inferenza
+User --- Visione crediti residui
 ```
 
 
 ### Diagramma E-R
 
-Come Database per il progetto abbiamo deciso di utilizzare MongoDB, un database NoSQL (Not Only SQL) open-source orientato ai documenti. È progettato per essere scalabile, flessibile e adatto a una vasta gamma di applicazioni. Segue una rappresentazione dello schema utilizzando la notazione del diagramma ER.
-In MongoDB i dati vengono organizzati all'interno di "collezioni", quelle che siamo andati a realizzare sono le seguenti:
+Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale (RDBMS) open-source che supporta lo standard SQL, progettato per essere robusto e flessibile. Di seguito si riporta una rappresentazione dello schema del database tramite diagramma ER.
 
-- `Clients`
-- `Employees`
-- ...
+- `User`
+- `Dataset`
 
 ```mermaid
     erDiagram
-    COMPONENT |{--o{ PROTOTYPE : forms
-    COMPONENT {
-        string id PK
+    USER ||--o{ DATASET : owns
+    USER {
+        string email PK
+        int id
         string name
+        string surname
         string type
-        string description
-        float price
-        date createdAt
+        int residual_tokens
     }
-    PROTOTYPE ||--o{ DEVICE : inspire
-    PROTOTYPE {
-        string id PK
-        string nome
-        string[] components FK
-        date createdAt
+    DATASET {
+        string dataset_name PK
+        string email PK, FK
+        string[] videos
     }
-    DEVICE |{--|{ SYSTEM : compose 
-    DEVICE{
-        string id PK
-        string name
-        string[] devicePrototypes FK
-        date createdAt
-    }
-    SYSTEM ||--|| CLIENT : belong
-    SYSTEM{
-        string id PK
-        string name
-        string[] devices FK
-        string address
-        string[] client FK
-        date createdAt
-    }
-    CLIENT{
-        string id FK
-        string firstName
-        string lastName
-        date birthDate
-        string fiscalCode UK
-        string vatNumber UK
-        string address
-        date createdAt 
-    }
-    EMPLOYEE o{--o{ SYSTEM: assigned
-    EMPLOYEE{
-        string id FK
-        string name
-        string role
-        string department
-        date birthdate
-        string fiscalCode UK
-        date createdAt
-    }
-    EMPLOYEE o{--o{ OPERATION: perform
-    OPERATION{
-        string id PK
-        string[] employees FK
-        string[] systems FK
-        string description
-        string type
-        date createdAt
-    }
-    FILE ||--|| DEVICE: refers
-    FILE{
-        string id PK
-        string name
-        string[] device FK
-        string fileType
-        string description
-        date createdAt
-    }
-    VERSION ||--|| FILE: extend
-    VERSION {
-        string id PK
-        string[] file FK
-        buffer blob
-        string versionNumber
-        date createdAt
-    }
+
 ```
 
 ## Design Pattern
