@@ -11,7 +11,7 @@ L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ al
 
 Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare ed implementare ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, con il modello, ovvero il database. La struttura da noi progettata ed implementata è quindi composta da: 
 
-- **Model**: Database _sql_.
+- **Model**: Logica di Business e accesso ai database.
 - **View**: Vista nel quale l'utente si interfaccia con il software.
 - **Controller**
 
@@ -29,16 +29,36 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e c
 
 ```mermaid
 graph LR;
-    subgraph Docker Host
-    Express.js ---  MongoDB;
-    MongoDB --- MongoExpress;
-    Angular --- Express.js;
-    Express.js --- Redis
+    subgraph App
+    Server.ts
+    Controller
+    Model
     end
-    subgraph External
-    Auth0
+
+    subgraph Redis
+    Redis
     end
-    Auth0 --- Angular
+
+    subgraph Authentication
+    Server.ts
+    Controller
+    Model
+    end
+
+    subgraph Inference
+    Server.py
+    Controller
+    end
+
+    subgraph Bull
+    bull
+    end
+
+    subgraph Cost
+    Cost_services.py
+    end 
+
+    
 ```
 
 ### Use Case
