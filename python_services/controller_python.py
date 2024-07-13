@@ -55,8 +55,6 @@ def _inferenceV3_ConvLSTM(videos, model_path):
     video_results = {}
 
     try:
-        # Verifica che il modello sia uno dei due disponibili
-        print(f"MODEL path: {model_path}")
 
         if not os.path.exists(model_path):
             raise ErrorFactory.create_error('ModelFileNotFoundError', model_path=model_path)

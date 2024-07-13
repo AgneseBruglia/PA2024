@@ -16,7 +16,6 @@ import {createJwt} from '../jwt/jwt_generator';
  */
 export function controllerErrorsAuth(enum_error: EnumErrorAuth, err: Error, res: any) {
     const new_err = getError(enum_error).getErrorObj();
-    console.log(err);
     res.status(new_err.status).json(new_err.message);
 }
 

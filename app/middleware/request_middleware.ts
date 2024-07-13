@@ -76,12 +76,10 @@ export function checkJwt(req: any, res: any, next: any): void{
  */
 export function verifyAndAuthenticate(req: any, res: any, next: any): void {
     try {
-        console.log('JWT non decodificato:  ', req.checkJwt);
         const decoded: string | JwtPayload = jwt.verify(req.checkJwt as string, process.env.JWT_SECRET_KEY || '');
         //const decoded: string | JwtPayload = jwt.verify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIiLCJuYW1lIjoiTHVjYSIsInN1cm5hbWUiOiJCZWxsYW50ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzIwMTk3MDA2LCJleHAiOjE3MjAyODM0MDZ9.PIdQL6TO-vFEwSrNHeEJSw__wmAM2drQViDRWCWT2bA', 'PA2024');
         if (decoded != null) {
             req.decodeJwt = decoded;
-            console.log('JWT dentro verifyAndAuthenticate: ', req.decodeJwt);
             next();
         }
     } catch (error) {
@@ -100,7 +98,6 @@ export function verifyAndAuthenticate(req: any, res: any, next: any): void {
  */
 export function checkAdminPermission(req: any, res: any, next: any): void{
     try{
-        console.log('Ruolo: ', req.decodeJwt.role as string);
         if(req.decodeJwt.role as string === typeOfUser.ADMIN as string) next();
         else next(EnumError.UserNotAdmin);
     }

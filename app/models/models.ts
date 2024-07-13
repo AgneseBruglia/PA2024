@@ -73,7 +73,6 @@ Dataset.belongsTo(User, { foreignKey: 'email' });
 const syncModels = async () => {
     try {
         await sequelize.sync({ force: true });
-        console.log('Modelli sincronizzati con successo');
         await createUsers(); // seed
     } catch (error) {
         console.error('Errore durante la sincronizzazione dei modelli:', error);

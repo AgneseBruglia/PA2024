@@ -23,14 +23,11 @@ dotenv.config();
 export async function checkResidualTokens(req: any, res: any, next: any): Promise<void> {
     try {
         const email: string = req.decodeJwt.email as string;
-        console.log('email dentro checkResidualTokens: ', email);
         const tokens: number | null = await Controller.getTokens(email);
         if (tokens !== null) {
-                console.log("ABBASTANZA TOKEN!");
-                next(); //ZeroTokensAvailable
+                next();
         } 
         else{
-            console.log('DENTRO BLOCCO ELSE');
             next(EnumError.NotEnoughTokens); 
         }
     }
@@ -71,7 +68,6 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
             next(EnumError.UserDoesNotExist);
         }
     } catch (error) {
-        console.error('Errore durante il controllo dei tokens:', error);
         next(EnumError.InternalServerError);
     }
 }
@@ -95,9 +91,7 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
         if((dataset !== null) && (dataset.getDataValue('videos') !== null)){
             const videos: string[] = dataset.getDataValue('videos');
             const result = await ControllerInference.checkTokensInference(dataset_name, email, res)
-            console.log('RISULTATO TOKENS: ', result)
             if((typeof result === 'boolean') && result === true){
-                console.log('TOKENS OK');
                 next();
             }
             else{
@@ -149,7 +143,6 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
 export function checkUserExists(getEmail: (req: any) => string) {
     return async (req: any, res: any, next: any): Promise<void> => {
         try {
-            console.log('JWT dentro checkUserExits: ', req.decodeJwt);
             const email: string = getEmail(req);
             const user = await Controller.getUser(email, req);
             if (user !== null) {
@@ -176,7 +169,6 @@ export function checkUserExists(getEmail: (req: any) => string) {
 */
 export async function checkDatasetExists(req: any, res: any, next: any): Promise<void> {
     try {
-        console.log('ciaooooo mondoooooo');
         let datasetName: string | undefined;
         let email: string | undefined;
         if (req.body.dataset_name) {
@@ -186,14 +178,12 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         }
         email = req.decodeJwt.email;
         const dataset = await Controller.getDataset(datasetName, email);
-        console.log('checkDatasetExists: ', dataset);
         if (dataset === null) {
             next();
         } else {
             next(EnumError.DatasetAlreadyExists); 
         }
     } catch (error) {
-        console.log(error);
         next(error);
     }
 }
@@ -218,7 +208,6 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
             next(EnumError.DatasetNotExitsError)
         }
         if(dataset !== null){
-            console.log('DATASET OK');
             next();
         }
     }
@@ -242,15 +231,11 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
     try{
         const new_videos = req.body.new_videos;
         const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
-        console.log('DATASET: ', dataset);
         if(dataset !== null){
-            const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName)
-            console.log('OKAY');
+            const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName);
             const existingVideos: string[] = dataset.getDataValue('videos');
-            console.log("VIdeo gia esistenti: ", existingVideos);
-            console.log("NEW VIDEOS: ", new_videos_complete);
             const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
-            console.log('SAME VIDEO: ', isSameVideoPresent);
+
             if(isSameVideoPresent){
                 next(EnumError.VideosAlreadyExitError);
             } else next(); 
@@ -277,7 +262,6 @@ export async function checkNumberOfVideo(req: any, res: any, next: any): Promise
     const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
     const videos: string[] = dataset.getDataValue('videos');
     if(videos.length > 0) {
-        console.log('VIDEO OK');
         next();
     }
     else next(EnumError.NoVideoError);

@@ -57,12 +57,9 @@ export async function doInference(email: string, dataset_name: string, model_nam
         if (dataset === null) {
             throw new Error('Dataset not found');
         } else {
-            //console.log('DATASET NAME: ', dataset_name);
             const videos: string[] = dataset.getDataValue('videos');
-            const python_inference_host: string = process.env.PYTHON_HOST || '';
-            const python_inference_port: number = parseInt(process.env.PYTHON_PORT || '0', 10);
-            //console.log('MODEL NAME: ', model_name);
-            //console.log('VIDEOS: ', videos);
+            const python_inference_host: string = process.env.PYTHON_HOST as string;
+            const python_inference_port: number = parseInt(process.env.PYTHON_PORT as string);
 
             const body = { "model_name": model_name, "videos": videos };
             const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`, body);
@@ -76,13 +73,12 @@ export async function doInference(email: string, dataset_name: string, model_nam
 
 
         if (axios.isAxiosError(error)) {
-            //console.log("ERRORE: ", error);
+
             if (error.response && error.response.data) {
-                // Verifica se la risposta dell'errore contiene `error` e `status_code`
+
                 const statusCode = error.response.data.status_code || error.response.status;
                 const errorMessage = error.response.data.error || error.response.statusText;
-                //console.log('statusCode: ', statusCode);
-                //console.log('errorMessage: ', errorMessage);
+
                 return {
                         status: statusCode,
                         message: errorMessage
@@ -118,9 +114,7 @@ export async function checkTokensInference(dataset_name: string, email:  string,
           })
         // Se è presente il dataset ed i video: 
         if((videosData !== null) && (user !== null)){
-            console.log('CHECK TOKENS OK');
             const videos: string[] = videosData.getDataValue('videos');
-            console.log('VIDEOS: ', videos);
             const remain_tokens: number = user.getDataValue('residual_tokens') as number;
             const cost_inference: number = await getVideoFrames(videos, res) as number;
             // Se i tokens bastano, allora ritorno true e aggiorno i tokens del dataset 
@@ -151,8 +145,6 @@ export async function checkTokensInference(dataset_name: string, email:  string,
 
 const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
     try {
-        // Converte l'array di video in una stringa di query parameter  
-        console.log('OK FRAMES');
         const cost_services_host: string = process.env.COST_SERVICES_HOST || '';
         const cost_services_port: number = parseInt(process.env.COST_SERVICES_PORT as string) || 0;
         const body = {

@@ -38,7 +38,6 @@ export enum typeOfUser {
  */
 export function controllerErrors(enum_error: EnumError, err: Error, res: any) {
     const new_err = getError(enum_error).getErrorObj();
-    console.log(err);
     res.status(new_err.status).json(new_err.message);
 }
 
@@ -294,7 +293,6 @@ export async function visualizeCredits(res:any, email?: String): Promise<any>{
 
             if(value === undefined) throw new Error;
             const tokens: number = value?.getDataValue('residual_tokens') as number;
-            console.log('Tokens: ', tokens);
             return{
                 successo: true,
                 data: tokens

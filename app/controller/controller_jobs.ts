@@ -20,7 +20,6 @@ export async function getUserJobs(email: string, res: any): Promise<any> {
       
         let resultsPromise: Promise<Result[]> = Promise.all(userJobs.map(async (job: Job) => {
             const status = await job.getState();
-            //console.log('id: ' + job.id + ' STATUS: ' + status);
             let result: Result = {
                 process_id: job.id as number,
                 status: status as string,

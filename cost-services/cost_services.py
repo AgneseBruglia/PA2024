@@ -12,12 +12,7 @@ def count_total_frames(video_paths):
     
     for video_path in video_paths:
         cap = cv2.VideoCapture(video_path)
-        
-        # Verifica se il video è stato aperto correttamente
-        #if not cap.isOpened():
-           # print(f"Errore nell'aprire il video: {video_path}")
-           # continue
-        
+                
         # Ottieni il numero di frame del video
         frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         total_frames += frames

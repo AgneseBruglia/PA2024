@@ -62,14 +62,10 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | '
 
     if (includeEmail) {
         email = req.decodeJwt.email;
-        console.log(`Email: ${email}`);
     }
-    
-    console.log(`dataset_name from ${source}: `, data.dataset_name);
     
     try {
         await schema.validateAsync(data);
-        console.log('SCHEMA OK');
         next();
     } catch (error) {
         next(EnumError.IncorrectInputError);

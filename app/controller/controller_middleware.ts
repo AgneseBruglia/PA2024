@@ -18,11 +18,8 @@ export async function getTokens(email: any, checkResidual: boolean = false): Pro
         //if(user === null || user === undefined) return 0;
         if(user !== null){
             const tokens: number = user?.getDataValue('residual_tokens');
-            console.log('TOKENS :', tokens);
-            console.log('residual_tokens: ', tokens);
             return tokens;
         }
-        console.log('USER: ', user);
         return null;
     }
     else {
@@ -33,7 +30,6 @@ export async function getTokens(email: any, checkResidual: boolean = false): Pro
             }
         });
         const tokens: number = parseInt(user?.getDataValue('residual_tokens'));
-        console.log('TOKENS :', tokens);
         return tokens;
     }
 }
