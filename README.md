@@ -28,7 +28,7 @@ graph TD;
 L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e che prevede l'utilizzo di `docker-compose` per la sua gestione, è la segunte:
 
 ```mermaid
-graph LR;
+graph TD;
     subgraph App
     Server.ts --- AppController.ts 
     AppController.ts 
@@ -65,10 +65,7 @@ graph LR;
     AppController.ts --- Server.py
     AppController.ts --- redis
     AppController.ts --- Cost_services.py
-     
-    linkDistance 180;
-    
-```
+
 
 ### Use Case
 
