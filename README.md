@@ -25,7 +25,7 @@ graph TD;
 
 ###  :whale: Architettura Docker 
 
-L'infrastruttura `Docker` che si è implementata per realizzare il progetto, e che prevede l'utilizzo di `docker-compose` per la sua gestione, è la segunte:
+L'infrastruttura `Docker` che si è implementata per realizzare il progetto e che prevede l'utilizzo di `docker-compose` per la sua gestione è la seguente:
 
 ```mermaid
 graph LR;
