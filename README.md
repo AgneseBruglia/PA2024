@@ -9,10 +9,10 @@ L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ al
 
 ### :electric_plug: Pattern Architetturale MVC 
 
-Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare ed implementare ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, con il modello, ovvero il database. La struttura da noi progettata ed implementata è quindi composta da: 
+Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare ed implementare ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, e il modello, ovvero il database. La struttura da noi progettata e implementata è quindi composta da: 
 
-- **Model**: Logica di Business e accesso ai database.
-- **View**: Vista nel quale l'utente si interfaccia con il software.
+- **Model**: Logica di Business e accesso al database.
+- **View**: Vista grazie alla quale l'utente si interfaccia con il software.
 - **Controller**
 
 ```mermaid
