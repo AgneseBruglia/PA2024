@@ -91,84 +91,21 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
 
 ```mermaid
     erDiagram
-    COMPONENT |{--o{ PROTOTYPE : forms
-    COMPONENT {
-        string id PK
+    USER ||--o{ DATASET : owns
+    USER {
+        string email PK
+        number id
         string name
-        string type
-        string description
-        float price
-        date createdAt
+        string surname
+        enum type
+        number residual_tokens
     }
-    PROTOTYPE ||--o{ DEVICE : inspire
-    PROTOTYPE {
-        string id PK
-        string nome
-        string[] components FK
-        date createdAt
+    DATASET {
+        string dataset_name PK
+        string[] videos
+        string email FK PK
     }
-    DEVICE |{--|{ SYSTEM : compose 
-    DEVICE{
-        string id PK
-        string name
-        string[] devicePrototypes FK
-        date createdAt
-    }
-    SYSTEM ||--|| CLIENT : belong
-    SYSTEM{
-        string id PK
-        string name
-        string[] devices FK
-        string address
-        string[] client FK
-        date createdAt
-    }
-    CLIENT{
-        string id FK
-        string firstName
-        string lastName
-        date birthDate
-        string fiscalCode UK
-        string vatNumber UK
-        string address
-        date createdAt 
-    }
-    EMPLOYEE o{--o{ SYSTEM: assigned
-    EMPLOYEE{
-        string id FK
-        string name
-        string role
-        string department
-        date birthdate
-        string fiscalCode UK
-        date createdAt
-    }
-    EMPLOYEE o{--o{ OPERATION: perform
-    OPERATION{
-        string id PK
-        string[] employees FK
-        string[] systems FK
-        string description
-        string type
-        date createdAt
-    }
-    FILE ||--|| DEVICE: refers
-    FILE{
-        string id PK
-        string name
-        string[] device FK
-        string fileType
-        string description
-        date createdAt
-    }
-    VERSION ||--|| FILE: extend
-    VERSION {
-        string id PK
-        string[] file FK
-        buffer blob
-        string versionNumber
-        date createdAt
-    }
+
 ```
 
 ## Design Pattern
