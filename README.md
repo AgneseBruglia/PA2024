@@ -250,42 +250,27 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
 </table>
 
 
-### GET Routes
-
-Ogni richiesta verso l'API ha poi specificata una catena di middleware che va ad agire su questa, in particolare abbiamo una catena di middleware per le richieste GET e una per le PUT e POST.
-La catena di middleware che gestisce le richieste GET è la segguente:
-
-- i due middleware di logging sono innescati uno all'avvio della richiesta e uno alla fine del completamento della richiesta.
-- è presente un middleware intermedio che va a verificare che il contenuto non sia stato già inserito all'interno della cache di redis (la chiave che si utilizza per lo storage è l'url della risorsa).
-- se non è contenuto all'interno della cache allora si attiva il controller che interroga il DB, prende il valore di ritorno lo aggiunge alla cache e lo invia all'utente.
+### GET /admin/tokens
+La rotta restituisce in output, in formato json, email e tokens di ciascun utente. Di seguito verrà rappresentato il diagramma di sequenza 
 
 ```mermaid
 sequenceDiagram
-    Bob ->>+ preLog: Request
-    preLog ->>- cacheMiddleware: next
-    activate cacheMiddleware
-    cacheMiddleware ->>+ Redis: Check
-    deactivate cacheMiddleware
-    alt is cached
-        Redis ->>- cacheMiddleware: Response
-        activate cacheMiddleware
-        cacheMiddleware ->> postLog: Log
-        cacheMiddleware ->> Bob: res.json
-        deactivate cacheMiddleware
-    else is notcached
-        Redis ->>+ cacheMiddleware: Empty
-        cacheMiddleware ->>- Controller: Router
-        activate Controller
-        Controller ->> Database: Query
-        deactivate Controller
-        activate Database
-        Database ->> Controller: Result
-        deactivate Database
-        activate Controller
-        Controller ->> Reids: add to cache
-        Controller ->> postLog: Log
-        Controller ->> Bob: res.json
-        deactivate Controller
+    alt Supera tutti i controlli
+        Admin->Server: /admin/tokens
+        Server->Middleware: checkAuthHeader
+        Middleware-->Server: checkOk
+        Server->Middleware: checkJwt
+        Middleware-->Server: checkOk
+        Server->Middleware: VerifyAndAuthenticate 
+        Middleware-->Server: checkOk
+        Server->Middleware: checkUserExits
+        Middleware->Controller: getUser()
+        Controller->Sequelize: findAll()
+        Sequelizee->Controller: Utente null(non esiste) oppure no
+        Controller-->Sequelize: Utente null(non esiste) oppure no
+        Controller-->Middlewara: utente esiste oppure no
+    else Viene sollevato un errore
+        Middleware-->Server: Errore
     end
 ```
 
