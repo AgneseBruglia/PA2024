@@ -73,12 +73,12 @@ graph LR;
 
 ```mermaid
 graph TD
-User ---|CRUD| Tabella Dataset
-Admin ---|CRUD generale| Tabella Dataset
-User ---|CRUD| Tabella User
-User --- Valutazione processo avanzamento
-User --- Ritorno risultato inferenza
-User --- Visione crediti residui
+    User ---|CRUD| Tabella Dataset
+    Admin ---|CRUD generale| Tabella Dataset
+    User ---|CRUD| Tabella User
+    User --- Valutazione processo avanzamento
+    User --- Ritorno risultato inferenza
+    User --- Visione crediti residui
 ```
 
 
