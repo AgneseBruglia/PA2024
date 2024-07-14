@@ -144,6 +144,98 @@ Il pattern Factory è un design pattern creazionale che fornisce un'interfaccia 
 
 Nella tabella sottostante sono riportate le principali rotte dell'applicazione. Per ciascuna rotta sarà descritto il funzionamento, con chiamata di esempio e diagramma di sequenza.
 
+<table align="center">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Rotta</th>
+            <th>User</th>
+            <th>Admin</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>GET</td>
+            <td>/admin/tokens</td>
+            <td></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>PUT</td>
+            <td>/admin/recharge-tokens</td>
+            <td></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/admin/dataset</td>
+            <td></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/admin/users</td>
+            <td></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/admin/create-user</td>
+            <td></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>PUT</td>
+            <td>/dataset/insert-videos</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/tokens</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/modify-dataset</td>
+            <td>❌</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/inference</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/result</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/user-jobs</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/remove-dataset</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/generate-jwt</td>
+            <td>❌</td>
+            <td>❌</td>
+        </tr>
+        
+    </tbody>
+</table>
+
 
 ### GET Routes
 
