@@ -71,15 +71,16 @@ graph LR;
 
 ### Use Case
 
+Di seguito viene mostrato il diagramma dei casi d'uso. Per '_generale_', intendiamo un comportamtento che può essere estesto a tutte le tuple della tabella 'dataset' e/o 'user'.
 ```mermaid
 graph TD
-    User ---|CRUD| Tabella_Dataset
-    Admin ---|CRUD_generale| Tabella_Dataset
-    Admin ---|CRU| Tabella_User
+    Admin ---|R_generale| Tabella_Dataset
+    Admin ---|CRU_generale| Tabella_User
+
     User --- Valutazione_processo_avanzamento
     User --- Ritorno_risultato_inferenza
     User --- Visione_crediti_residui
-
+    User ---|CRUD| Tabella_Dataset
 ```
 
 
