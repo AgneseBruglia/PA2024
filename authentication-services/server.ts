@@ -16,6 +16,7 @@ app.post('/generate-token', Middleware.verifyInput, Middleware.error_handling, a
     res.json(result);
 });
 
+// Inizializzazione dell server sulla porta dedicata
 app.listen(port, () => {
     console.log(`Server running at http://${host}:${port}`);
 });

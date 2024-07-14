@@ -11,21 +11,18 @@ import * as Message from './error_messages'
 interface IErrorObj {
     status: number;
     message: string;
-    getErrorObj(): {message:string, status:number}
+    getErrorObj(): { message: string, status: number }
 }
-
 
 export class NotEnoughTokens implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 401;
         this.message = Message.notEnoughTokens_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -35,14 +32,12 @@ export class NotEnoughTokens implements IErrorObj {
 export class UserDoesNotExist implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.userDoesNotExist_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -52,14 +47,12 @@ export class UserDoesNotExist implements IErrorObj {
 export class UserAlreadyExists implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.userAlreadyExists_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -69,14 +62,12 @@ export class UserAlreadyExists implements IErrorObj {
 export class DatasetAlreadyExists implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.datasetAlreadyExists_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -86,14 +77,12 @@ export class DatasetAlreadyExists implements IErrorObj {
 export class UserNotAdmin implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 403;
         this.message = Message.userNotAdmin_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -103,14 +92,12 @@ export class UserNotAdmin implements IErrorObj {
 export class MalformedPayload implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 404;
         this.message = Message.malformedPayload_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -120,14 +107,12 @@ export class MalformedPayload implements IErrorObj {
 export class InternalServerError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 500;
         this.message = Message.internalServerError_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -137,86 +122,72 @@ export class InternalServerError implements IErrorObj {
 export class DatasetNotExitsError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.datasetNotExits_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
     }
 }
-
 
 export class VideosAlreadyExitError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.videoAlreadyExist_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
     }
 }
-
 
 export class VideosAlreadyExitArrayError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.videoAlreadyExitsArray_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
     }
 }
-
 
 export class NoJwtInTheHeaderError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 401;
         this.message = Message.noJwtInTheHeader_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
     }
 }
 
-
 export class VerifyAndAuthenticateError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 401;
         this.message = Message.verifyAndAuthenticate_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -226,14 +197,12 @@ export class VerifyAndAuthenticateError implements IErrorObj {
 export class IncorrectInputError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.incorrectParameter_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -243,14 +212,12 @@ export class IncorrectInputError implements IErrorObj {
 export class PayloadHeaderError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 415;
         this.message = Message.incorrectPayloadHeader_messsage
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -260,14 +227,12 @@ export class PayloadHeaderError implements IErrorObj {
 export class AuthHeaderError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.noAuthHeader_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -277,14 +242,12 @@ export class AuthHeaderError implements IErrorObj {
 export class RouteNotFoundError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 404;
         this.message = Message.notFound_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -294,14 +257,12 @@ export class RouteNotFoundError implements IErrorObj {
 export class NoTokensForInferenceError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 403;
         this.message = Message.noTokensForInference_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -311,14 +272,12 @@ export class NoTokensForInferenceError implements IErrorObj {
 export class JobsFetchError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 500;
         this.message = Message.jobsFetchError_message;
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -328,14 +287,12 @@ export class JobsFetchError implements IErrorObj {
 export class NoVideoError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = Message.noVideoFoundDataset_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -345,14 +302,12 @@ export class NoVideoError implements IErrorObj {
 export class JobNotFoundError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 404;
         this.message = Message.jobNotFounderror_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -362,32 +317,27 @@ export class JobNotFoundError implements IErrorObj {
 export class JobResultError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 404;
         this.message = Message.jobResultError_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
     }
 }
 
-
 export class ZeroTokensError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 401;
         this.message = Message.zeroTokens_message
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -429,7 +379,7 @@ export enum EnumError {
  */
 export function getError(type: EnumError): IErrorObj {
     let val: IErrorObj | null = null;
-    switch (type){
+    switch (type) {
         case EnumError.NotEnoughTokens:
             val = new NotEnoughTokens();
             break;
@@ -450,25 +400,25 @@ export function getError(type: EnumError): IErrorObj {
             break;
         case EnumError.InternalServerError:
             val = new InternalServerError();
-            break; 
+            break;
         case EnumError.DatasetNotExitsError:
-            val = new DatasetNotExitsError(); 
-            break;   
+            val = new DatasetNotExitsError();
+            break;
         case EnumError.VideosAlreadyExitError:
-            val = new VideosAlreadyExitError(); 
+            val = new VideosAlreadyExitError();
             break;
         case EnumError.NoJwtInTheHeaderError:
             val = new NoJwtInTheHeaderError();
-            break;  
+            break;
         case EnumError.VerifyAndAuthenticateError:
             val = new VerifyAndAuthenticateError();
             break;
         case EnumError.IncorrectInputError:
             val = new IncorrectInputError();
-            break; 
+            break;
         case EnumError.PayloadHeaderError:
             val = new PayloadHeaderError();
-            break; 
+            break;
         case EnumError.AuthHeaderError:
             val = new AuthHeaderError();
             break;
@@ -477,10 +427,10 @@ export function getError(type: EnumError): IErrorObj {
             break;
         case EnumError.NoTokensForInferenceError:
             val = new NoTokensForInferenceError();
-            break; 
+            break;
         case EnumError.NoVideoError:
             val = new NoVideoError();
-            break; 
+            break;
         case EnumError.JobsFetchError:
             val = new JobsFetchError();
             break;
@@ -497,5 +447,5 @@ export function getError(type: EnumError): IErrorObj {
             val = new ZeroTokensError();
             break;
     }
-    return val; 
+    return val;
 }

@@ -18,7 +18,7 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
     }
     else {
         next();
-    } 
+    }
 }
 
 /**
@@ -32,7 +32,7 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export function errorHandler(err: any, req: any, res: any, next: any): void { 
+export function errorHandler(err: any, req: any, res: any, next: any): void {
     if (err !== null) {
         let status = err.status;
         let message = err.message;

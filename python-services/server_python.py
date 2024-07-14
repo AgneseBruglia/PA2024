@@ -11,19 +11,15 @@ def analyze_video():
     try:
         if 'model_name' not in request.json or 'videos' not in request.json:
             raise ErrorFactory.create_error('ModelMissingError')
-
         model = request.json['model_name']
         videos = request.json['videos']
         base_path = '/app/dataset_&_modelli/modelli/'
         model_path = os.path.join(base_path, model)
-
         predictions = _inferenceV3_ConvLSTM(videos, model_path)
-
         if 'error' in predictions:
             return jsonify({"error": predictions['error']}), predictions['status_code']
         else:
             return jsonify(predictions), 200
-
     except ModelMissingError as mpme:
         return jsonify({"error": str(mpme)}), 400
 

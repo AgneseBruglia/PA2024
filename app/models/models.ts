@@ -1,14 +1,12 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import Database from '../sequelize';
 
-/*
-* Connessione con il RDBMS
-*/
+// Connessione con il RDBMS
 const sequelize: Sequelize = Database.getInstance();
 
 // Definizione della tabella 'User'
 export const User = sequelize.define('users', {
-    user_id: { 
+    user_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -88,9 +86,8 @@ async function createUsers() {
             surname: 'Bruglia',
             email: 'agnib@gmail.com',
             type: 'ADMIN',
-            residual_tokens: 2000 
+            residual_tokens: 2000
         });
-
         const newUser1 = await User.create({
             name: 'Luca',
             surname: 'Bellante',
@@ -98,7 +95,6 @@ async function createUsers() {
             type: 'USER',
             residual_tokens: 100000000000
         });
-
         const newUser2 = await User.create({
             name: 'Adriano',
             surname: 'Mancini',
@@ -106,7 +102,6 @@ async function createUsers() {
             type: 'USER',
             residual_tokens: 2000
         });
-
     } catch (error) {
         console.error('Errore durante la creazione dell\'utente:', error);
     }

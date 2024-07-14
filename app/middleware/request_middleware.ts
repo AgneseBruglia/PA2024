@@ -1,7 +1,7 @@
 import { getError } from "../factory/errors";
 import { JwtPayload } from 'jsonwebtoken';
-import {typeOfUser} from '../controller/controller_db';
 import * as jwt from 'jsonwebtoken';
+import { typeOfUser } from '../controller/controller_db';
 import { EnumError } from '../factory/errors';
 
 /**
@@ -36,7 +36,7 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export function errorHandler(err: any, req: any, res: any, next: any): void { 
+export function errorHandler(err: any, req: any, res: any, next: any): void {
     if (err !== null) {
         let status = err.status;
         let message = err.message;
@@ -55,9 +55,9 @@ export function errorHandler(err: any, req: any, res: any, next: any): void {
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export function checkJwt(req: any, res: any, next: any): void{
+export function checkJwt(req: any, res: any, next: any): void {
     const bearerHeader: string = req.headers.authorization;
-    if (typeof bearerHeader !== 'undefined'){
+    if (typeof bearerHeader !== 'undefined') {
         const bearerToken: string = bearerHeader.split(' ')[1];
         req.checkJwt = bearerToken;
         next();
@@ -82,7 +82,7 @@ export function verifyAndAuthenticate(req: any, res: any, next: any): void {
             next();
         }
     } catch (error) {
-        next(EnumError.VerifyAndAuthenticateError); 
+        next(EnumError.VerifyAndAuthenticateError);
     }
 }
 
@@ -95,12 +95,12 @@ export function verifyAndAuthenticate(req: any, res: any, next: any): void {
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export function checkAdminPermission(req: any, res: any, next: any): void{
-    try{
-        if(req.decodeJwt.role as string === typeOfUser.ADMIN as string) next();
+export function checkAdminPermission(req: any, res: any, next: any): void {
+    try {
+        if (req.decodeJwt.role as string === typeOfUser.ADMIN as string) next();
         else next(EnumError.UserNotAdmin);
     }
-    catch(error:any){
+    catch (error: any) {
         next(error);
     }
 }
@@ -114,7 +114,7 @@ export function checkAdminPermission(req: any, res: any, next: any): void{
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export function checkAuthHeader (req: any, res: any, next: any): void{
+export function checkAuthHeader(req: any, res: any, next: any): void {
     if (req.headers.authorization) next();
     else next(EnumError.AuthHeaderError);
 }
@@ -129,7 +129,7 @@ export function checkAuthHeader (req: any, res: any, next: any): void{
  * @param res La risposta da parte del server
  * @param next Il riferimento al middleware successivo
  */
-export function checkPayloadHeader(req: any, res: any, next: any): void{
+export function checkPayloadHeader(req: any, res: any, next: any): void {
     if (req.headers["content-type"] == 'application/json') next();
     else next(EnumError.PayloadHeaderError);
 }

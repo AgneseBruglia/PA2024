@@ -13,9 +13,9 @@ import Joi from 'joi';
  * 'body' indica i parametri inclusi nel corpo della richiesta.
  * 'query' indica i parametri inclusi nella stringa di query dell'URL.
  */
-export const enum type{
-body = 'body',
-query = 'query',
+export const enum type {
+    body = 'body',
+    query = 'query',
 };
 
 let email: string | undefined = undefined;
@@ -37,7 +37,7 @@ export const createUserSchema = Joi.object({
     name: Joi.string().max(50).required(),
     surname: Joi.string().max(50).required(),
     email: Joi.string().email().max(50).required(),
-    type: Joi.string().max(50).required().valid('USER','ADMIN'),
+    type: Joi.string().max(50).required().valid('USER', 'ADMIN'),
     residual_tokens: Joi.number().integer().greater(0).required()
 });
 
@@ -48,7 +48,7 @@ export const updateDatasetSchema = Joi.object({
 
 export const doInferenceSchema = Joi.object({
     dataset_name: Joi.string().max(50).required(),
-    model_name: Joi.string().max(50).required().valid('model.tflite','model_8bit.tflite')
+    model_name: Joi.string().max(50).required().valid('model.tflite', 'model_8bit.tflite')
 });
 
 export const resultSchema = Joi.object({
@@ -61,7 +61,7 @@ export const getDatasetSchema = Joi.object({
 
 export const generateJwtSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
-    type: Joi.string().max(50).required().valid('USER','ADMIN'),
+    type: Joi.string().max(50).required().valid('USER', 'ADMIN'),
     expiration: Joi.number().integer().positive().min(1).max(48).required()
 });
 
@@ -71,7 +71,7 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | '
     if (includeEmail) {
         email = req.decodeJwt.email;
     }
-    
+
     try {
         await schema.validateAsync(data);
         next();
@@ -80,18 +80,18 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | '
     }
 };
 
-export async function validateInsertVideo(req: any, res: any, next: any): Promise<void>{
+export async function validateInsertVideo(req: any, res: any, next: any): Promise<void> {
     const insertVideoSchema = Joi.object({
         dataset_name: Joi.string().max(50).required(),
         new_videos: Joi.array().items(Joi.string()).min(1).required()
     });
-    try{
+    try {
         const dataset_name: string | undefined = req.query.dataset_name;
         const new_videos: string[] | undefined = req.body.new_videos;
         await insertVideoSchema.validateAsync({ dataset_name: dataset_name, new_videos: new_videos });
         next();
     }
-    catch(error:any){
+    catch (error: any) {
         next(EnumError.IncorrectInputError);
-    } 
+    }
 }

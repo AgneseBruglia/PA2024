@@ -21,7 +21,6 @@ export async function generateJwt(req: any, res: any): Promise<any> {
                 expiration: req.query.expiration
             }
         });
-
         if (result.status === 200) return result.data;
     }
     catch (error: any) {

@@ -46,33 +46,26 @@ export async function doInference(email: string, dataset_name: string, model_nam
             const videos: string[] = dataset.getDataValue('videos');
             const python_inference_host: string = process.env.PYTHON_HOST as string;
             const python_inference_port: number = parseInt(process.env.PYTHON_PORT as string);
-
             const body = { "model_name": model_name, "videos": videos };
             const result = await axios.post(`http://${python_inference_host}:${python_inference_port}/inference`, body);
-
             return {
                 status: 200,
-                message: result.data 
+                message: result.data
             };
         }
     } catch (error: any) {
-
-
         if (axios.isAxiosError(error)) {
-
             if (error.response && error.response.data) {
-
                 const statusCode = error.response.data.status_code || error.response.status;
                 const errorMessage = error.response.data.error || error.response.statusText;
-
                 return {
-                        status: statusCode,
-                        message: errorMessage
-                    }
-                };
-            }
+                    status: statusCode,
+                    message: errorMessage
+                }
+            };
         }
     }
+}
 
 /**
  * Funzione 'checkTokensInference'
@@ -85,36 +78,35 @@ export async function doInference(email: string, dataset_name: string, model_nam
  * @param email Email dell'utente 
  * @param res La risposta del server
  */
-export async function checkTokensInference(dataset_name: string, email:  string, res: any): Promise<any>{
-    try{
+export async function checkTokensInference(dataset_name: string, email: string, res: any): Promise<any> {
+    try {
         const videosData = await Dataset.findOne({
             where: {
-              dataset_name: dataset_name
+                dataset_name: dataset_name
             },
-            attributes: [ 'videos' ]
-          })
+            attributes: ['videos']
+        })
         const user = await User.findOne({
             where: {
-              email: email
+                email: email
             },
-          })
-        if((videosData !== null) && (user !== null)){
+        })
+        if ((videosData !== null) && (user !== null)) {
             const videos: string[] = videosData.getDataValue('videos');
             const remain_tokens: number = user.getDataValue('residual_tokens') as number;
             const cost_inference: number = await getVideoFrames(videos, res) as number;
-            if(remain_tokens >= cost_inference){
-                const new_credits: number = remain_tokens - cost_inference; 
+            if (remain_tokens >= cost_inference) {
+                const new_credits: number = remain_tokens - cost_inference;
                 const [numberOfAffectedRows] = await User.update(
                     { residual_tokens: new_credits },
                     {
-                      where: { email: email }
+                        where: { email: email }
                     }
-                  );
-
-                if(numberOfAffectedRows === 0 ) throw new Error;
+                );
+                if (numberOfAffectedRows === 0) throw new Error;
                 return true;
             }
-            else{
+            else {
                 return false;
             }
         }
@@ -122,7 +114,7 @@ export async function checkTokensInference(dataset_name: string, email:  string,
             throw new Error;
         }
     }
-    catch(error:any){
+    catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 }
@@ -148,7 +140,7 @@ const getVideoFrames = async (videos: string[], res: any): Promise<any> => {
         } else {
             throw new Error();
         }
-    } catch (error:any) {
+    } catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
 };

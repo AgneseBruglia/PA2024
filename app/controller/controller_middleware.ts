@@ -1,9 +1,7 @@
 import { User, Dataset } from '../models/models'
 import { Op } from 'sequelize'
 
-/**
- * Controller per le funzioni di Middleware per interfacciarsi con il Model
- */
+// Controller per le funzioni di Middleware per interfacciarsi con il Model
 
 /**
  * Funzione 'getTokens'
@@ -24,7 +22,7 @@ export async function getTokens(email: any, checkResidual: boolean = false): Pro
                 residual_tokens: { [Op.gt]: 0 }
             }
         });
-        if(user !== null){
+        if (user !== null) {
             const tokens = user?.getDataValue('residual_tokens');
             return tokens as number;
         }
@@ -71,7 +69,7 @@ export async function getDataset(dataset_name: any, email: any): Promise<any> {
         }
     });
     return result;
-} 
+}
 
 /**
  * Funzione 'getUser'
@@ -85,12 +83,12 @@ export async function getDataset(dataset_name: any, email: any): Promise<any> {
 export async function getUser(email: any, req: any, findAll: boolean = false): Promise<any> {
     if (findAll) {
         const result = await User.findAll({
-            where: { email: req.body.email as string}
+            where: { email: req.body.email as string }
         });
         return result;
     } else {
         const result = await User.findOne({
-             where: { email: email as string }
+            where: { email: email as string }
         });
         return result;
     }

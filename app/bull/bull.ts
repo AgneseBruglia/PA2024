@@ -16,35 +16,27 @@ queue.process(async function (job: any, done: any) {
   const dataset_name: string = job.data.dataset_name;
   const model_name: string = job.data.model_name;
   const email: string = job.data.email;
-
   try {
     const result = await ControllerInference.doInference(email, dataset_name, model_name);
-
     if (result.status !== 200) {
       const status: number = result.status;
       const errMessage: string = result.message;
       done(new Error(`Status code: ${status}. ${errMessage}`), result);
       return;
     }
-
     done(null, result);
   } catch (error) {
     done(error);
   }
 });
 
+// Specifica le azioni da effettuare quando lo stato di un processo diventa 'completed'
 queue.on('completed', function (job: Job) {
   const email: string = job.data.email;
   const jobId: number = parseInt(job.id as string);
-
-
   if (completedJobResults[email]) {
     completedJobResults[email].push(jobId);
   } else {
     completedJobResults[email] = [jobId];
   }
-});
-
-queue.on('failed', function (job: any, error: any) {
-
 });

@@ -1,6 +1,6 @@
 import { EnumErrorAuth, getError } from "../factory/errors";
 import { typeOfUser } from "../jwt/jwt_generator";
-import {createJwt} from '../jwt/jwt_generator';
+import { createJwt } from '../jwt/jwt_generator';
 
 /**
  * Funzione 'controllerErrorsAuth'
@@ -27,14 +27,14 @@ export function controllerErrorsAuth(enum_error: EnumErrorAuth, err: Error, res:
  * @param res Risposta del server
  */
 export async function generateToken(req: any, res: any): Promise<any> {
-    try{
+    try {
         const typeOfuser: typeOfUser | undefined = stringToTypeOfUser(req.query.type as string);
-        if(typeOfuser !== undefined) 
-            return createJwt(req.query.email as string, 
-                            typeOfuser, parseInt(req.query.expiration));
+        if (typeOfuser !== undefined)
+            return createJwt(req.query.email as string,
+                typeOfuser, parseInt(req.query.expiration));
         else throw new Error;
     }
-    catch(error:any){
+    catch (error: any) {
         controllerErrorsAuth(EnumErrorAuth.InternalServerError, error, res);
     }
 }

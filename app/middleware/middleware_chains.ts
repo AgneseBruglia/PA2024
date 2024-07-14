@@ -12,8 +12,6 @@ import * as InputMiddleware from './input_correcteness_middleware';
 
 export const checkInsertUsers = [
     InputMiddleware.validateSchema(InputMiddleware.createUserSchema, InputMiddleware.type.body),
-    ReqMiddleware.checkAdminPermission,
-    RouteMiddleware.checkResidualTokens,
     RouteMiddleware.checkUser
 ];
 
@@ -29,7 +27,7 @@ export const getDataset = [
 ];
 
 export const createDataset = [
-    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.body), 
+    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.body),
     RouteMiddleware.checkDatasetExists
 ];
 
@@ -47,8 +45,8 @@ export const insertVideo = [
 ];
 
 export const deleteDataset = [
-   InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.query),
-   RouteMiddleware.checkDatasetAlreadyExist
+    InputMiddleware.validateSchema(InputMiddleware.createDatasetSchema, InputMiddleware.type.query),
+    RouteMiddleware.checkDatasetAlreadyExist
 ];
 
 export const checkPermission = [
@@ -61,7 +59,7 @@ export const checkJwt = [
     RouteMiddleware.checkUserExists((req) => req.decodeJwt.email)
 ];
 
-export const error_handling =[
+export const error_handling = [
     ReqMiddleware.logErrors,
     ReqMiddleware.errorHandler
 ];

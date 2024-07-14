@@ -61,7 +61,6 @@ export async function createUser({
             residual_tokens
         });
         if (newUser === null || newUser === undefined) throw new Error;
-
         return newUser.toJSON();
     } catch (error: any) {
         return error.toJSON();
@@ -84,7 +83,6 @@ export async function addDataset(dataset_name: string, email: string, res: any):
             email: email
         });
         if (new_dataset === null || new_dataset === undefined) throw new Error;
-
         return dataset_name;
     } catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
@@ -104,7 +102,6 @@ export async function getAllUsers(res: any): Promise<any> {
             attributes: ['user_id', 'name', 'surname', 'email', 'residual_tokens']
         });
         if (users.length === 0) throw new Error;
-
         return {
             successo: true,
             data: users
@@ -137,7 +134,6 @@ export async function getDatasets(email: String, res: any, dataset_name?: String
                 data: result
             };
         }
-
         else {
             const result = await Dataset.findAll({
                 where: {
@@ -151,7 +147,6 @@ export async function getDatasets(email: String, res: any, dataset_name?: String
                 data: result
             };
         }
-
     } catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
@@ -173,7 +168,6 @@ export async function getAllDataset(res: any): Promise<any> {
             data: result
         }
     }
-
     catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
     }
@@ -201,7 +195,6 @@ export async function updateDataset(email: String, dataset_name: String, new_dat
             },
         );
         if (affectedCount === 0) throw new Error;
-
         return {
             successo: true,
             data: "Modifica del dataset avvenuta correttamente."
@@ -230,7 +223,6 @@ export async function insertVideoIntoDataset(email: String, dataset_name: String
             },
             attributes: ['videos']
         });
-
         if (videos != null) {
             const old_videos: Array<String> = videos.getDataValue('videos');
             const videos_path_complete: Array<String> = new_videos.map(fileName => '/app/dataset_&_modelli/dataset/' + fileName);
@@ -252,7 +244,6 @@ export async function insertVideoIntoDataset(email: String, dataset_name: String
         else {
             throw new Error;
         }
-
     }
     catch (error: any) {
         controllerErrors(EnumError.InternalServerError, res);
@@ -303,7 +294,6 @@ export async function visualizeCredits(res: any, email?: String): Promise<any> {
                 },
                 attributes: ['residual_tokens']
             });
-
             if (value === undefined) throw new Error;
             const tokens: number = value?.getDataValue('residual_tokens') as number;
             return {

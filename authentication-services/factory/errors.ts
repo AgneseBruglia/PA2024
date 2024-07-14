@@ -9,20 +9,18 @@
 interface IErrorObj {
     status: number;
     message: string;
-    getErrorObj(): {message:string, status:number}
+    getErrorObj(): { message: string, status: number }
 }
 
 export class InternalServerError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 500;
         this.message = 'Internal server error.';
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -32,14 +30,12 @@ export class InternalServerError implements IErrorObj {
 export class IncorrectInputError implements IErrorObj {
     status: number;
     message: string;
-
     constructor() {
         this.status = 400;
         this.message = 'Parameters missing or incorrectly entered.';
     }
-
     getErrorObj(): { message: string; status: number } {
-        return { 
+        return {
             status: this.status,
             message: this.message
         }
@@ -53,7 +49,7 @@ export enum EnumErrorAuth {
 
 export function getError(type: EnumErrorAuth): IErrorObj {
     let val: IErrorObj | null = null;
-    switch (type){
+    switch (type) {
         case EnumErrorAuth.InternalServerError:
             val = new InternalServerError();
             break;
@@ -61,5 +57,5 @@ export function getError(type: EnumErrorAuth): IErrorObj {
             val = new IncorrectInputError();
             break;
     }
-    return val; 
+    return val;
 }

@@ -21,13 +21,13 @@ export async function checkResidualTokens(req: any, res: any, next: any): Promis
         const email: string = req.decodeJwt.email as string;
         const tokens: number = await Controller.getTokens(email);
         if (tokens > 0) {
-                next();
-        } 
-        else{
-            next(EnumError.ZeroTokensError); 
+            next();
+        }
+        else {
+            next(EnumError.ZeroTokensError);
         }
     }
-    catch(error){
+    catch (error) {
         next(EnumError.InternalServerError);
     }
 }
@@ -78,21 +78,21 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 * @param next Riferimento al middleware successivo
 */
 export async function checkTokensForInference(req: any, res: any, next: any): Promise<void> {
-    try{
+    try {
         const dataset_name: string = req.query.dataset_name;
         const email: string = req.decodeJwt.email;
         const dataset = await Controller.getDataset(dataset_name, email);
-        if((dataset !== null) && (dataset.getDataValue('videos') !== null)){
+        if ((dataset !== null) && (dataset.getDataValue('videos') !== null)) {
             const result = await ControllerInference.checkTokensInference(dataset_name, email, res)
-            if((typeof result === 'boolean') && result === true){
+            if ((typeof result === 'boolean') && result === true) {
                 next();
             }
-            else{
+            else {
                 next(EnumError.NoTokensForInferenceError);
             }
         }
     }
-    catch(error:any){
+    catch (error: any) {
         next(EnumError.InternalServerError);
     }
 }
@@ -112,12 +112,12 @@ export async function checkUser(req: any, res: any, next: any): Promise<void> {
     try {
         let users = await Controller.getUser(null, req, true);
         if (users.length == 0) {
-                next();
+            next();
         } else {
             next(EnumError.UserAlreadyExists);
         }
     }
-    catch(error){
+    catch (error) {
         next(error);
     }
 }
@@ -164,7 +164,7 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         let email: string | undefined;
         if (req.body.dataset_name) {
             datasetName = req.body.dataset_name as string;
-        } else if (req.query.new_dataset_name  && req.query.dataset_name) {
+        } else if (req.query.new_dataset_name && req.query.dataset_name) {
             datasetName = req.query.new_dataset_name as string;
         }
         email = req.decodeJwt.email;
@@ -172,7 +172,7 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
         if (dataset === null) {
             next();
         } else {
-            next(EnumError.DatasetAlreadyExists); 
+            next(EnumError.DatasetAlreadyExists);
         }
     } catch (error) {
         next(error);
@@ -189,19 +189,19 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
 * @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkDatasetAlreadyExist(req: any, res: any, next: any): Promise<void>{
+export async function checkDatasetAlreadyExist(req: any, res: any, next: any): Promise<void> {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
-    try{
+    try {
         const dataset = await Controller.getDataset(dataset_name, email);
-        if(dataset === null){
+        if (dataset === null) {
             next(EnumError.DatasetNotExitsError)
         }
-        if(dataset !== null){
+        if (dataset !== null) {
             next();
         }
     }
-    catch(error:any){
+    catch (error: any) {
         next(error);
     }
 }
@@ -217,28 +217,27 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
 * @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkSameVideo(req: any, res: any, next: any): Promise<void>{
-    try{
+export async function checkSameVideo(req: any, res: any, next: any): Promise<void> {
+    try {
         const new_videos = req.body.new_videos;
         const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
-        if(dataset !== null){
+        if (dataset !== null) {
             const new_videos_complete: string[] = new_videos.map((fileName: string) => '/app/dataset_&_modelli/dataset/' + fileName);
             const existingVideos: string[] = dataset.getDataValue('videos');
             const hasDuplicate = (arr: string[]): boolean => arr.some((val, index) => arr.indexOf(val) !== index);
             const isSameVideoPresent = new_videos_complete.some((video: string) => existingVideos.includes(video));
-
-            if(!hasDuplicate(new_videos_complete)){
-                if(isSameVideoPresent){
+            if (!hasDuplicate(new_videos_complete)) {
+                if (isSameVideoPresent) {
                     next(EnumError.VideosAlreadyExitError);
-                } else next(); 
+                } else next();
             }
             else next(EnumError.VideosAlreadyExitArrayError);
         }
-        else{
+        else {
             next();
         }
     }
-    catch(error: any){
+    catch (error: any) {
         next(error);
     }
 }
@@ -252,10 +251,10 @@ export async function checkSameVideo(req: any, res: any, next: any): Promise<voi
 * @param res Risposta del server
 * @param next Riferimento al middleware successivo
 */
-export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void>{
+export async function checkNumberOfVideo(req: any, res: any, next: any): Promise<void> {
     const dataset = await Controller.getDataset(req.query.dataset_name, req.decodeJwt.email);
     const videos: string[] = dataset.getDataValue('videos');
-    if(videos.length > 0) {
+    if (videos.length > 0) {
         next();
     }
     else next(EnumError.NoVideoError);

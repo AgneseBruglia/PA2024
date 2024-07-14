@@ -13,9 +13,9 @@ import Joi from 'joi';
  * 'body' indica i parametri inclusi nel corpo della richiesta.
  * 'query' indica i parametri inclusi nella stringa di query dell'URL.
  */
-export const enum type{
-body = 'body',
-query = 'query',
+export const enum type {
+    body = 'body',
+    query = 'query',
 };
 
 export const createTokensSchema = Joi.object({
@@ -24,7 +24,7 @@ export const createTokensSchema = Joi.object({
     expiration: Joi.number().integer().min(1).max(48).required()
 });
 
-export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') =>  async (req: any, res: any, next: any): Promise<void> => {
+export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') => async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;
     try {
         await schema.validateAsync(data);

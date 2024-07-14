@@ -1,14 +1,16 @@
 import express, { Response } from 'express';
-import { createUser, 
-         addDataset,
-         getAllUsers, 
-         getDatasets, 
-         getAllDataset, 
-         updateDataset, 
-         insertVideoIntoDataset, 
-         deleteDataset, 
-         visualizeCredits, 
-         rechargeCredits } from './controller/controller_db';
+import {
+    createUser,
+    addDataset,
+    getAllUsers,
+    getDatasets,
+    getAllDataset,
+    updateDataset,
+    insertVideoIntoDataset,
+    deleteDataset,
+    visualizeCredits,
+    rechargeCredits
+} from './controller/controller_db';
 import { resetBull } from './controller/controller_jobs'
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
@@ -152,13 +154,13 @@ app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middle
     res.json(result);
 });
 
-
 // Gestione delle rotte non previste
 app.get('*', Middleware.other_route, Middleware.error_handling);
 app.post('*', Middleware.other_route, Middleware.error_handling);
 app.put('*', Middleware.other_route, Middleware.error_handling);
 app.delete('*', Middleware.other_route, Middleware.error_handling);
 
+// Inizializzazione del server sulla porta dedicata
 app.listen(port, () => {
     resetBull();
     console.log(`Server running at http://${host}:${port}`);
