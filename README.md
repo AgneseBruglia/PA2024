@@ -288,7 +288,7 @@ sequenceDiagram
         else Il controller genera eccezione
              Server->>Admin: errore
         end 
-    else Viene sollevato un errore
+    else Non supera Middleware
         Server->>Admin:errore
     end
 ```
@@ -349,7 +349,7 @@ sequenceDiagram
         else Il controller genera eccezione
              Server->>Admin: errore
         end 
-    else Viene sollevato un errore
+    else  Non supera Middleware
         Server->>Admin: errore
     end
 ```
@@ -406,14 +406,60 @@ sequenceDiagram
         else Il controller genera eccezione
              Server->>Admin: errore
         end 
-    else Viene sollevato un errore
+    else  Non supera Middleware
         Server->>Admin: errore
     end
 ```
 
 ### Get admin/users
+La rotta, non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database.
 
+```mermaid
+sequenceDiagram
+     actor Admin
 
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
+    alt Supera Middleware
+        Server->>Controller: getAllDataset()
+        Controller->>Sequelize: find()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>Admin: response
+        else Il controller genera eccezione
+             Server->>Admin: errore
+        end 
+    else  Non supera Middleware
+        Server->>Admin: errore
+    end
+```
 
 
 ## API Docs
