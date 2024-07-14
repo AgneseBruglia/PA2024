@@ -72,10 +72,11 @@ graph LR;
 ### Use Case
 
 ```mermaid
-graph TD
-    User --- Tabella Dataset
-    Admin --- Tabella Dataset
-    User --- Tabella User
+graph TD;
+    User ---|CRUD| Tabella Dataset
+    Admin ---|CRUD GENERALE| Tabella Dataset
+    Admin ---|CRUD GENERALE| Tabella User
+    User ---|R| Tabella User
     User --- Valutazione processo avanzamento
     User --- Ritorno risultato inferenza
     User --- Visione crediti residui
