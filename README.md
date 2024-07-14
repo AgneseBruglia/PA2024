@@ -72,14 +72,14 @@ graph LR;
 ### Use Case
 
 ```mermaid
-graph TD;
-    User ---|CRUD| "Tabella Dataset";
-    Admin ---|CRUD GENERALE| "Tabella Dataset";
-    Admin ---|CRUD GENERALE| "Tabella User";
-    User ---|R| "Tabella User";
-    User --- "Valutazione processo avanzamento";
-    User --- "Ritorno risultato inferenza";
-    User --- "Visione crediti residui";
+graph TD
+    User ---|CRUD| Tabella_Dataset
+    Admin ---|CRUD_generale| Tabella_Dataset
+    User ---|CRUD| Tabella_User
+    User --- Valutazione_processo_avanzamento
+    User --- Ritorno_risultato_inferenza
+    User --- Visione_crediti_residui
+
 ```
 
 
