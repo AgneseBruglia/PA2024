@@ -570,7 +570,7 @@ La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggi
 
 ```mermaid
 sequenceDiagram
-     actor Admin
+     actor User
 
     User->>Server: Put admin/recharge-tokens
 
@@ -623,7 +623,7 @@ sequenceDiagram
     Sequelize->>Controller: result
     Controller->>Middleware: result
     Middleware->>Server: result
-
+    
 
     alt Supera Middleware
         Server->>Controller: insertVideoIntoDataset()
