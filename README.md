@@ -205,7 +205,7 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
             <td>🔒</td>
         </tr>
         <tr>
-            <td>POST</td>
+            <td>PUT</td>
             <td>/modify-dataset</td>
             <td>❌</td>
             <td>❌</td>
@@ -240,7 +240,7 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
             <td>🔒</td>
         </tr>
         <tr>
-            <td>POST</td>
+            <td>GET</td>
             <td>/generate-jwt</td>
             <td>❌</td>
             <td>❌</td>
