@@ -475,15 +475,17 @@ La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritor
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
-- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0(zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
 - **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
-- **Controllo validazione input**: Per ciascun campo vengono effettuale le seguenti verifiche:
-      - _name_: Il nome deve essere una stringa di massimo 50 caratteri.
-      - _surname_: Il cognome deve essere una stringa di massimo 50 caratteri.
-      - _email_: Deve contenere effettivamente una stringa rappresentante un'email e non deve essere più lunga di 50 caratteri.
-      - _type_: La tipologia deve essere _USER_ oppure _ADMIN_.
-      - _residual_tokens_: Deve essere un numero intero strettamente maggiore di 0
-      Se anche solo uno di questi campi dovesse risultare errato o non presente, verrebbe generata la seguente eccezione: _IncorrectInputError_.
+- **Controllo validazione input**: Per ciascun campo vengono effettuate le seguenti verifiche:
+  - _name_: Il nome deve essere una stringa di massimo 50 caratteri.
+  - _surname_: Il cognome deve essere una stringa di massimo 50 caratteri.
+  - _email_: Deve contenere effettivamente una stringa rappresentante un'email e non deve essere più lunga di 50 caratteri.
+  - _type_: La tipologia deve essere _USER_ oppure _ADMIN_.
+  - _residual_tokens_: Deve essere un numero intero strettamente maggiore di 0.
+  
+  Se anche solo uno di questi campi dovesse risultare errato o non presente, verrebbe generata la seguente eccezione: _IncorrectInputError_.
+
 
 ```mermaid
 sequenceDiagram
