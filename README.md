@@ -262,22 +262,23 @@ La rotta restituisce in output, in formato json, email e tokens di ciascun utent
 ```mermaid
 sequenceDiagram
     Admin->>Server: /admin/tokens
+    actor Admin
+    Server->>Middleware: checkAuthHeader()
+    Middleware->>Server: result
+    Server->Middleware: checkJwt()
+    Middleware->>Server: result
+    Server->>Middleware: VerifyAndAuthenticate() 
+    Middleware->>Server: result
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Server->>Middleware: checkPermission()
+    Middleware->>Server: result 
+    
     alt Supera tutti i controlli
-        actor Admin
-        Server->>Middleware: checkAuthHeader()
-        Middleware->>Server: result
-        Server->Middleware: checkJwt()
-        Middleware->>Server: result
-        Server->>Middleware: VerifyAndAuthenticate() 
-        Middleware->>Server: result
-        Server->>Middleware: checkUserExits()
-        Middleware->>Controller: getUser()
-        Controller->>Sequelize: find()
-        Sequelize->>Controller: result
-        Controller->>Middleware: result
-        Server->>Middleware: checkPermission()
-        Middleware->>Server: result 
-        Server->>Admin: tokens
+        Server->>Admin: response
     else Viene sollevato un errore
         Server->>Admin: Errore
     end
