@@ -696,6 +696,14 @@ sequenceDiagram
 ```
 
 ### Put modify-dataset
+La seguente rotta ha lo scopo di fornire all'utente la possibilità di modificare il nome del dataset ad esso associato. I controlli middleware effettuati sono: 
+
+- **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- **Controllo validazione input**: Viene verificato che i paramteri _dataset_name_ e _new_dataset_name_ presenti nella query della richiesta siano stringhe di non più di 50 caratteri ciascuna. Se anche solo uno dei due parametri dovesse essere omesso e/o errato(ad esempio digitando _n_dataset_name_ anzichè _new_dataset_name_), oppure venissero meno le condizioni di lunghezza delle stringhe, allora verrebbe generata l'eccezione: _IncorrectInputError_.
 
 
 ```mermaid
@@ -759,6 +767,77 @@ sequenceDiagram
         Server->>User/Admin: errore
     end
 ```
+
+### Post inference
+
+```mermaid
+sequenceDiagram
+     actor User/Admin
+
+    User/Admin->>Server: Put /modify-dataset
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkDatasetAlreadyExist()
+    Middleware->>Controller: getDataset()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkNumberOfVideo()
+    Middleware->>Controller: getDataset()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkTokensForInference()
+    Middleware->>Controller: getDataset()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    
+    alt Supera Middleware Server->>Redis: add_process
+        Server->>Redis: add_process
+        Redis->>Server: result
+
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
+    else  Non supera Middleware
+        Server->>User/Admin: errore
+    end
+```
+
 
 ## API Docs
 
