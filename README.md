@@ -275,7 +275,6 @@ sequenceDiagram
         Middleware->>Controller: getUser()
         Controller->>Sequelize: findAll()
         Sequelize->>Controller: result
-        Controller->>Sequelize: result
         Controller->>Middleware: result
     else Viene sollevato un errore
         Middleware->>Server: Errore
