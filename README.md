@@ -253,122 +253,212 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
 ### GET /admin/tokens
 La rotta restituisce in output, in formato json, email e tokens di ciascun utente. Di seguito verrà rappresentato il diagramma di sequenza. I controlli effettuati nel _Middleware_ sono i seguenti:
 
-- 'Controllo su presenza di _AuthenticationHeadher_': In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
-- 'Controllo su presenza del _Jwt_': In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
-- 'Controllo su autenticità del _Jwt_': In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
-- 'Controllo utente esistente nel Database ': In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
-- 'Controllo permessi admin': In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
+- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
+- **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
 
 ```mermaid
 sequenceDiagram
-    alt Supera tutti i controlli
-        actor Admin
-        Admin->>Server: /admin/tokens
-        Server->>Middleware: checkAuthHeader()
-        Middleware->>Server: result
-        Server->Middleware: checkJwt()
-        Middleware->>Server: result
-        Server->>Middleware: VerifyAndAuthenticate() 
-        Middleware->>Server: result
-        Server->>Middleware: checkUserExits()
-        Middleware->>Controller: getUser()
-        Controller->>Sequelize: findAll()
+    Admin->>Server: /admin/tokens
+    actor Admin
+    Server->>Middleware: checkAuthHeader()
+    Middleware->>Server: result
+    Server->Middleware: checkJwt()
+    Middleware->>Server: result
+    Server->>Middleware: VerifyAndAuthenticate() 
+    Middleware->>Server: result
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result 
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result 
+    
+    alt Supera Middleware
+        Server->>Controller: visualizeCredits()
+        Controller->>Sequelize: find()
         Sequelize->>Controller: result
-        Controller->>Middleware: result
-        Server->>Middleware: checkPermission()
-        Middleware->>Server: result 
-        Server->>Admin: tokens
-    else Viene sollevato un errore
-        Server->>Admin: Errore
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>Admin: response
+        else Il controller genera eccezione
+             Server->>Admin: errore
+        end 
+    else Non supera Middleware
+        Server->>Admin:errore
     end
 ```
 
+### Put admin/recharge-tokens
+La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
 
-### POST/PUT Routes
-
-Le rotte POST e PUT sono quelle che richiedono autenticazione, perciò presentano i middleware di autenticazione che vanno a verificare la validità del Token che è stato iniettato per la richiesta e i permessi contenuti al suo interno. Seguono due validazioni, una da parte del middleware `express-validation` per quanto riguarda il body della richiesta, un altra realizzato tramite il middleware `pre save` messo a disposizione tramite mongoose.
-
-- Se entrambe le validazioni vanno a buon fine, la risorsa viene aggiunta al database, altrimenti vengono ritoranti gli errori di validazione
-- Quando la risorsa viene creata viene fatto il flush della cache su Redis, altrimenti avremmo incorenenza sulle richieste GET che coinvolgono quella risorsa
+- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
+- **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
+- **Controllo validità input**: Viene verificato che i campi siano solamente due e che corrispondano a: '_email_' E '_tokens_to_charge_'. Inoltre viene verificato che il campo email sia effettivamente popolato da un'email(lunghezza massima di 50 caratteri) e che i tokens da aggiungere sia un numero intero positivo strettamente maggiore di 0. In caso di errore, viene lanciata l'eccezione: _IncorrectInputError_.
+- **Controllo esistenza utente da ricaricare**: In caso di errore, viene sollevata un'opportuna eccezione: _UserDoesNotExist_.
 
 ```mermaid
 sequenceDiagram
-    Bob ->>+ preLog: Request
-    preLog ->>- checkToken: Authentication
-    activate checkToken
-    alt is valid
-        checkToken ->>+ checkPermission: check Permission
-        deactivate checkToken
-        alt authorized
-            checkPermission ->>- Validator: apply validatione & sanitize
-            activate Validator
-                Validator ->> checkValidation: check validation
-            deactivate Validator
-            activate checkValidation
-            alt valid
-                checkValidation ->>+ Controller: end of chain
-                deactivate checkValidation
-                Controller ->>- Database: Validation & save
-                activate Database
-                    Database ->> Controller: OK
-                deactivate Database
-                activate Controller
-                    Controller ->> Bob: 204 Created
-                    Controller ->> Reids: flush cache
-                deactivate Controller
-            else not valid
-                activate checkValidation
-                checkValidation ->> Bob: validation error
-                deactivate checkValidation
-            end
-        else not authorized 
-                    activate checkPermission
-                checkPermission ->> Bob: not allowed
-            deactivate checkPermission
+     actor Admin
 
-        end
-    else is not valid
-                activate checkToken
-                checkToken ->> Bob: invalid token
-            deactivate checkToken
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    alt Supera Middleware
+        Server->>Controller: rechargeCredits()
+        Controller->>Sequelize: find()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>Admin: response
+        else Il controller genera eccezione
+             Server->>Admin: errore
+        end 
+    else  Non supera Middleware
+        Server->>Admin: errore
     end
 ```
-### Database Middleware
 
-Una peculiarità di Mongoose è che si basa su una logica, simile a quella di express, che fa utilizzo di middleware per realizzare le operazioni. Data questa logica, consente di definire dei middleware personalizzati da applicare prima di alcuni metodi; nel nostro caso abbiamo definito dei middleware:
+### Get admin/dataset
+La rotta, non prende in input alcun parametro e ritorna in output tutti i dataset posseduti da tutti gli utenti del database. I controlli effettuati nel middleware sono i seguenti:
 
-- `pre-save`: in modo tale da andare ad eseguire dei controlli prima di effettuare il salvataggio
-- `pre-validation`: anche il processo di validazione è implementato come un middleware, nel nostro caso lo abbiamo implementato in modo tale implementare dei controlli sulle chiavi esterne per quelle entità che hanno "vincoli di chiave esterna"
-- `post-save`: per verificare se la fase di save generasse degli errori a causa dell'unicità di alcuni campi
+- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0(zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
 
 ```mermaid
 sequenceDiagram
-    Request--> CheckExistenceFK:check exixts FK
-    CheckExistenceFK->>+CheckSizeFK:check ok
-    alt exists 
-        CheckExistenceFK ->> Request:error
-    else not exists
-    CheckSizeFK ->>- Validation:next()
-    activate Validation
-    end
-    alt data valid
-    activate Save
-    else 
-    Validation ->> Request:error
-    Validation ->> Save:next()
-    deactivate Validation
-    end
-    activate Save
-    alt good
-    Save ->> VerifyDuplicateKey:next()
-    activate VerifyDuplicateKey
-    else bad
-    Save ->> Request: error
-    end
-    deactivate Save
-    VerifyDuplicateKey ->> MongoDB:save
-    deactivate VerifyDuplicateKey
+     actor Admin
 
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
+    alt Supera Middleware
+        Server->>Controller: getAllDataset()
+        Controller->>Sequelize: find()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>Admin: response
+        else Il controller genera eccezione
+             Server->>Admin: errore
+        end 
+    else  Non supera Middleware
+        Server->>Admin: errore
+    end
+```
+
+### Get admin/users
+La rotta, non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database.
+
+```mermaid
+sequenceDiagram
+     actor Admin
+
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
+    alt Supera Middleware
+        Server->>Controller: getAllDataset()
+        Controller->>Sequelize: find()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>Admin: response
+        else Il controller genera eccezione
+             Server->>Admin: errore
+        end 
+    else  Non supera Middleware
+        Server->>Admin: errore
+    end
 ```
 
 
