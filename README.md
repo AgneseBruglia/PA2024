@@ -29,9 +29,7 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto e ch
 
 ```mermaid
 graph TD;
-    %% Definizione dei subgraph
     subgraph App
-    direction TB
     Server.ts --- AppController.ts 
     AppController.ts 
     AppModel.ts 
@@ -39,12 +37,10 @@ graph TD;
     end
 
     subgraph Redis
-    direction TB
     redis
     end
 
     subgraph Authentication
-    direction TB
     Server.ts --- AuthController.ts
     AuthController.ts 
     AuthModel.ts 
@@ -52,52 +48,25 @@ graph TD;
     end
 
     subgraph Inference
-    direction TB
     Server.py --- InfController.py
     InfController.py
     end
 
     subgraph Postgress
-    direction TB
     postgress
     end
 
     subgraph Cost
-    direction TB
     Cost_services.py
     end
 
-    %% Connessioni esterne ai subgraph
     AppModel.ts --- redis
     AppController.ts --- postgress
     AppController.ts --- Server.py
     AppController.ts --- redis
     AppController.ts --- Cost_services.py
 
-    %% Posizionamento per ridurre sovrapposizioni
-    Server.ts --- postgress
-    Server.ts --- redis
-    AuthController.ts --- AppController.ts
-    InfController.py --- Cost_services.py
-
-
 ```
-
-
-### Use Case
-
-Di seguito viene mostrato il diagramma dei casi d'uso. Per '_generale_', intendiamo un comportamtento che può essere estesto a tutte le tuple della tabella 'dataset' e/o 'user'.
-```mermaid
-graph TD
-    Admin ---|R_generale| Tabella_Dataset
-    Admin ---|CRU_generale| Tabella_User
-
-    User --- Valutazione_processo_avanzamento
-    User --- Ritorno_risultato_inferenza
-    User --- Visione_crediti_residui
-    User ---|CRUD| Tabella_Dataset
-```
-
 
 ### Diagramma E-R
 
