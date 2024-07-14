@@ -37,7 +37,7 @@ export const createUserSchema = Joi.object({
     name: Joi.string().max(50).required(),
     surname: Joi.string().max(50).required(),
     email: Joi.string().email().max(50).required(),
-    type: Joi.string().max(50).required().valid('USER', 'ADMIN'),
+    type: Joi.string().required().valid('USER', 'ADMIN'),
     residual_tokens: Joi.number().integer().greater(0).required()
 });
 
@@ -48,7 +48,7 @@ export const updateDatasetSchema = Joi.object({
 
 export const doInferenceSchema = Joi.object({
     dataset_name: Joi.string().max(50).required(),
-    model_name: Joi.string().max(50).required().valid('model.tflite', 'model_8bit.tflite')
+    model_name: Joi.string().required().valid('model.tflite', 'model_8bit.tflite')
 });
 
 export const resultSchema = Joi.object({
@@ -61,7 +61,7 @@ export const getDatasetSchema = Joi.object({
 
 export const generateJwtSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
-    type: Joi.string().max(50).required().valid('USER', 'ADMIN'),
+    type: Joi.string().required().valid('USER', 'ADMIN'),
     expiration: Joi.number().integer().positive().min(1).max(48).required()
 });
 
