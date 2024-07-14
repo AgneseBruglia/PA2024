@@ -640,7 +640,7 @@ sequenceDiagram
     end
 ```
 
-## Get tokens
+### Get tokens
 La rotta, consente di visualizzare il numero di tokens residui del utente chiamante. I controlli effettuati nel middleware sono:
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
@@ -695,6 +695,70 @@ sequenceDiagram
     end
 ```
 
+### Put modify-dataset
+
+
+```mermaid
+sequenceDiagram
+     actor User
+
+    User->>Server: Put /modify-dataset
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkDatasetAlreadyExist()
+    Middleware->>Controller: getDataset()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkDatasetExists()
+    Middleware->>Controller: getDataset()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    
+    alt Supera Middleware
+        Server->>Controller: updateDataset()
+        Controller->>Sequelize: update()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>User: response
+        else Il controller genera eccezione
+             Server->>User: errore
+        end 
+    else  Non supera Middleware
+        Server->>User: errore
+    end
+```
 
 ## API Docs
 
