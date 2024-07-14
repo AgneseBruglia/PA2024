@@ -567,7 +567,8 @@ La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggi
 - **Controllo non ripetizione dei video**: Viene verificato che nell'array dei video da inserire non siano presenti doppioni, in caso contrario viene generata l'eccezione: _VideosAlreadyExitArrayError_ . Inoltre, viene verificata la non presenza di doppioni tra i nuovi video da aggiungere e quelli già presenti nella corrispondente tupla della tabella: _dataset_, in caso contrario viene generata l'eccezione: _VideosAlreadyExitError_.
 - **Controllo tokens per caricamento video**:  Viene verificato che i tokens dell'utente che intende effettuare la richiesta siano sufficienti per caricare tutti i video nella tupla della tabella _dataset_. In caso contrario, viene generata l'eccezione: _NotEnoughTokens_.
 
-  
+
+```mermaid
 sequenceDiagram
      actor Admin
 
@@ -637,6 +638,7 @@ sequenceDiagram
     else  Non supera Middleware
         Server->>User: errore
     end
+```
 
 ## API Docs
 
