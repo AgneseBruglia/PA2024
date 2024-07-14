@@ -28,8 +28,10 @@ graph TD;
 L'infrastruttura `Docker` che si è implementata per realizzare il progetto e che prevede l'utilizzo di `docker-compose` per la sua gestione è la seguente:
 
 ```mermaid
-graph TB;
+graph TD;
+    %% Definizione dei subgraph
     subgraph App
+    direction TB
     Server.ts --- AppController.ts 
     AppController.ts 
     AppModel.ts 
@@ -37,10 +39,12 @@ graph TB;
     end
 
     subgraph Redis
+    direction TB
     redis
     end
 
     subgraph Authentication
+    direction TB
     Server.ts --- AuthController.ts
     AuthController.ts 
     AuthModel.ts 
@@ -48,23 +52,34 @@ graph TB;
     end
 
     subgraph Inference
+    direction TB
     Server.py --- InfController.py
     InfController.py
     end
 
     subgraph Postgress
+    direction TB
     postgress
     end
 
     subgraph Cost
+    direction TB
     Cost_services.py
     end
 
+    %% Connessioni esterne ai subgraph
     AppModel.ts --- redis
     AppController.ts --- postgress
     AppController.ts --- Server.py
     AppController.ts --- redis
     AppController.ts --- Cost_services.py
+
+    %% Posizionamento per ridurre sovrapposizioni
+    Server.ts --- postgress
+    Server.ts --- redis
+    AuthController.ts --- AppController.ts
+    InfController.py --- Cost_services.py
+
 
 ```
 
