@@ -256,21 +256,21 @@ La rotta restituisce in output, in formato json, email e tokens di ciascun utent
 ```mermaid
 sequenceDiagram
     alt Supera tutti i controlli
-        Admin->Server: /admin/tokens
-        Server->Middleware: checkAuthHeader
-        Middleware-->Server: checkOk
+        Admin->>Server: /admin/tokens
+        Server->>Middleware: checkAuthHeader
+        Middleware->>Server: checkOk
         Server->Middleware: checkJwt
-        Middleware-->Server: checkOk
-        Server->Middleware: VerifyAndAuthenticate 
-        Middleware-->Server: checkOk
-        Server->Middleware: checkUserExits
-        Middleware->Controller: getUser()
-        Controller->Sequelize: findAll()
-        Sequelizee->Controller: Utente null(non esiste) oppure no
-        Controller-->Sequelize: Utente null(non esiste) oppure no
-        Controller-->Middlewara: utente esiste oppure no
+        Middleware->>Server: checkOk
+        Server->>Middleware: VerifyAndAuthenticate 
+        Middleware->>Server: checkOk
+        Server->>Middleware: checkUserExits
+        Middleware->>Controller: getUser()
+        Controller->>Sequelize: findAll()
+        Sequelizee->>Controller: Utente null(non esiste) oppure no
+        Controller->>Sequelize: Utente null(non esiste) oppure no
+        Controller->>Middlewara: utente esiste oppure no
     else Viene sollevato un errore
-        Middleware-->Server: Errore
+        Middleware->>Server: Errore
     end
 ```
 
