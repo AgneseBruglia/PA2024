@@ -271,11 +271,11 @@ sequenceDiagram
         Server->>Middleware: VerifyAndAuthenticate 
         Middleware->>Server: result
         Server->>Middleware: checkUserExits()
-        Server->>Middleware: checkPermission()
-        Middleware->>Server: result 
         Middleware->>Controller: getUser()
         Controller->>Sequelize: findAll()
         Sequelize->>Controller: result
+        Server->>Middleware: checkPermission()
+        Middleware->>Server: result 
         Controller->>Middleware: result
         Server->>Admin: tokens
     else Viene sollevato un errore
