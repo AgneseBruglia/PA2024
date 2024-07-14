@@ -95,7 +95,7 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
     USER ||--o{ DATASET : owns
     USER {
         string email PK
-        int id
+        string id PK
         string name
         string surname
         string type
