@@ -274,9 +274,9 @@ sequenceDiagram
         Middleware->>Controller: getUser()
         Controller->>Sequelize: findAll()
         Sequelize->>Controller: result
+        Controller->>Middleware: result
         Server->>Middleware: checkPermission()
         Middleware->>Server: result 
-        Controller->>Middleware: result
         Server->>Admin: tokens
     else Viene sollevato un errore
         Server->>Admin: Errore
