@@ -205,7 +205,7 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
             <td>🔒</td>
         </tr>
         <tr>
-            <td>POST</td>
+            <td>PUT</td>
             <td>/modify-dataset</td>
             <td>❌</td>
             <td>❌</td>
@@ -240,7 +240,7 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
             <td>🔒</td>
         </tr>
         <tr>
-            <td>POST</td>
+            <td>GET</td>
             <td>/generate-jwt</td>
             <td>❌</td>
             <td>❌</td>
@@ -412,7 +412,14 @@ sequenceDiagram
 ```
 
 ### Get admin/users
-La rotta, non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database.
+La rotta, non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database. Nel middleware vengono effettuati i seguenti controlli:
+
+- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0(zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
 
 ```mermaid
 sequenceDiagram
@@ -447,8 +454,87 @@ sequenceDiagram
     Middleware->>Server: result
 
     alt Supera Middleware
-        Server->>Controller: getAllDataset()
+        Server->>Controller: getAllUsers()
         Controller->>Sequelize: find()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>Admin: response
+        else Il controller genera eccezione
+             Server->>Admin: errore
+        end 
+    else  Non supera Middleware
+        Server->>Admin: errore
+    end
+```
+
+### Post admin/create-user
+La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritorna in output l'utente precedentemente aggiunto. I controlli effettuati nel middleware sono:
+
+- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
+- **Controllo validazione input**: Per ciascun campo vengono effettuate le seguenti verifiche:
+  - _name_: Il nome deve essere una stringa di massimo 50 caratteri.
+  - _surname_: Il cognome deve essere una stringa di massimo 50 caratteri.
+  - _email_: Deve contenere effettivamente una stringa rappresentante un'email e non deve essere più lunga di 50 caratteri.
+  - _type_: La tipologia deve essere _USER_ oppure _ADMIN_.
+  - _residual_tokens_: Deve essere un numero intero strettamente maggiore di 0.
+  
+  Se anche solo uno di questi campi dovesse risultare errato o non presente, verrebbe generata la seguente eccezione: _IncorrectInputError_.
+
+
+```mermaid
+sequenceDiagram
+     actor Admin
+
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkPayloadHeader()
+    Middleware->>Server: result 
+    
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUser()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    alt Supera Middleware
+        Server->>Controller: createUser()
+        Controller->>Sequelize: create()
         Sequelize->>Controller: result
         Controller->>Server:result
         alt Il controller non genera eccezione
