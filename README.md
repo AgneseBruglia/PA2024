@@ -289,6 +289,7 @@ sequenceDiagram
              Server->>Admin: errore
         end 
     else Viene sollevato un errore
+        Server->>Admin:errore
     end
 ```
 
