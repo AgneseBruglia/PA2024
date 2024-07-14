@@ -277,7 +277,6 @@ sequenceDiagram
         Controller->>Sequelize: findAll()
         Sequelize->>Controller: result
         Controller->>Middleware: result
-        Middleware<<-Server: result
         Server->>Admin: tokens
     else Viene sollevato un errore
         Server->>Admin: Errore
