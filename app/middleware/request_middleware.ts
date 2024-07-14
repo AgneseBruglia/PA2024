@@ -1,5 +1,5 @@
 import { getError } from "../factory/errors";
-import { JwtPayload, Secret } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import {typeOfUser} from '../controller/controller_db';
 import * as jwt from 'jsonwebtoken';
 import { EnumError } from '../factory/errors';
@@ -77,7 +77,6 @@ export function checkJwt(req: any, res: any, next: any): void{
 export function verifyAndAuthenticate(req: any, res: any, next: any): void {
     try {
         const decoded: string | JwtPayload = jwt.verify(req.checkJwt as string, process.env.JWT_SECRET_KEY || '');
-        //const decoded: string | JwtPayload = jwt.verify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIiLCJuYW1lIjoiTHVjYSIsInN1cm5hbWUiOiJCZWxsYW50ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzIwMTk3MDA2LCJleHAiOjE3MjAyODM0MDZ9.PIdQL6TO-vFEwSrNHeEJSw__wmAM2drQViDRWCWT2bA', 'PA2024');
         if (decoded != null) {
             req.decodeJwt = decoded;
             next();

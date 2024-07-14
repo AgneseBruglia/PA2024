@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config(); 
 
+// Classe Singleton per la connessione con il DB
 class Database {
   private static instance: Sequelize;
 
@@ -13,8 +14,8 @@ class Database {
       const dbName = process.env.POSTGRES_DB as string ;
       const dbUser = process.env.POSTGRES_USER as string;
       const dbPassword = process.env.POSTGRES_PASSWORD;
-      const dbHost = process.env.POSTGRES_HOST;
-      const dbPort = parseInt(process.env.POSTGRES_PORT as string);
+      const dbHost = process.env.POSTGRES_HOST || 'pgs';
+      const dbPort = parseInt(process.env.POSTGRES_PORT || '5432');
 
       Database.instance = new Sequelize(dbName, dbUser, dbPassword, {
         host: dbHost,

@@ -1,5 +1,5 @@
 import cv2
-from flask import Flask, abort, request, jsonify
+from flask import Flask, request, jsonify
 import os 
 
 
@@ -12,12 +12,8 @@ def count_total_frames(video_paths):
     
     for video_path in video_paths:
         cap = cv2.VideoCapture(video_path)
-                
-        # Ottieni il numero di frame del video
         frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         total_frames += frames
-        
-        # Rilascia il video
         cap.release()
     
     return total_frames
@@ -40,7 +36,6 @@ def get_total_frames():
     return jsonify({"total_frames": total_frames*COST}), 200
 
 
-
 if __name__ == '__main__':
-    port = int(os.environ.get('COST_SERVICES_PORT'))
-    app.run(host=os.environ.get('COST_SERVICES_HOST'), port=port, debug=True)
+    port = int(os.environ.get('COST_SERVICES_PORT', 5005))
+    app.run(host=os.environ.get('COST_SERVICES_HOST', 'cost-services'), port=port, debug=True)

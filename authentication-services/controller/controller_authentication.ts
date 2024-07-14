@@ -2,7 +2,6 @@ import { EnumErrorAuth, getError } from "../factory/errors";
 import { typeOfUser } from "../jwt/jwt_generator";
 import {createJwt} from '../jwt/jwt_generator';
 
-
 /**
  * Funzione 'controllerErrorsAuth'
  * 
@@ -19,18 +18,13 @@ export function controllerErrorsAuth(enum_error: EnumErrorAuth, err: Error, res:
     res.status(new_err.status).json(new_err.message);
 }
 
-
-
-
 /**
  * Funzione 'generateToken'
  * 
- * La funzione, genera i token necessari per la successiva autenticazione di user e/o admin
+ * Funzione che unzione genera i token necessari per la successiva autenticazione di user e/o admin.
  * 
- * @param req Richiesta
- * @param res La risposta da parte del server
- * 
- * @returns JWT
+ * @param req Richiesta del client
+ * @param res Risposta del server
  */
 export async function generateToken(req: any, res: any): Promise<any> {
     try{
@@ -43,19 +37,14 @@ export async function generateToken(req: any, res: any): Promise<any> {
     catch(error:any){
         controllerErrorsAuth(EnumErrorAuth.InternalServerError, error, res);
     }
-
 }
-
-
 
 /**
  * Funzione 'stringToTypeOfUser'
  * 
- * La funzione mappa la stringa sul tipo enumerativo.
+ * Funzione che mappa la stringa sul tipo enumerativo.
  * 
  * @param str Stringa da mappare
- * 
- * @returns typeOfUser 
  */
 function stringToTypeOfUser(str: string): typeOfUser | undefined {
     return typeOfUser[str as keyof typeof typeOfUser];

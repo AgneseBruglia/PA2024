@@ -394,9 +394,6 @@ export class ZeroTokensError implements IErrorObj {
     }
 }
 
-
-
-
 export enum EnumError {
     NotEnoughTokens,
     UserDoesNotExist,
@@ -422,6 +419,14 @@ export enum EnumError {
     ZeroTokensError
 }
 
+/**
+ * Funzione 'getError'
+ * 
+ * Funzione per creare l'istanza della classe corrispondente
+ * all'errore che si è verificato.
+ * 
+ * @param type Tipo di errore che si è verificato
+ */
 export function getError(type: EnumError): IErrorObj {
     let val: IErrorObj | null = null;
     switch (type){

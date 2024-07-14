@@ -1,15 +1,11 @@
-from flask import Flask, abort, request, jsonify
+from flask import Flask, request, jsonify
 import os
-import tensorflow as tf
-import numpy as np
-import cv2
-import json
-from collections import defaultdict
 from errors_factory import ErrorFactory, ModelMissingError
 from controller_python import  _inferenceV3_ConvLSTM
 
 app = Flask(__name__)
 
+# Definizione della rotta per fare inferenza su un certo insieme di video
 @app.route('/inference', methods=['POST'])
 def analyze_video():
     try:
@@ -35,4 +31,3 @@ if __name__ == '__main__':
     port = int(os.environ.get('PYTHON_PORT'))
     server_python_host = os.environ.get('PYTHON_HOST')
     app.run(host=server_python_host, port=port, debug=False)
-    

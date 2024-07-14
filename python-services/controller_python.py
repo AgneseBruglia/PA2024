@@ -3,7 +3,7 @@ from flask import jsonify
 import tensorflow as tf
 import numpy as np
 import cv2
-from collections import defaultdict
+# from collections import defaultdict
 from errors_factory import ErrorFactory, IncorrectFileError, ModelFileNotFoundError
 
 # Funzione per caricare il modello TensorFlow Lite

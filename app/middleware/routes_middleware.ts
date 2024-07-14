@@ -70,7 +70,7 @@ export async function checkEnoughTokens(req: any, res: any, next: any): Promise<
 /**
 * Middleware 'checkTokensForInference'
 *
-* Controlla che l'utente che sta effettuando la richiesta di inferenza abbia sufficiente
+* Controlla che l'utente che sta effettuando la richiesta di inferenza abbia sufficienti
 * crediti (tokens) per processare correttamente la richiesta. Se così non è, dà errore.
 * 
 * @param req Richiesta del client
@@ -83,7 +83,6 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
         const email: string = req.decodeJwt.email;
         const dataset = await Controller.getDataset(dataset_name, email);
         if((dataset !== null) && (dataset.getDataValue('videos') !== null)){
-            const videos: string[] = dataset.getDataValue('videos');
             const result = await ControllerInference.checkTokensInference(dataset_name, email, res)
             if((typeof result === 'boolean') && result === true){
                 next();
@@ -112,7 +111,6 @@ export async function checkTokensForInference(req: any, res: any, next: any): Pr
 export async function checkUser(req: any, res: any, next: any): Promise<void> {
     try {
         let users = await Controller.getUser(null, req, true);
-
         if (users.length == 0) {
                 next();
         } else {
@@ -150,7 +148,6 @@ export function checkUserExists(getEmail: (req: any) => string) {
     }
 }
 
-
 /**
 * Middleware 'checkDatasetExists'
 *
@@ -185,8 +182,8 @@ export async function checkDatasetExists(req: any, res: any, next: any): Promise
 /**
 * Middleware 'checkDatasetAlreadyExist'
 *
-* Controlla che nel database esista un dataset con lo stesso nome passato in input e
-* creato dallo stesso utente passato in input. 
+* Controlla che nel database esista un dataset con un certo nome
+* associato a un certo utente.
 * 
 * @param req Richiesta del client
 * @param res Risposta del server
@@ -196,7 +193,6 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     try{
-        // Cerco se il dataset esiste 
         const dataset = await Controller.getDataset(dataset_name, email);
         if(dataset === null){
             next(EnumError.DatasetNotExitsError)
@@ -214,7 +210,7 @@ export async function checkDatasetAlreadyExist(req: any, res: any, next: any): P
 * Middleware 'checkSameVideo'
 *
 * Controlla che i video da passare non siano uguali ai video già presenti nel dataset. Nel caso 
-* in cui anche solo un nuovo video fosse uguale a quelli già presenti nel dataset allora lancia
+* in cui anche solo un nuovo video fosse uguale a quelli già presenti nel dataset, allora lancia
 * l'errore.
 * 
 * @param req Richiesta del client

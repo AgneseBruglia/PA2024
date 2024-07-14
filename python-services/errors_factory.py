@@ -27,12 +27,14 @@ class UnexpectedError(CustomError):
         super().__init__(self.message)
 
 class IncorrectFileError(CustomError):
+    """ Eccezione per file che non sono video """
     def __init__(self, message="ERROR: File is not a video.", status = 404):
         self.message = message
         self.status = status 
         super().__init__(self.message)
 
 class FileNotFoundError(CustomError):
+    """ Eccezione per path video inesistente """
     def __init__(self, message="ERROR: File not found.", status = 404):
         self.message = message
         self.status = status

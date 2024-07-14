@@ -1,8 +1,14 @@
-import express, { Request, Response } from 'express';
-import {
-    createUser, addDataset, getAllUsers, getDatasets, getAllDataset, updateDataset, insertVideoIntoDataset, deleteDataset,
-    visualizeCredits, rechargeCredits
-} from './controller/controller_db';
+import express, { Response } from 'express';
+import { createUser, 
+         addDataset,
+         getAllUsers, 
+         getDatasets, 
+         getAllDataset, 
+         updateDataset, 
+         insertVideoIntoDataset, 
+         deleteDataset, 
+         visualizeCredits, 
+         rechargeCredits } from './controller/controller_db';
 import { resetBull } from './controller/controller_jobs'
 import * as Middleware from './middleware/middleware_chains';
 import { EnumError, getError } from './factory/errors';
@@ -14,9 +20,8 @@ import { generateJwt } from './controller/controller_authentication';
 dotenv.config();
 
 const app = express();
-const port = process.env.APP_PORT;
-const host = process.env.APP_HOST;
-
+const port = parseInt(process.env.APP_PORT || '3000');
+const host = process.env.APP_HOST || 'app';
 
 app.use(express.json());
 app.use((err: Error, req: any, res: any, next: any) => {
@@ -27,12 +32,13 @@ app.use((err: Error, req: any, res: any, next: any) => {
     next();
 });
 
+/*********************************    ROTTE USER    ************************************ */
+
 // Definizione della rotta per creare un nuovo dataset vuoto
-app.post('/generate-jwt', Middleware.generateJwt, Middleware.error_handling, async (req: any, res: Response) => {
+app.get('/generate-jwt', Middleware.generateJwt, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await generateJwt(req, res);
     res.json(result);
 });
-
 
 // Definizione della rotta per creare un nuovo dataset vuoto
 app.post('/create-dataset', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
@@ -56,7 +62,7 @@ app.get('/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlew
 });
 
 // Definizione della rotta per aggiornare un dataset
-app.post('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.updateDataset, Middleware.error_handling, async (req: any, res: Response) => {
+app.put('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.updateDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
     const new_dataset_name = req.query.new_dataset_name as string;
@@ -111,7 +117,7 @@ app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middl
     res.json(result);
 });
 
-/*********************************    AMMINISTRATORE    ************************************ */
+/*********************************    ROTTE ADMIN    ************************************ */
 
 // Definizione della rotta per l'inserimento di un nuovo utente
 app.post('/admin/create-user', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.checkInsertUsers, Middleware.error_handling, async (req: any, res: Response) => {
@@ -146,9 +152,8 @@ app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middle
     res.json(result);
 });
 
-/** 
- * Gestione delle rotte non previste
- */
+
+// Gestione delle rotte non previste
 app.get('*', Middleware.other_route, Middleware.error_handling);
 app.post('*', Middleware.other_route, Middleware.error_handling);
 app.put('*', Middleware.other_route, Middleware.error_handling);

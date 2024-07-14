@@ -1,11 +1,22 @@
 import { EnumError } from '../factory/errors';
 import Joi from 'joi';
 
+/**
+ * 'Input corrrectness middleware'
+ * 
+ * Sono funzioni di middleware per il controllo di correttezza
+ * dei parametri inseriti nelle richieste Postman.
+ */
+
+/**
+ * Struttura per distinguere i tipi di parametri utilizzati nelle richieste Postman.
+ * 'body' indica i parametri inclusi nel corpo della richiesta.
+ * 'query' indica i parametri inclusi nella stringa di query dell'URL.
+ */
 export const enum type{
 body = 'body',
 query = 'query',
 };
-
 
 let email: string | undefined = undefined;
 
@@ -48,13 +59,11 @@ export const getDatasetSchema = Joi.object({
     dataset_name: Joi.string().max(50)
 });
 
-
 export const generateJwtSchema = Joi.object({
     email: Joi.string().email().max(50).required(),
     type: Joi.string().max(50).required().valid('USER','ADMIN'),
     expiration: Joi.number().integer().positive().min(1).max(48).required()
 });
-
 
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query', includeEmail: boolean = true) => async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;

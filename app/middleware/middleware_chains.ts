@@ -21,8 +21,7 @@ export const checkGeneral = [
     ReqMiddleware.checkJwt,
     ReqMiddleware.verifyAndAuthenticate,
     RouteMiddleware.checkUserExists((req) => req.decodeJwt.email),
-    RouteMiddleware.checkResidualTokens,
-    
+    RouteMiddleware.checkResidualTokens
 ];
 
 export const getDataset = [
@@ -94,7 +93,6 @@ export const doInference = [
 export const result = [
     InputMiddleware.validateSchema(InputMiddleware.resultSchema, InputMiddleware.type.query)
 ];
-
 
 export const generateJwt = [
     InputMiddleware.validateSchema(InputMiddleware.generateJwtSchema, InputMiddleware.type.query, false)
