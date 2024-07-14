@@ -774,7 +774,7 @@ La rotta, prende in input il nome del modello da utilizzare: '_model_name_' ed i
 
 ```mermaid
 sequenceDiagram
-     actor User/Admin
+    actor User/Admin
 
     User/Admin->>Server: Put /modify-dataset
 
@@ -831,7 +831,7 @@ sequenceDiagram
         Redis->>Server: result
         Server->>User/Admin: response
         end 
-    else  Non supera Middleware
+    else Non supera Middleware
         Server->>User/Admin: errore
     end
 ```
