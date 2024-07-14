@@ -769,6 +769,8 @@ sequenceDiagram
 ```
 
 ### Post inference
+La rotta, prende in input il nome del modello da utilizzare: '_model_name_' ed il nome del dataset: '_dataset_name_' nella query della richiesta. Inserisce il processo in coda e ritorna in output l'id del processo. I controlli middleware effettuati sono: 
+
 
 ```mermaid
 sequenceDiagram
@@ -824,14 +826,10 @@ sequenceDiagram
     Middleware->>Server: result
 
     
-    alt Supera Middleware Server->>Redis: add_process
+    alt Supera Middleware
         Server->>Redis: add_process
         Redis->>Server: result
-
-        alt Il controller non genera eccezione
-             Server->>User/Admin: response
-        else Il controller genera eccezione
-             Server->>User/Admin: errore
+        Server->>User/Admin: response
         end 
     else  Non supera Middleware
         Server->>User/Admin: errore
