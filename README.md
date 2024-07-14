@@ -275,7 +275,7 @@ sequenceDiagram
     Sequelize->>Controller: result
     Controller->>Middleware: result
     Middleware->>Server: result 
-    Server->>Middleware: checkPermission()
+    Server->>Middleware: checkAdminPermission()
     Middleware->>Server: result 
     
     alt Supera tutti i controlli
@@ -286,13 +286,15 @@ sequenceDiagram
 ```
 
 ### Put admin/recharge-tokens
-La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
+La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
 
 - 'Controllo su presenza di _AuthenticationHeadher_': In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - 'Controllo su presenza del _Jwt_': In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - 'Controllo su autenticità del _Jwt_': In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - 'Controllo utente esistente nel Database ': In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
 - 'Controllo permessi admin': In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
+- 'Controllo validità input': Viene verificato che i campi siano solamente due e che corrispondano a: '_email_' E '_tokens_to_charge_'. Inoltre viene verificato che il campo email sia effettivamente popolato da un'email(lunghezza massima di 50 caratteri) e che i tokens da aggiungere sia un numero intero positivo strettamente maggiore di 0. In caso di errore, viene lanciata l'eccezione: _IncorrectInputError_.
+- 'Controllo esistenza utente da ricaricare': In caso di errore, viene sollevata un'opportuna eccezione: _UserDoesNotExist_.
 
 ```mermaid
 sequenceDiagram
@@ -329,6 +331,55 @@ sequenceDiagram
     Controller->>Middleware: result
 
     Middleware->>Server: result 
+    alt Supera tutti i controlli
+      Server->>Admin: response
+    else Viene sollevato un errore
+        Server->>Admin: Errore
+    end
+```
+
+### Get admin/dataset
+La rotta, non prende in input alcun parametro e ritorna in output tutti i dataset posseduti da tutti gli utenti del database. I controlli effettuati nel middleware sono i seguenti:
+
+- 'Controllo su presenza di _AuthenticationHeadher_': In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- 'Controllo su presenza del _Jwt_': In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- 'Controllo su autenticità del _Jwt_': In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- 'Controllo utente esistente nel Database ': Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- 'Controllo su tokens residui': Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0(zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- 'Controllo permessi admin': In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
+
+```mermaid
+sequenceDiagram
+     actor Admin
+
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
     alt Supera tutti i controlli
       Server->>Admin: response
     else Viene sollevato un errore
