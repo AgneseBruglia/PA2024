@@ -266,9 +266,9 @@ sequenceDiagram
         Admin->>Server: /admin/tokens
         Server->>Middleware: checkAuthHeader()
         Middleware->>Server: result
-        Server->Middleware: checkJwt
+        Server->Middleware: checkJwt()
         Middleware->>Server: result
-        Server->>Middleware: VerifyAndAuthenticate 
+        Server->>Middleware: VerifyAndAuthenticate() 
         Middleware->>Server: result
         Server->>Middleware: checkUserExits()
         Middleware->>Controller: getUser()
