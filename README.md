@@ -261,9 +261,9 @@ La rotta restituisce in output, in formato json, email e tokens di ciascun utent
 
 ```mermaid
 sequenceDiagram
+    Admin->>Server: /admin/tokens
     alt Supera tutti i controlli
         actor Admin
-        Admin->>Server: /admin/tokens
         Server->>Middleware: checkAuthHeader()
         Middleware->>Server: result
         Server->Middleware: checkJwt()
@@ -272,7 +272,7 @@ sequenceDiagram
         Middleware->>Server: result
         Server->>Middleware: checkUserExits()
         Middleware->>Controller: getUser()
-        Controller->>Sequelize: findAll()
+        Controller->>Sequelize: find()
         Sequelize->>Controller: result
         Controller->>Middleware: result
         Server->>Middleware: checkPermission()
@@ -283,94 +283,56 @@ sequenceDiagram
     end
 ```
 
+### Put admin/recharge-tokens
+La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
 
-### POST/PUT Routes
-
-Le rotte POST e PUT sono quelle che richiedono autenticazione, perciò presentano i middleware di autenticazione che vanno a verificare la validità del Token che è stato iniettato per la richiesta e i permessi contenuti al suo interno. Seguono due validazioni, una da parte del middleware `express-validation` per quanto riguarda il body della richiesta, un altra realizzato tramite il middleware `pre save` messo a disposizione tramite mongoose.
-
-- Se entrambe le validazioni vanno a buon fine, la risorsa viene aggiunta al database, altrimenti vengono ritoranti gli errori di validazione
-- Quando la risorsa viene creata viene fatto il flush della cache su Redis, altrimenti avremmo incorenenza sulle richieste GET che coinvolgono quella risorsa
-
-```mermaid
-sequenceDiagram
-    Bob ->>+ preLog: Request
-    preLog ->>- checkToken: Authentication
-    activate checkToken
-    alt is valid
-        checkToken ->>+ checkPermission: check Permission
-        deactivate checkToken
-        alt authorized
-            checkPermission ->>- Validator: apply validatione & sanitize
-            activate Validator
-                Validator ->> checkValidation: check validation
-            deactivate Validator
-            activate checkValidation
-            alt valid
-                checkValidation ->>+ Controller: end of chain
-                deactivate checkValidation
-                Controller ->>- Database: Validation & save
-                activate Database
-                    Database ->> Controller: OK
-                deactivate Database
-                activate Controller
-                    Controller ->> Bob: 204 Created
-                    Controller ->> Reids: flush cache
-                deactivate Controller
-            else not valid
-                activate checkValidation
-                checkValidation ->> Bob: validation error
-                deactivate checkValidation
-            end
-        else not authorized 
-                    activate checkPermission
-                checkPermission ->> Bob: not allowed
-            deactivate checkPermission
-
-        end
-    else is not valid
-                activate checkToken
-                checkToken ->> Bob: invalid token
-            deactivate checkToken
-    end
-```
-### Database Middleware
-
-Una peculiarità di Mongoose è che si basa su una logica, simile a quella di express, che fa utilizzo di middleware per realizzare le operazioni. Data questa logica, consente di definire dei middleware personalizzati da applicare prima di alcuni metodi; nel nostro caso abbiamo definito dei middleware:
-
-- `pre-save`: in modo tale da andare ad eseguire dei controlli prima di effettuare il salvataggio
-- `pre-validation`: anche il processo di validazione è implementato come un middleware, nel nostro caso lo abbiamo implementato in modo tale implementare dei controlli sulle chiavi esterne per quelle entità che hanno "vincoli di chiave esterna"
-- `post-save`: per verificare se la fase di save generasse degli errori a causa dell'unicità di alcuni campi
+- 'Controllo su presenza di _AuthenticationHeadher_': In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- 'Controllo su presenza del _Jwt_': In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- 'Controllo su autenticità del _Jwt_': In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- 'Controllo utente esistente nel Database ': In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
+- 'Controllo permessi admin': In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
 
 ```mermaid
 sequenceDiagram
-    Request--> CheckExistenceFK:check exixts FK
-    CheckExistenceFK->>+CheckSizeFK:check ok
-    alt exists 
-        CheckExistenceFK ->> Request:error
-    else not exists
-    CheckSizeFK ->>- Validation:next()
-    activate Validation
-    end
-    alt data valid
-    activate Save
-    else 
-    Validation ->> Request:error
-    Validation ->> Save:next()
-    deactivate Validation
-    end
-    activate Save
-    alt good
-    Save ->> VerifyDuplicateKey:next()
-    activate VerifyDuplicateKey
-    else bad
-    Save ->> Request: error
-    end
-    deactivate Save
-    VerifyDuplicateKey ->> MongoDB:save
-    deactivate VerifyDuplicateKey
+     actor Admin
 
+    Admin->>Server: Put admin/recharge-tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: checkAdminPermission()
+    Middleware->>Server: result
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+
+    Middleware->>Server: result 
+    alt Supera tutti i controlli
+      Server->>Admin: response
+    else Viene sollevato un errore
+        Server->>Admin: Errore
+    end
 ```
-
 
 ## API Docs
 
