@@ -5,9 +5,12 @@ const Queue = require('bull');
 // Viene definito un tipo per l'oggetto che mappa email a array di number
 type CompletedJobMap = Record<string, number[]>;
 
+const redisHost = process.env.REDIS_HOST || 'redis';
+const redisPort = process.env.REDIS_PORT || 6379;
+
 // Viene inizializzato un oggetto per tenere traccia dei job completati per ogni email
 export const completedJobResults: CompletedJobMap = {};
-export const queue = new Queue('queue', { redis: { port: 6379, host: 'redis' } });
+export const queue = new Queue('queue', { redis: { port: redisPort, host: redisHost } });
 
 queue.process(async function (job: any, done: any) {
   const dataset_name: string = job.data.dataset_name;
