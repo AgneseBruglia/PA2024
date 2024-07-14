@@ -287,6 +287,7 @@ sequenceDiagram
              Server->>Admin: response
         else Il controller genera eccezione
              Server->>Admin: errore
+        end 
     else Viene sollevato un errore
     end
 ```
@@ -346,6 +347,7 @@ sequenceDiagram
              Server->>Admin: response
         else Il controller genera eccezione
              Server->>Admin: errore
+        end 
     else Viene sollevato un errore
         Server->>Admin: errore
     end
@@ -402,6 +404,7 @@ sequenceDiagram
              Server->>Admin: response
         else Il controller genera eccezione
              Server->>Admin: errore
+        end 
     else Viene sollevato un errore
         Server->>Admin: errore
     end
