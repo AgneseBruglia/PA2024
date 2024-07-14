@@ -278,7 +278,7 @@ sequenceDiagram
         Sequelize->>Controller: result
         Controller->>Middleware: result
         Middleware<<-Server: result
-        Admin<<-Server: tokens
+        Server->>Admin: tokens
     else Viene sollevato un errore
         Server->>Admin: Errore
     end
