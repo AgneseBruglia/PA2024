@@ -73,12 +73,13 @@ graph LR;
 
 ```mermaid
 graph TD
-User ---|CRUD| Tabella Dataset
-Admin ---|CRUD generale| Tabella Dataset
-User ---|CRUD| Tabella User
-User --- Valutazione processo avanzamento
-User --- Ritorno risultato inferenza
-User --- Visione crediti residui
+    User ---|CRUD| Tabella_Dataset
+    Admin ---|CRUD_generale| Tabella_Dataset
+    Admin ---|CRU| Tabella_User
+    User --- Valutazione_processo_avanzamento
+    User --- Ritorno_risultato_inferenza
+    User --- Visione_crediti_residui
+
 ```
 
 
@@ -114,92 +115,162 @@ Breve descrizione dei design pattern utilizzati per la realizzazione del codice 
 
 ### Chain of Responsability
 
-Abbiamo fatto ampio utilizzo di middleware, dato che il funzionamento di express.js si basa proprio su questa tipologia di pattern. In paritocolare abbiamo creato middleware con diverse funzionalità:
+Il design pattern middleware è un concetto architetturale utilizzato principalmente nelle applicazioni web per gestire e processare le richieste e le risposte _HTTP_. Esso consente di strutturare il codice in moduli separati, ciascuno dei quali può eseguire una specifica operazione su una richiesta o risposta prima di passare al successivo middleware. Questo pattern è particolarmente comune nei framework web come Express. I prinicipali punti di forza sono i seguenti: 
 
-- funzionalità di **logging**: tramite l'utilizzo delle librerie winston e morgan andiamo a eeguire il logging di tutte quelle che sono le richiesta che l'API riceve, in questo modo otteniamo un elevata sicurezza su quello che accade e inoltre possiamo anche determinare le performance andando a vedere quelli che sono i tempi di risposta;
-- funzionalità di **caching**: tramite l'utilizzo di redis, abbiamo realizzato dei middlware che, nelle principali rotte GET, vanno a verificare se la riposta a quella rotta è stato salvato in Redis. Questo al fine di evitare chiamati inutili all'API.
-- funzionalità di **autenticazione**: dato che sono presenti diversi livelli di utenza i quali fanno uso delle funzionalità delle API tramite token, abbiamo realizzato dei middleware che vanno a verificare la validità dei token e dei permessi degli utenti sulle risorse che richiedono.
-- funzionalità di **validazione**: per essere sicure dei dati ricevuti dalle richieste sono presenti dei middleware che prevedono la sanitization dei dati, in modo tale che solo l'informazione appropriata raggiunga l'applicazione; poi una fase di validazione per vedere che questi rispettino la business logic dell'applicazione.
+- 'Modularità': Ogni funzionalità può essere separata in moduli distinti. Questo rende il codice più organizzato e manutenibile.
+- 'Riutilizzabilità':  Un middleware può essere riutilizzato in diverse parti dell'applicazione o in diversi progetti.
+- 'Testabilità': Ogni middleware può essere testato singolarmente, migliorando la capacità di individuare e correggere errori.
+- 'Flessibilità': È possibile comporre i middleware in varie sequenze per ottenere il comportamento desiderato.
+- 'Isolamento delle responsabilità': Ogni middleware si concentra su una singola responsabilità, seguendo il principio di separazione delle preoccupazioni (SoC).
 
 ### Singleton
 
-Dato che l'API comunica con altri servizi abbastanza onerosi e in qui è presente conflitto delle risorse abbiamo deciso di utilizzare il pattern singleton per fare in modo che esista una sola istanza di questi oggetti. In particolare questo è stato realizzato per le connessione al DB e al servizio Redis; ma per esempio anche sul sistema di Logging in modo tale da non avere concorrenza nella scrittura sui file di log.
-
-### Proxy
-
-Si tratta di un design pattern strutturale utilizzato per fornire un surrogato o un rappresentante di un oggetto, controllando l'accesso a esso. Il suo obiettivo principale è quello di agire come intermediario tra il client e l'oggetto reale, consentendo di controllare, gestire o migliorare l'accesso all'oggetto senza modificarne la logica di base.
-Nel nostro caso lo abbiamo utilizzato come intermediario per il client Redis che va poi ad interagire con la cache, questo in modo tale da poter applicare una logica personalizzata, ovvero estendere il comportamento di un oggetto senza modificarne l'implementazione.
-
-### Builder
-
-E' un design pattern creazionale utilizzato per separare la creazione di un oggetto complesso dalla sua rappresentazione. Questo pattern permette di costruire oggetti complessi passo dopo passo, consentendo una maggiore flessibilità e chiarezza nel processo di creazione. Per garantire un sistema di errori il più standard possibile abbiamo realizzato una classe di errori che costriusce l'oggetto di errore tramite questo pattern. In modo da garantire una descrizione esaustiva su quello che è l'errore che si è andato a verificare.
+Il pattern Singleton è un design pattern creazionale che assicura che una classe abbia una sola istanza e fornisce un punto di accesso globale a tale istanza. Questo pattern è utile quando è necessario un oggetto che coordini le azioni in tutto il sistema, come un gestore di connessioni a un database, nel nostro caso, la connessione al database di _Postgress_.
 
 
-## Diagram
+### Factory
 
-Lo schema di interazione base dell'applicazione è il seguente:
+Il pattern Factory è un design pattern creazionale che fornisce un'interfaccia per creare oggetti in una classe madre, ma permette alle sottoclassi di alterare il tipo di oggetti che verranno creati. Questo pattern è particolarmente utile quando il processo di creazione richiede una certa logica o quando il tipo di oggetto creato può variare a seconda della situazioni. I benefici offerti da tale pattern sono i seguenti: 
 
-- L'utente si autentica alla Single Page Application, la quale esegue un redirect verso il servizio di autenticazione (Auth0)
-- Una volta che il processo di autenteicazione è andato a buon fine il servizio di autenticazione fornisce all'applicazione un Token
-- Questo token verrò consumato per fare le richieste alle API
+-  'Separazione delle responsabilità': Mantiene separata la logica di creazione degli oggetti dalla loro implementazione e utilizzo.
+-  'Flessibilità': Consente di aggiungere nuovi tipi di errori senza modificare il codice esistente.
+-  'Centralizzazione della creazione': Centralizza la logica di creazione degli oggetti, rendendo più facile la manutenzione e l'estensione del codice.
+-  'Riduzione della complessità': Rende il codice più leggibile e manutenibile riducendo la complessità del codice di creazione.
+-  'Consistenza': Garantisce che tutti gli oggetti vengano creati in modo coerente, seguendo lo stesso processo di creazione.
+
+
+
+## Rotte
+
+Nella tabella sottostante sono riportate le principali rotte dell'applicazione. Per ciascuna rotta sarà descritto il funzionamento, con chiamata di esempio e diagramma di sequenza.
+
+<table align="center">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Rotta</th>
+            <th>User</th>
+            <th>Admin</th>
+            <th>Autenticazione</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>GET</td>
+            <td>/admin/tokens</td>
+            <td></td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>PUT</td>
+            <td>/admin/recharge-tokens</td>
+            <td></td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/admin/dataset</td>
+            <td></td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/admin/users</td>
+            <td></td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/admin/create-user</td>
+            <td></td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>PUT</td>
+            <td>/dataset/insert-videos</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/tokens</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/modify-dataset</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/inference</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/result</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/user-jobs</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/remove-dataset</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔒</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/generate-jwt</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>🔓</td>
+        </tr>
+    </tbody>
+</table>
+
+
+### GET /admin/tokens
+La rotta restituisce in output, in formato json, email e tokens di ciascun utente. Di seguito verrà rappresentato il diagramma di sequenza 
 
 ```mermaid
 sequenceDiagram
-    actor Bob
-    participant Angular
-    participant Auth0
-    participant API
-    Bob ->> Angular: Auth
-    activate Bob
-    Angular->>Auth0: Redirect
-    activate Auth0
-    Auth0->>Angular: Token
-    deactivate Auth0
-    Angular ->> Bob: Authenticated
-    deactivate Bob
-    Bob ->> Angular: Action
-    Angular ->> API: Request
-    activate API
-    API ->> Angular: Response
-    deactivate API
-```
-
-### GET Routes
-
-Ogni richiesta verso l'API ha poi specificata una catena di middleware che va ad agire su questa, in particolare abbiamo una catena di middleware per le richieste GET e una per le PUT e POST.
-La catena di middleware che gestisce le richieste GET è la segguente:
-
-- i due middleware di logging sono innescati uno all'avvio della richiesta e uno alla fine del completamento della richiesta.
-- è presente un middleware intermedio che va a verificare che il contenuto non sia stato già inserito all'interno della cache di redis (la chiave che si utilizza per lo storage è l'url della risorsa).
-- se non è contenuto all'interno della cache allora si attiva il controller che interroga il DB, prende il valore di ritorno lo aggiunge alla cache e lo invia all'utente.
-
-```mermaid
-sequenceDiagram
-    Bob ->>+ preLog: Request
-    preLog ->>- cacheMiddleware: next
-    activate cacheMiddleware
-    cacheMiddleware ->>+ Redis: Check
-    deactivate cacheMiddleware
-    alt is cached
-        Redis ->>- cacheMiddleware: Response
-        activate cacheMiddleware
-        cacheMiddleware ->> postLog: Log
-        cacheMiddleware ->> Bob: res.json
-        deactivate cacheMiddleware
-    else is notcached
-        Redis ->>+ cacheMiddleware: Empty
-        cacheMiddleware ->>- Controller: Router
-        activate Controller
-        Controller ->> Database: Query
-        deactivate Controller
-        activate Database
-        Database ->> Controller: Result
-        deactivate Database
-        activate Controller
-        Controller ->> Reids: add to cache
-        Controller ->> postLog: Log
-        Controller ->> Bob: res.json
-        deactivate Controller
+    alt Supera tutti i controlli
+        Admin->>Server: /admin/tokens
+        Server->>Middleware: checkAuthHeader
+        Middleware->>Server: checkOk
+        Server->Middleware: checkJwt
+        Middleware->>Server: checkOk
+        Server->>Middleware: VerifyAndAuthenticate 
+        Middleware->>Server: checkOk
+        Server->>Middleware: checkUserExits
+        Middleware->>Controller: getUser()
+        Controller->>Sequelize: findAll()
+        Sequelizee->>Controller: Utente null(non esiste) oppure no
+        Controller->>Sequelize: Utente null(non esiste) oppure no
+        Controller->>Middlewara: utente esiste oppure no
+    else Viene sollevato un errore
+        Middleware->>Server: Errore
     end
 ```
 
