@@ -253,7 +253,7 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
 ### GET /admin/tokens
 La rotta restituisce in output, in formato json, email e tokens di ciascun utente. Di seguito verrà rappresentato il diagramma di sequenza. I controlli effettuati nel _Middleware_ sono i seguenti:
 
-- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
@@ -296,7 +296,7 @@ sequenceDiagram
 ### Put admin/recharge-tokens
 La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
 
-- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
@@ -308,7 +308,7 @@ La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _t
 sequenceDiagram
      actor Admin
 
-    Admin->>Server: Put admin/recharge-tokens
+    Admin->>Server: Put /admin/recharge-tokens
 
     Server->>Middleware: checkAuthHeader
     Middleware->>Server: result
@@ -357,7 +357,7 @@ sequenceDiagram
 ### Get admin/dataset
 La rotta, non prende in input alcun parametro e ritorna in output tutti i dataset posseduti da tutti gli utenti del database. I controlli effettuati nel middleware sono i seguenti:
 
-- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
@@ -368,7 +368,7 @@ La rotta, non prende in input alcun parametro e ritorna in output tutti i datase
 sequenceDiagram
      actor Admin
 
-    Admin->>Server: Put admin/recharge-tokens
+    Admin->>Server: Put /admin/recharge-tokens
 
     Server->>Middleware: checkAuthHeader
     Middleware->>Server: result
@@ -414,7 +414,7 @@ sequenceDiagram
 ### Get admin/users
 La rotta, non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database. Nel middleware vengono effettuati i seguenti controlli:
 
-- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
@@ -425,7 +425,7 @@ La rotta, non prende alcun parametro in input e ritorna in output la lista di tu
 sequenceDiagram
      actor Admin
 
-    Admin->>Server: Put admin/recharge-tokens
+    Admin->>Server: Put /admin/recharge-tokens
 
     Server->>Middleware: checkAuthHeader
     Middleware->>Server: result
@@ -471,7 +471,7 @@ sequenceDiagram
 ### Post admin/create-user
 La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritorna in output l'utente precedentemente aggiunto. I controlli effettuati nel middleware sono:
 
-- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo sulla presenza del payload header**: In caso di errore genera l'eccezione: _PayloadHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
@@ -493,7 +493,7 @@ La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritor
 sequenceDiagram
      actor Admin
 
-    Admin->>Server: Put admin/recharge-tokens
+    Admin->>Server: Put /admin/recharge-tokens
 
     Server->>Middleware: checkPayloadHeader()
     Middleware->>Server: result 
@@ -552,7 +552,7 @@ sequenceDiagram
 ### PUT dataset/insert-videos
 La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. I controlli che vengono effettuati nel middleware sono i seguenti:
 
-- **Controllo su presenza di _AuthenticationHeadher_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo sulla presenza del payload header**: In caso di errore genera l'eccezione: _PayloadHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
@@ -572,7 +572,7 @@ La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggi
 sequenceDiagram
      actor User
 
-    User->>Server: Put admin/recharge-tokens
+    User->>Server: Put /dataset/insert-videos
 
     Server->>Middleware: checkPayloadHeader()
     Middleware->>Server: result 
@@ -639,6 +639,62 @@ sequenceDiagram
         Server->>User: errore
     end
 ```
+
+## Get tokens
+La rotta, consente di visualizzare il numero di tokens residui del utente chiamante. I controlli effettuati nel middleware sono:
+
+- **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+
+
+```mermaid
+sequenceDiagram
+     actor User
+
+    User->>Server: Put /tokens
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    
+    alt Supera Middleware
+        Server->>Controller: visualizeCredits()
+        Controller->>Sequelize: find()
+        Sequelize->>Controller: result
+        Controller->>Server:result
+        alt Il controller non genera eccezione
+             Server->>User: response
+        else Il controller genera eccezione
+             Server->>User: errore
+        end 
+    else  Non supera Middleware
+        Server->>User: errore
+    end
+```
+
 
 ## API Docs
 
