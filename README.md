@@ -274,6 +274,7 @@ sequenceDiagram
     Controller->>Sequelize: find()
     Sequelize->>Controller: result
     Controller->>Middleware: result
+    Middleware->>Server: result 
     Server->>Middleware: checkPermission()
     Middleware->>Server: result 
     
