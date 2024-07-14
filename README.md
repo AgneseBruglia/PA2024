@@ -274,7 +274,7 @@ sequenceDiagram
         Middleware->>Server: result 
         Middleware->>Controller: getUser()
         Controller->>Sequelize: findAll()
-        Sequelizee->>Controller: Utente null(non esiste) oppure no
+        Sequelize->>Controller: result
         Controller->>Sequelize: result
         Controller->>Middleware: result
     else Viene sollevato un errore
