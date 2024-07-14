@@ -73,7 +73,7 @@ graph LR;
 
 ```mermaid
 graph TD;
-    User ---|CRUD| Tabella Dataset;
+    User ---|CRUD| TabellaDataset;
     Admin ---|CRUD GENERALE| Tabella Dataset;
     Admin ---|CRUD GENERALE| Tabella User;
     User ---|R| Tabella User;
