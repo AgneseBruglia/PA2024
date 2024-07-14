@@ -862,7 +862,7 @@ Il controller _getResult()_ inoltre, ha lo scopo di filtrare l'_id_ immesso nell
 sequenceDiagram
     actor User/Admin
 
-    User/Admin->>Server: Put /modify-dataset
+    User/Admin->>Server: Get /result
 
     Server->>Middleware: checkAuthHeader
     Middleware->>Server: result
@@ -902,7 +902,61 @@ sequenceDiagram
 
 ```
 
+### Get user-jobs
+La seguente rotta, mostra tutti e soli i risultati dei jobs di inferenza riferiti all'utente che ha effettuato la chiamata _/user-jobs_. In caso di processo ' _completed_', Dovrà anche essere stampato il risultato, mentre in caso di '_failed_' dovrà essere mostrato a schermo il codice e messaggio di errore. Ulteriori stati osservabili dalla rotta, oltre ai due precedentemente menzionati, sono:
+- 'Active': Il processo è in fase di inferenza.
+- 'Wait': Il processo è in attesa di iniziare l'inferenza.
 
+I controlli middleware implementati sono i seguenti:
+
+- **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+
+```mermaid
+sequenceDiagram
+    actor User/Admin
+
+    User/Admin->>Server: Get /result
+
+    Server->>Middleware: checkAuthHeader
+    Middleware->>Server: result
+
+    Server->>Middleware: checkJwt()
+    Middleware->>Server: result
+
+    Server->>Middleware: verifyAndAuthenticate()
+    Middleware->>Server: result
+
+    Server->>Middleware: checkUserExits()
+    Middleware->>Controller: getUser()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    Server->>Middleware: CheckResidualTokens()
+    Middleware->>Controller: getTokens()
+    Controller->>Sequelize: find()
+    Sequelize->>Controller: result
+    Controller->>Middleware: result
+    Middleware->>Server: result
+
+    alt Supera Middleware
+        Server->>Controller: getUserJobs()
+        Controller->>Redis: getJobs()
+        Redis->>Controller: result
+        Controller->>Redis: getState()
+        Redis->>Controller: result
+        Controller->>Server: result
+        Server->>User/Admin: response
+    else Non supera Middleware
+        Server->>User/Admin: errore
+    end
+
+```
 ## API Docs
 
 ### Clients
