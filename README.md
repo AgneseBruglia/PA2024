@@ -142,7 +142,7 @@ Il pattern Factory è un design pattern creazionale che fornisce un'interfaccia 
 
 ## Rotte
 
-Nella tabella sottostante sono riportate le principali rotte dell'applicazione. Per ciascuna rotta sarà descritto il funzionamento, con chiamata di esempio e diagramma di sequenza.
+Nella tabella sottostante sono riportate le principali rotte dell'applicazione. Per ciascuna rotta sarà descritto il funzionamento ed il diagramma di sequenza.
 
 <table align="center">
     <thead>
@@ -251,28 +251,37 @@ Nella tabella sottostante sono riportate le principali rotte dell'applicazione. 
 
 
 ### GET /admin/tokens
-La rotta restituisce in output, in formato json, email e tokens di ciascun utente. Di seguito verrà rappresentato il diagramma di sequenza 
+La rotta restituisce in output, in formato json, email e tokens di ciascun utente. Di seguito verrà rappresentato il diagramma di sequenza. I controlli effettuati nel _Middleware_ sono i seguenti:
+
+- 'Controllo su presenza di _AuthenticationHeadher_': In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
+- 'Controllo su presenza del _Jwt_': In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
+- 'Controllo su autenticità del _Jwt_': In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
+- 'Controllo utente esistente nel Database ': In caso di errore lancia opportuna eccezione: _UserDoesNotExist_.
+- 'Controllo permessi admin': In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
 
 ```mermaid
 sequenceDiagram
     alt Supera tutti i controlli
         Admin->>Server: /admin/tokens
-        Server->>Middleware: checkAuthHeader
-        Middleware->>Server: checkOk
+        Server->>Middleware: checkAuthHeader()
+        Middleware->>Server: result
         Server->Middleware: checkJwt
-        Middleware->>Server: checkOk
+        Middleware->>Server: result
         Server->>Middleware: VerifyAndAuthenticate 
-        Middleware->>Server: checkOk
-        Server->>Middleware: checkUserExits
+        Middleware->>Server: result
+        Server->>Middleware: checkUserExits()
+        Server->>Middleware: checkPermission()
+        Middleware->>Server: result 
         Middleware->>Controller: getUser()
         Controller->>Sequelize: findAll()
         Sequelizee->>Controller: Utente null(non esiste) oppure no
-        Controller->>Sequelize: Utente null(non esiste) oppure no
-        Controller->>Middlewara: utente esiste oppure no
+        Controller->>Sequelize: result
+        Controller->>Middleware: result
     else Viene sollevato un errore
         Middleware->>Server: Errore
     end
 ```
+
 
 ### POST/PUT Routes
 
