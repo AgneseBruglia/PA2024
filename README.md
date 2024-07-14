@@ -493,7 +493,7 @@ La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritor
 sequenceDiagram
      actor Admin
 
-    Admin->>Server: Put /admin/recharge-tokens
+    Admin->>Server: Put /admin/create-user
 
     Server->>Middleware: checkPayloadHeader()
     Middleware->>Server: result 
@@ -570,9 +570,9 @@ La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggi
 
 ```mermaid
 sequenceDiagram
-     actor User
+     actor User/Admin
 
-    User->>Server: Put /dataset/insert-videos
+    User/Admin->>Server: Put /dataset/insert-videos
 
     Server->>Middleware: checkPayloadHeader()
     Middleware->>Server: result 
@@ -631,12 +631,12 @@ sequenceDiagram
         Sequelize->>Controller: result
         Controller->>Server:result
         alt Il controller non genera eccezione
-             Server->>User: response
+             Server->>User/Admin: response
         else Il controller genera eccezione
-             Server->>User: errore
+             Server->>User/Admin: errore
         end 
     else  Non supera Middleware
-        Server->>User: errore
+        Server->>User/Admin: errore
     end
 ```
 
@@ -652,9 +652,9 @@ La rotta, consente di visualizzare il numero di tokens residui del utente chiama
 
 ```mermaid
 sequenceDiagram
-     actor User
+     actor User/Admin
 
-    User->>Server: Put /tokens
+    User/Admin->>Server: Put /tokens
 
     Server->>Middleware: checkAuthHeader
     Middleware->>Server: result
@@ -686,12 +686,12 @@ sequenceDiagram
         Sequelize->>Controller: result
         Controller->>Server:result
         alt Il controller non genera eccezione
-             Server->>User: response
+             Server->>User/Admin: response
         else Il controller genera eccezione
-             Server->>User: errore
+             Server->>User/Admin: errore
         end 
     else  Non supera Middleware
-        Server->>User: errore
+        Server->>User/Admin: errore
     end
 ```
 
@@ -700,9 +700,9 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-     actor User
+     actor User/Admin
 
-    User->>Server: Put /modify-dataset
+    User/Admin->>Server: Put /modify-dataset
 
     Server->>Middleware: checkAuthHeader
     Middleware->>Server: result
@@ -751,12 +751,12 @@ sequenceDiagram
         Sequelize->>Controller: result
         Controller->>Server:result
         alt Il controller non genera eccezione
-             Server->>User: response
+             Server->>User/Admin: response
         else Il controller genera eccezione
-             Server->>User: errore
+             Server->>User/Admin: errore
         end 
     else  Non supera Middleware
-        Server->>User: errore
+        Server->>User/Admin: errore
     end
 ```
 
