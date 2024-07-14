@@ -262,6 +262,7 @@ La rotta restituisce in output, in formato json, email e tokens di ciascun utent
 ```mermaid
 sequenceDiagram
     alt Supera tutti i controlli
+        actor Admin
         Admin->>Server: /admin/tokens
         Server->>Middleware: checkAuthHeader()
         Middleware->>Server: result
@@ -277,7 +278,7 @@ sequenceDiagram
         Sequelize->>Controller: result
         Controller->>Middleware: result
     else Viene sollevato un errore
-        Middleware->>Server: Errore
+        Server->>Admin: Errore
     end
 ```
 
