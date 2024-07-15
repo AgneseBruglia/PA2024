@@ -1451,7 +1451,7 @@ Per eseguire il progetto procedere nel seguente modo:
 
 1. Scaricare la repository da _GitHUb_ aprendo il terminale e digitando il seguente comando: 
 ```
-git clone git@github.com:AgneseBruglia/PA2024.git
+git clone https://github.com/AgneseBruglia/PA2024
 ```   
 2. Aprire la shell nella directory di progetto, ovvero dentro la cartella _/PA2024_.
 
