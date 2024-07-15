@@ -70,15 +70,15 @@ graph TD;
     InfController.py
     end
 
-    subgraph Postgress
-    postgress
-    end
-
     subgraph App
     Server.ts --- AppController.ts 
     AppController.ts 
     AppModel.ts 
     AppController.ts --- AppModel.ts
+    end
+
+    subgraph Postgress
+    postgress
     end
 
     subgraph Cost
