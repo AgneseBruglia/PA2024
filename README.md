@@ -53,12 +53,6 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto e ch
 
 ```mermaid
 graph TD;
-    subgraph App
-    Server.ts --- AppController.ts 
-    AppController.ts 
-    AppModel.ts 
-    AppController.ts --- AppModel.ts
-    end
 
     subgraph Redis
     redis
@@ -69,6 +63,13 @@ graph TD;
     AuthController.ts 
     AuthModel.ts 
     AuthController.ts --- AuthModel.ts
+    end
+
+    subgraph App
+    Server.ts --- AppController.ts 
+    AppController.ts 
+    AppModel.ts 
+    AppController.ts --- AppModel.ts
     end
 
     subgraph Inference
