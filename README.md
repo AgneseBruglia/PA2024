@@ -999,8 +999,8 @@ Request:
 Authorization: Bearer {token}
 ```
 ```params
-    email = "mariorossi@gmail.com"
-    tokens_to_charge = 200
+email = "mariorossi@gmail.com"
+tokens_to_charge = 200
 ```
 
 Response: 
@@ -1019,10 +1019,6 @@ GET /admin/dataset
 Request:
 ```
 Authorization: Bearer {token}
-```
-
-```json
-
 ```
 Response: 
 ```json
@@ -1115,6 +1111,41 @@ Response:
 ```
 
 ### User
+
+#### Create user 🔐
+
+```
+POST /admin/create-user
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+
+```json
+{
+    "name": "Agnese",
+    "surname": "Bruglia",
+    "email": "agnese.b@gmail.com",
+    "type": "ADMIN",
+    "residual_tokens": 500
+}
+```
+Response: 
+```json
+{
+    "user_id": 3,
+    "name": "Agnese",
+    "surname": "Bruglia",
+    "email": "agnese.b@gmail.com",
+    "type": "ADMIN",
+    "residual_tokens": 500,
+    "updatedAt": "2024-07-14T17:36:57.943Z",
+    "createdAt": "2024-07-14T17:36:57.943Z"
+}
+```
+
+
 
 
 
