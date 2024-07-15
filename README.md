@@ -1409,6 +1409,25 @@ Response:
 }
 ```
 
+#### Create JWT 🔐
+```
+GET /generate-token
+```
+Request:
+```params
+email = contedicavour@gmail.com
+type = USER
+expiration = 14
+
+```
+Response: 
+```json
+{
+    "successo": true,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFnbmVzZS5iQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzIxMDUyMTgwLCJleHAiOjE3MjIyNjE3ODB9.C_C18xINCpbnYKwbegc8rPV0HsbWX_i1cuqlhQcuf7M"
+}
+```
+
 
 ## Startup
 
