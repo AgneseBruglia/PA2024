@@ -71,7 +71,7 @@ graph TD;
     end
 
     subgraph App
-    Server.ts --- AppController.ts
+    AppServer.ts --- AppController.ts
     AppController.ts --- AppModel.ts
     end
 
