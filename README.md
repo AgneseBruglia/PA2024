@@ -998,6 +998,10 @@ Request:
 ```
 Authorization: Bearer {token}
 ```
+```params
+    email = "mariorossi@gmail.com"
+    tokens_to_charge = 200
+```
 
 Response: 
 ```json
