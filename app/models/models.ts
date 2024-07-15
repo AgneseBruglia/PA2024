@@ -82,25 +82,25 @@ const syncModels = async () => {
 async function createUsers() {
     try {
         const newAdmin = await User.create({
-            name: 'Agnese',
-            surname: 'Bruglia',
-            email: 'agnib@gmail.com',
+            name: 'Mario',
+            surname: 'Rossi',
+            email: 'mariorossi@gmail.com',
             type: 'ADMIN',
-            residual_tokens: 2000
+            residual_tokens: 200
         });
         const newUser1 = await User.create({
-            name: 'Luca',
-            surname: 'Bellante',
-            email: 'lubells@gmail.com',
+            name: 'Giuseppe',
+            surname: 'Verdi',
+            email: 'giuseppeverdi@gmail.com',
             type: 'USER',
-            residual_tokens: 100000000000
+            residual_tokens: 200
         });
         const newUser2 = await User.create({
-            name: 'Adriano',
-            surname: 'Mancini',
-            email: 'mancins@gmail.com',
+            name: 'Jorge',
+            surname: 'Bergoglio',
+            email: 'pontefice@gmail.com',
             type: 'USER',
-            residual_tokens: 2000
+            residual_tokens: 1
         });
     } catch (error) {
         console.error('Errore durante la creazione dell\'utente:', error);
