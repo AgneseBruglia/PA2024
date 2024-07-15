@@ -11,13 +11,13 @@
   </p>
   <br/>
   <p>
-    <a href="##Obiettivo"><strong>Obiettivo</strong></a> ·
-    <a href="##Progettazione"><strong>Progettazione</strong></a> .
-    <a href="##Rotte"><strong>Rotte</strong></a> .
-    <a href="##API Docs"><strong>Api docs</strong></a> .
-    <a href="##Startup"><strong>Startup</strong></a> .
-    <a href="##Q &amp A"><strong>Api docs</strong></a> .
-    <a href="##Autori e Contributi"><strong>Autori</strong></a> .
+    <a href="## Obiettivo"><strong>Obiettivo</strong></a> ·
+    <a href="## Progettazione"><strong>Progettazione</strong></a> .
+    <a href="## Rotte"><strong>Rotte</strong></a> .
+    <a href="## API Docs"><strong>Api docs</strong></a> .
+    <a href="## Startup"><strong>Startup</strong></a> .
+    <a href="## Q &amp A"><strong>Api docs</strong></a> .
+    <a href="## Autori e Contributi"><strong>Autori</strong></a> .
   </p>
   <br/>
 </div>
