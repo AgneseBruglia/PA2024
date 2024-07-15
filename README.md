@@ -75,12 +75,12 @@ graph LR;
     AppController.ts --- AppModel.ts
     end
 
-    subgraph Postgress
-    postgress
-    end
-
     subgraph Cost
     Cost_services.py
+    end
+
+    subgraph Postgress
+    postgress
     end
 
     AppModel.ts --- redis
