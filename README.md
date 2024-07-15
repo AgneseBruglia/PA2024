@@ -93,6 +93,21 @@ Per il progetto abbiamo deciso di utilizzare PostgreSQL, un database relazionale
     }
 
 ```
+### Use Case
+La figura sottostante rappresenta il diagramma dei casi d'uso. Per _generale_, si intende, un'operazione che può essere svolta a livello di qualsivoglia tupla della tabella: '_dataser_' oppure '_user_'.
+
+```mermaid
+graph TD
+    Admin ---|R_generale| Tabella_Dataset
+    Admin ---|CRU_generale| Tabella_User
+
+    User --- Valutazione_processo_avanzamento
+    User --- Ritorno_risultato_inferenza
+    User --- Visione_crediti_residui
+    User ---|CRUD| Tabella_Dataset
+
+```
+
 
 ## Design Pattern
 
