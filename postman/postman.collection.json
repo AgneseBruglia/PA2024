@@ -584,7 +584,7 @@
 				{
 					"name": "CreateJWTToken",
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "http://localhost:3100/generate-token?email=giuseppeverdi@gmail.com&type=USER&expiration=14",
@@ -622,7 +622,7 @@
 				{
 					"name": "CreateJWTToken",
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "http://localhost:3100/generate-token?email=giuseppeverdi@gmail.com&type=USER&expiration=14",
