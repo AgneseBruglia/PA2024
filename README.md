@@ -1418,7 +1418,6 @@ Request:
 email = contedicavour@gmail.com
 type = USER
 expiration = 14
-
 ```
 Response: 
 ```json
