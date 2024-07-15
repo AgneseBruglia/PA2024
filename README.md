@@ -2,7 +2,7 @@
 
 <div align="center">
   <br/>
-  <img src="./img/logo_PA2024.png" width="300" />
+  <img src="./img/Logo_PA2024.png" width="300" />
   <br/>
   <br/>
   <p>
