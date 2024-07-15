@@ -65,6 +65,18 @@ export const generateJwtSchema = Joi.object({
     expiration: Joi.number().integer().positive().min(1).max(48).required()
 });
 
+
+
+
+/**
+ * Middleware 'validateSchema'
+ * 
+ * Lambda function con lo scopo di validare la correttezza dell'input passato alla rotta 
+ * 
+ * @param schema Schema da validare
+ * @param source Sorgente da dove prelevare l'input: body o query
+ * @param includeEmail Variabile booleana per tracciare indirizzo email, utile per il meccanismo di visione isolata(per utente) della coda
+ */
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query', includeEmail: boolean = true) => async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;
 
@@ -80,6 +92,15 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | '
     }
 };
 
+/**
+ * Middleware 'validateInsertVideo'
+ * 
+ * Lambda function con lo scopo di validare la correttezza dell'input passato alla rotta 
+ * 
+ * @param req La richiesta da parte del client
+ * @param res La risposta da parte del server
+ * @param next Il riferimento al middleware successivo
+ */
 export async function validateInsertVideo(req: any, res: any, next: any): Promise<void> {
     const insertVideoSchema = Joi.object({
         dataset_name: Joi.string().max(50).required(),

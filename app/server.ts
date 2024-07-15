@@ -36,13 +36,17 @@ app.use((err: Error, req: any, res: any, next: any) => {
 
 /*********************************    ROTTE USER    ************************************ */
 
-// Definizione della rotta per creare un nuovo dataset vuoto
+/**
+ * Definizione della rotta per creare un nuovo dataset vuoto
+ */
 app.get('/generate-jwt', Middleware.generateJwt, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await generateJwt(req, res);
     res.json(result);
 });
 
-// Definizione della rotta per creare un nuovo dataset vuoto
+/**
+ * Definizione della rotta per creare un nuovo dataset vuoto
+ */
 app.post('/create-dataset', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.createDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const dataset_name = req.body.dataset_name;
     const email: string = req.decodeJwt.email as string;
@@ -50,7 +54,9 @@ app.post('/create-dataset', Middleware.checkPayloadHeader, Middleware.checkAuthH
     res.json(result);
 });
 
-// Definizione della rotta per recuperare tutti i dataset di un utente
+/**
+ * Definizione della rotta per recuperare tutti i dataset di un utente
+ */
 app.get('/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.getDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
@@ -63,7 +69,9 @@ app.get('/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middlew
     }
 });
 
-// Definizione della rotta per aggiornare un dataset
+/**
+ * Definizione della rotta per aggiornare un dataset
+ */
 app.put('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.updateDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
@@ -72,7 +80,9 @@ app.put('/modify-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, 
     res.json(result);
 });
 
-// Definizione della rotta per classificare i video di un dataset
+/**
+ * Definizione della rotta per classificare i video di un dataset
+ */
 app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.doInference, Middleware.error_handling, async (req: any, res: Response) => {
     const dataset_name: string = req.query.dataset_name;
     const model_name: string = req.query.model_name;
@@ -81,14 +91,18 @@ app.post('/inference', Middleware.checkAuthHeader, Middleware.checkGeneral, Midd
     res.json({ job_id: job.id });
 });
 
-// Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id
+/**
+ * Definizione della rotta per ritornare il risultato di un processo in coda in base al suo id
+ */
 app.get('/result', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.result, Middleware.error_handling, async (req: any, res: Response) => {
     const job_id = req.query.id;
     const jobResult = await getResult(job_id, res, req.decodeJwt.email);
     res.json(jobResult);
 });
 
-// Definizione della rotta per aggiungere un contenuto a un dataset 
+/**
+ * Definizione della rotta per aggiungere un contenuto a un dataset 
+ */
 app.put('/dataset/insert-videos', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.insertVideo, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
@@ -97,7 +111,9 @@ app.put('/dataset/insert-videos', Middleware.checkPayloadHeader, Middleware.chec
     res.json(result);
 });
 
-// Definizione della rotta per eliminare un dataset
+/**
+ * Definizione della rotta per eliminare un dataset
+ */
 app.delete('/remove-dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.deleteDataset, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const dataset_name = req.query.dataset_name as string;
@@ -105,14 +121,18 @@ app.delete('/remove-dataset', Middleware.checkAuthHeader, Middleware.checkGenera
     res.json(result);
 });
 
-// Definizione della rotta per ottenere il numero di token residui per un certo utente
+/**
+ * Definizione della rotta per ottenere il numero di token residui per un certo utente
+ */
 app.get('/tokens', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const result = await visualizeCredits(res, email);
     res.json(result);
 });
 
-// Definizione della rotta per restituire i processi di un utente
+/**
+ * Definizione della rotta per restituire i processi di un utente
+ */
 app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.decodeJwt.email as string;
     const result = await getUserJobs(email, res);
@@ -121,26 +141,34 @@ app.get('/user-jobs', Middleware.checkAuthHeader, Middleware.checkGeneral, Middl
 
 /*********************************    ROTTE ADMIN    ************************************ */
 
-// Definizione della rotta per l'inserimento di un nuovo utente
+/**
+ * Definizione della rotta per l'inserimento di un nuovo utente
+ */
 app.post('/admin/create-user', Middleware.checkPayloadHeader, Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.checkInsertUsers, Middleware.error_handling, async (req: any, res: Response) => {
     const { name, surname, email, type, residual_tokens } = req.body;
     const newUser = await createUser({ name, surname, email, type, residual_tokens });
     res.json(newUser);
 });
 
-// Definizione della rotta per ottenere tutti i dataset di tutti gli utenti
+/**
+ * Definizione della rotta per ottenere tutti i dataset di tutti gli utenti
+ */
 app.get('/admin/dataset', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await getAllDataset(res);
     res.json(result);
 });
 
-// Definizione della rotta per ottenere tutti gli utenti
+/**
+ * Definizione della rotta per ottenere tutti gli utenti
+ */
 app.get('/admin/users', Middleware.checkAuthHeader, Middleware.checkGeneral, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const users = await getAllUsers(res);
     res.json(users);
 });
 
-// Definizione della rotta per ricaricare i token di un utente
+/**
+ * Definizione della rotta per ricaricare i token di un utente
+ */
 app.put('/admin/recharge-tokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.rechargeCredits, Middleware.error_handling, async (req: any, res: Response) => {
     const email = req.query.email as string;
     const tokens_to_charge = parseInt(req.query.tokens_to_charge as string);
@@ -148,19 +176,25 @@ app.put('/admin/recharge-tokens', Middleware.checkAuthHeader, Middleware.checkJw
     res.json(result);
 });
 
-// Definizione della rotta per ottenere i tokens di tutti gli utenti
+/**
+ * Definizione della rotta per ottenere i tokens di tutti gli utenti
+ */
 app.get('/admin/tokens', Middleware.checkAuthHeader, Middleware.checkJwt, Middleware.checkPermission, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await visualizeCredits(res);
     res.json(result);
 });
 
-// Gestione delle rotte non previste
+/**
+ * Gestione delle rotte non previste
+ */
 app.get('*', Middleware.other_route, Middleware.error_handling);
 app.post('*', Middleware.other_route, Middleware.error_handling);
 app.put('*', Middleware.other_route, Middleware.error_handling);
 app.delete('*', Middleware.other_route, Middleware.error_handling);
 
-// Inizializzazione del server sulla porta dedicata
+/**
+ * Inizializzazione del server sulla porta dedicata
+ */
 app.listen(port, () => {
     resetBull();
     console.log(`Server running at http://${host}:${port}`);

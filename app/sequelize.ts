@@ -3,10 +3,24 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Classe Singleton per la connessione con il DB
+/**
+ * Classe Singleton per la connessione con il DB
+ */
 class Database {
   private static instance: Sequelize;
+
+  /**
+   * Costruttore privato, utile per implementazione Singleton
+   */
   private constructor() { }
+
+  /**
+   * Database: getInstance()
+   * 
+   * Il metodo ritorna l'istanza corrente della classe Database
+   * 
+   * @returns Database.instance
+   */
   public static getInstance(): Sequelize {
     if (!Database.instance) {
       const dbName = process.env.POSTGRES_DB as string;

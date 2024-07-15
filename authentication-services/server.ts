@@ -10,13 +10,17 @@ const host = process.env.AUTHENTICATION_SERVICES_HOST || 'authentication-service
 
 app.use(express.json());
 
-// Definizione della rotta per generare un jwt
+/**
+ * Definizione della rotta per generare un jwt
+ */
 app.post('/generate-token', Middleware.verifyInput, Middleware.error_handling, async (req: any, res: Response) => {
     const result = await generateToken(req, res); 
     res.json(result);
 });
 
-// Inizializzazione dell server sulla porta dedicata
+/**
+ * Inizializzazione dell server sulla porta dedicata
+ */
 app.listen(port, () => {
     console.log(`Server running at http://${host}:${port}`);
 });

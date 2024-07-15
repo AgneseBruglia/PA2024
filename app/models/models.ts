@@ -1,10 +1,14 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import Database from '../sequelize';
 
-// Connessione con il RDBMS
+/**
+ * Connessione con il RDBMS
+ */
 const sequelize: Sequelize = Database.getInstance();
 
-// Definizione della tabella 'User'
+/**
+ * Definizione della tabella 'User'
+ */
 export const User = sequelize.define('users', {
     user_id: {
         type: DataTypes.INTEGER,
@@ -37,7 +41,9 @@ export const User = sequelize.define('users', {
     tableName: 'users'
 });
 
-// Definizione della tabella 'Dataset'
+/**
+ * Definizione della tabella 'Dataset'
+ */
 export const Dataset = sequelize.define('dataset', {
     dataset_name: {
         type: DataTypes.STRING(50),
@@ -58,7 +64,9 @@ export const Dataset = sequelize.define('dataset', {
     ]
 });
 
-// Definizione della relazione tra le tabelle
+/**
+ * Definizione della relazione tra le tabelle
+ */
 User.hasMany(Dataset, {
     foreignKey: {
         name: 'email',
@@ -68,7 +76,9 @@ User.hasMany(Dataset, {
 });
 Dataset.belongsTo(User, { foreignKey: 'email' });
 
-// Funzione per la sincronizzazione delle tabelle nel DB e per il seed
+/**
+ * Funzione per la sincronizzazione delle tabelle nel DB e per il seed
+ */
 const syncModels = async () => {
     try {
         await sequelize.sync({ force: true });
@@ -78,7 +88,9 @@ const syncModels = async () => {
     }
 };
 
-// Funzione per la creazione degli utenti nel database
+/**
+ * Funzione per la creazione degli utenti nel database
+ */
 async function createUsers() {
     try {
         const newAdmin = await User.create({
