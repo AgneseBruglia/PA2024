@@ -32,7 +32,7 @@ L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ al
 
 ### Pattern Architetturale MVC 
 
-Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare ed implementare ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, e il modello, ovvero il database e la logica di business. La struttura da noi progettata e implementata è quindi composta da: 
+Per il progetto è stato scelto di utilizzare il pattern **MVC**: "Model View Controller". Tale pattern è relativamente semplice da progettare e implementare, ma offre notevoli benifici in quanto scardina la comunicazione diretta tra la view, nel nostro caso le interazioni _http_ degli utenti, e il modello, ovvero il database e la logica di business. La struttura da noi progettata e implementata è quindi composta da: 
 
 - **Model**: logica di Business e accesso al database.
 - **View**: vista grazie alla quale l'utente si interfaccia con il software.
@@ -148,7 +148,7 @@ Il design pattern middleware è un concetto architetturale utilizzato principalm
 
 ### Singleton
 
-Il pattern Singleton è un design pattern creazionale che assicura che una classe abbia una sola istanza e fornisce un punto di accesso globale a tale istanza. Questo pattern è utile quando è necessario un oggetto che coordini le azioni in tutto il sistema, come un gestore di connessioni a un database, nel nostro caso, la connessione al database di _Postgress_.
+Il pattern Singleton è un design pattern creazionale che assicura che una classe abbia una sola istanza e fornisce un punto di accesso globale a tale istanza. Questo pattern è utile quando è necessario un oggetto che coordini le azioni in tutto il sistema, come un gestore di connessioni a un database: nel nostro caso, la connessione al database di _Postgress_.
 
 
 ### Factory
@@ -378,7 +378,7 @@ sequenceDiagram
 ```
 
 ### Get admin/dataset
-La rotta, non prende in input alcun parametro e ritorna in output tutti i dataset posseduti da tutti gli utenti del database. I controlli effettuati nel middleware sono i seguenti:
+La rotta non prende in input alcun parametro e ritorna in output tutti i dataset posseduti da tutti gli utenti del database. I controlli effettuati nel middleware sono i seguenti:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -435,7 +435,7 @@ sequenceDiagram
 ```
 
 ### Get admin/users
-La rotta, non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database. Nel middleware vengono effettuati i seguenti controlli:
+La rotta non prende alcun parametro in input e ritorna in output la lista di tutti e soli gli utenti presenti nel database. Nel middleware vengono effettuati i seguenti controlli:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -497,7 +497,7 @@ La rotta aggiunge un nuovo utente al database. Essa, prende in input nel _body_ 
 - **name**. 
 - **surname**.
 - **email**.
-- **tokens**: Crediti residui iniziali.
+- **tokens**: Crediti residui.
 - **type**: Tipologia di utente distinguibile tra '_USER_' o '_ADMIN_'.
 
 
@@ -508,7 +508,7 @@ I controlli effettuati nel middleware sono:
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
-- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
+- **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata l'eccezione: _ZeroTokensError_.
 - **Controllo permessi admin**: In caso di errore lancia opportuna eccezione: _UserNotAdmin_.
 - **Controllo validazione input**: Per ciascun campo vengono effettuate le seguenti verifiche:
   - _name_: Il nome deve essere una stringa di massimo 50 caratteri.
@@ -582,7 +582,7 @@ sequenceDiagram
 ```
 
 ### PUT dataset/insert-videos
-La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. La rotta prende come _query parameters_  il '_dataset_name_' overo il nome del dataset dentro il quale si vuole aggiungere nuovi filmati e nel _body_ della richiesta, prende in input l'array di nuovi video: '_videos_', che dovranno confluire nel dataset.
+La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. Prende come _query parameters_  il '_dataset_name_' overo il nome del dataset dentro il quale si vuole aggiungere nuovi filmati e, nel _body_ della richiesta, prende in input l'array di nuovi video, '_videos_', che dovranno confluire nel dataset.
 
 I controlli che vengono effettuati nel middleware sono i seguenti:
 
@@ -597,7 +597,7 @@ I controlli che vengono effettuati nel middleware sono i seguenti:
   - _videos_: Deve essere un array di stringhe, obbligatoriamente contenuto nel body della richiesta sotto forma di Json. L'array deve contenere almeno un video.
   In caso di non ottemperanza, verrebbe generata un'apposita eccezione: _IncorrectInputError_.
 
-- **Controllo dataset esistente**: Viene verificato che il dataset, inserito nella query della richiesta, esista realmente ed appartenga all'utente che effettua la richiesta. In caso contrario, viene lanciato la seguente eccezione: _DatasetNotExitsError_.
+- **Controllo dataset esistente**: Viene verificato che il dataset, inserito nella query della richiesta, esista realmente ed appartenga all'utente che effettua la richiesta. In caso contrario, viene lanciata l'eccezione: _DatasetNotExitsError_.
 - **Controllo non ripetizione dei video**: Viene verificato che nell'array dei video da inserire non siano presenti doppioni, in caso contrario viene generata l'eccezione: _VideosAlreadyExitArrayError_ . Inoltre, viene verificata la non presenza di doppioni tra i nuovi video da aggiungere e quelli già presenti nella corrispondente tupla della tabella: _dataset_, in caso contrario viene generata l'eccezione: _VideosAlreadyExitError_.
 - **Controllo tokens per caricamento video**:  Viene verificato che i tokens dell'utente che intende effettuare la richiesta siano sufficienti per caricare tutti i video nella tupla della tabella _dataset_. In caso contrario, viene generata l'eccezione: _NotEnoughTokens_.
 
@@ -675,17 +675,14 @@ sequenceDiagram
 ```
 
 ### Get tokens
-La rotta, consente di visualizzare il numero di tokens residui del utente chiamante. I controlli effettuati nel middleware sono:
+La rotta consente di visualizzare il numero di tokens residui del utente chiamante. I controlli effettuati nel middleware sono:
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
 - **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
-- **Controllo dataset esistente**: Viene verificato che il dataset, inserito nella query della richiesta, esista realmente ed appartenga all'utente che effettua la richiesta. In caso contrario, viene lanciato la seguente eccezione: _DatasetNotExitsError_.
-- **Controllo numero di video**: Verifica che il dataset, non sia vuoto e che quindi contenga almeno un video. In caso contrario, viene generata l'eccezione: _NoVideoError_.
-- **Controllo disponibilità token per inferenza**: Verifica che i token dell'utente che effettua la richiesta siano sufficiente per processare l'intero dataset. In caso affermativo, i token vengono scalati, mentre in caso negativo viene generata l'eccezione: _NoTokensForInferenceError_.
-
+  
 
 ```mermaid
 sequenceDiagram
@@ -733,7 +730,7 @@ sequenceDiagram
 ```
 
 ### Put modify-dataset
-La rotta prende in input, come _query parameters_, il nome del dataset da modificare: _dataset_name_ ed il nuovo nome: _new_dataset_name_ , effettuando la modifica.
+La rotta prende in input come _query parameters_ il nome del dataset da modificare: _dataset_name_ e il nuovo nome: _new_dataset_name_ , effettuando la modifica.
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -806,15 +803,14 @@ sequenceDiagram
 ```
 
 ### Post inference
-La rotta, prende in input il nome del modello da utilizzare: '_model_name_' ed il nome del dataset: '_dataset_name_' nella query della richiesta. Inserisce il processo in coda e ritorna in output l'id del processo. I controlli middleware effettuati sono: 
+La rotta prende in input il nome del modello da utilizzare: '_model_name_' ed il nome del dataset: '_dataset_name_' nella query della richiesta. Inserisce il processo in coda e ritorna in output l'id del processo. I controlli middleware effettuati sono: 
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
 - **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
-- **Controllo validazione input**: Verifica che i campi _dataset_name_ e _model_ siano presenti e contengano stringhe. Inoltre verifica che _model_ sia popolato solo con due diversi tipi di modelli: '_model.tflite_' oppure '_model_8bit.tflite_'. In caso di errore viene generata l'eccezione: _IncorrectInputError_.
-
+- **Controllo validazione input**: Verifica che i campi _dataset_name_ e _model_ siano presenti e contengano stringhe. Inoltre verifica che _model_ sia popolato solo i possibili tipi di modelli: '_model.tflite_' oppure '_model_8bit.tflite_'. In caso di errore viene generata l'eccezione: _IncorrectInputError_.
 
 
 ```mermaid
@@ -885,16 +881,16 @@ sequenceDiagram
 ```
 
 ### Get result
-La rotta, prende come input nella query della richiesta, l'_id_ corrispondente al processo di inferenza effettuato dall'utente e di cui si vuole conoscere il risultato. Il middleware implementato per la richiesta è il seguente:
+La rotta prende come input nella query della richiesta l'_id_ corrispondente al processo di inferenza effettuato dall'utente e di cui si vuole conoscere il risultato. Il middleware implementato per la richiesta è il seguente:
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
 - **Controllo su autenticità del _Jwt_**: In caso di errore lancia opportuna eccezione: _VerifyAndAuthenticateError_.
 - **Controllo utente esistente nel Database**: Verifica che l'utente che ha effettuato la richiesta sia presente nel database. In caso di errore viene lanciata un'opportuna eccezione: _UserDoesNotExist_.
 - **Controllo su tokens residui**: Verifica che l'utente che vuole effettuare la richiesta abbia un numero di tokens maggiore di 0 (zero). In caso di errore, viene sollevata la seguente eccezione: _ZeroTokensError_.
-- **Controllo validazione input**: Viene verificato che l'_id_ immesso sia un intero positivo strettamente maggiore di 0(zero).
+- **Controllo validazione input**: Viene verificato che l'_id_ immesso sia un intero positivo strettamente maggiore di 0 (zero).
 
-Il controller _getResult()_ inoltre, ha lo scopo di filtrare l'_id_ immesso nella richiesta, facendo visualizzare il processo solo se completo e se l'utente che ha lanciato il processo di inferenza è lo stesso che cerca di scaricare i risultati.
+Il controller _getResult()_, inoltre, ha lo scopo di filtrare l'_id_ immesso nella richiesta facendo visualizzare il processo solo se completo e se l'utente che ha lanciato il processo di inferenza è lo stesso che cerca di scaricare i risultati.
 
 ```mermaid
 sequenceDiagram
@@ -944,8 +940,10 @@ sequenceDiagram
 
 ```
 
+
 ### Get user-jobs
-La seguente rotta, mostra tutti e soli i risultati dei jobs di inferenza riferiti all'utente che ha effettuato la chiamata _/user-jobs_. In caso di processo ' _completed_', Dovrà anche essere stampato il risultato, mentre in caso di '_failed_' dovrà essere mostrato a schermo il codice e messaggio di errore. Ulteriori stati osservabili dalla rotta, oltre ai due precedentemente menzionati, sono:
+
+La rotta mostra tutti e soli i risultati dei jobs di inferenza riferiti all'utente che ha effettuato la chiamata _/user-jobs_. In caso di processo ' _completed_', Dovrà anche essere stampato il risultato, mentre in caso di '_failed_' dovrà essere mostrato a schermo il codice e messaggio di errore. Ulteriori stati osservabili dalla rotta, oltre ai due precedentemente menzionati, sono:
 - 'Active': Il processo è in fase di inferenza.
 - 'Wait': Il processo è in attesa di iniziare l'inferenza.
 
@@ -1005,7 +1003,7 @@ sequenceDiagram
 ```
 
 ### Get /generate-jwt
-La rotta restituisce un token Jwt, con algoritmo di firma: '_HS256_'. La chiave segreta per firmare il _JWT_ è presente nel file _.env_, non disponibile nella repository. Per funzionaere correttamente, dovranno essere inseriti nei _query parameters_ i seguenti:
+La rotta restituisce un token Jwt con algoritmo di firma: '_HS256_'. La chiave segreta per firmare il _JWT_ è presente nel file _.env_, non disponibile nella repository. Per funzionaere correttamente, dovranno essere inseriti nei _query parameters_ i seguenti:
 
 - **email**: Email dell'utente.
 - **type**: Tipo di utente: user o admin.
@@ -1017,7 +1015,7 @@ La rotta restituisce un token Jwt, con algoritmo di firma: '_HS256_'. La chiave 
   - **type**: Il tipo deve essere una stringa popolata solo da due possibili valori: '_USER_' oppure '_ADMIN_'.
   - **expiration**: Deve essere un numero intero positivo compreso tra 1 e 48.
 
-  Nel caso in cui, anche solo uno dei tre(3) parametri elencati dovesse essere non presente o scorretto, verrebbe generato l'errore: _IncorrectInputError_.
+  Nel caso in cui anche solo uno dei tre (3) parametri elencati dovesse essere non presente o non corretto, verrebbe generato l'errore: _IncorrectInputError_.
 
 
 
@@ -1068,7 +1066,7 @@ Response:
             "residual_tokens": 2000
         },
         {
-            "email": "francor@gmail.com",
+            "email": "giuseppeverdi@gmail.com",
             "residual_tokens": 150
         }
     ]
@@ -1120,7 +1118,7 @@ Response:
             "id": 2,
             "dataset_name": "test",
             "videos": ["4.mp4", "5.mp4", "6.mp4"],
-            "email": "francor@gmail.com",
+            "email": "giuseppeverdi@gmail.com",
             "createdAt": "2024-07-14T17:24:05.700Z",
             "updatedAt": "2024-07-14T17:24:05.700Z"
         }
@@ -1150,9 +1148,9 @@ Response:
         },
         {
             "user_id": 2,
-            "name": "Franco",
+            "name": "Giuseppe",
             "surname": "Verdi",
-            "email": "francor@gmail.com",
+            "email": "giuseppeverdi@gmail.com",
             "residual_tokens": 150
         }
     ]
@@ -1169,22 +1167,22 @@ Authorization: Bearer {token}
 ```
 ```json
 {
-    "name": "Agnese",
-    "surname": "Bruglia",
-    "email": "agnese.b@gmail.com",
-    "type": "ADMIN",
-    "residual_tokens": 500
+    "name": "Camillo",
+    "surname": "Benso",
+    "email": "contedicavour@gmail.com",
+    "type": "USER",
+    "residual_tokens": 200
 }
 ```
 Response: 
 ```json
 {
     "user_id": 3,
-    "name": "Agnese",
-    "surname": "Bruglia",
-    "email": "agnese.b@gmail.com",
-    "type": "ADMIN",
-    "residual_tokens": 500,
+    "name": "Camillo",
+    "surname": "Benso",
+    "email": "contedicavour@gmail.com",
+    "type": "USER",
+    "residual_tokens": 200,
     "updatedAt": "2024-07-14T17:36:57.943Z",
     "createdAt": "2024-07-14T17:36:57.943Z"
 }
@@ -1225,12 +1223,12 @@ Response:
     "data": [
         {
             "dataset_name": "prova",
-            "videos": [],
+            "videos":  ["1.mp4", "2.mp4", "3.mp4"],
             "email": "mariorossi@gmail.com"
         },
         {
             "dataset_name": "test",
-            "videos": [],
+            "videos":  ["4.mp4", "5.mp4", "6.mp4"]
             "email": "mariorossi@gmail.com"
         }
     ]
@@ -1266,7 +1264,7 @@ Request:
 Authorization: Bearer {token}
 ```
 ```params
-dataset_name = prova2
+dataset_name = prova
 ```
 ```json
 {
@@ -1411,6 +1409,24 @@ Response:
 }
 ```
 
+#### Create JWT 🔐
+```
+GET /generate-token
+```
+Request:
+```params
+email = contedicavour@gmail.com
+type = USER
+expiration = 14
+```
+Response: 
+```json
+{
+    "successo": true,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFnbmVzZS5iQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzIxMDUyMTgwLCJleHAiOjE3MjIyNjE3ODB9.C_C18xINCpbnYKwbegc8rPV0HsbWX_i1cuqlhQcuf7M"
+}
+```
+
 
 ## Startup
 
@@ -1449,7 +1465,7 @@ Inoltre, è possibile accedere ai servizi in questa maniera:
 -   Semplice ! Occorre eseguire i seguenti passaggi in ordine:
     1. Copia il contenuto del file '_entrypoint.sh_'.
     2. Cancella il file '_entrypoint.sh_'.
-    3. Nello stesso punto dove il file è stato cancellato, crea un nuovo file chiamato: '_entrypoint.sh_' ed incolla il contenuto precedentemente copiato.
+    3. Nello stesso punto dove il file è stato cancellato, crea un nuovo file chiamato: '_entrypoint.sh_' e incolla il contenuto precedentemente copiato.
 
 
 ## Autori e Contributi
@@ -1464,5 +1480,3 @@ Inoltre, è possibile accedere ai servizi in questa maniera:
     <td><progress value="50" max="100"></progress> 50%</td>
   </tr>
 </table>
-
-
