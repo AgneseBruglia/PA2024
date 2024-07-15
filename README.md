@@ -294,7 +294,7 @@ sequenceDiagram
 ```
 
 ### Put admin/recharge-tokens
-La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
+La rotta prende in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. I controlli effettuati nel _Middleware_ sono i seguenti:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -469,7 +469,16 @@ sequenceDiagram
 ```
 
 ### Post admin/create-user
-La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritorna in output l'utente precedentemente aggiunto. I controlli effettuati nel middleware sono:
+La rotta aggiunge un nuovo utente al database. Essa, prende in input nel _body_ della richiesta, i seguenti parametri:
+
+- **name**. 
+- **surname**.
+- **email**.
+- **tokens**: Crediti residui iniziali.
+- **type**: Tipologia di utente distinguibile tra '_USER_' o '_ADMIN_'.
+
+
+I controlli effettuati nel middleware sono:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo sulla presenza del payload header**: In caso di errore genera l'eccezione: _PayloadHeaderError_.
@@ -1384,9 +1393,16 @@ Response:
 
 Per eseguire il progeto, dopo avere eseguito la `clone` del progetto, in locale procedere nel seguente modo:
 
-1. Copiare il file di ambiente e apportare le modifiche, in particolare alle password
+1. Aprire la shell nella directory di progetto, ovvero dentro la cartella _/PA2024_.
+
+2. Copiare il file di ambiente e apportare le modifiche, in particolare alle password
+**Windows**
 ```
-cp .env.template .env
+copy <PERCORSO_FILE_\.env> 
+```   
+**Linux**
+```
+cp <PERCORSO_FILE_\.env> 
 ```
 2. Tramite Docker CLI eseguire il seguente comando:
 ```
@@ -1397,3 +1413,18 @@ Inoltre, è possibile accedere ai servizi in questa maniera:
 - `localhost:3100`: serve per accedere al servizio di generazione del jwt - rotta POST `\generate-token'
 - `localhost:5005`: serve per accedere al servizio per il conteggio del numero di token necessari per fare inferenza su un certo dataset - rotta POST `\cost'
 - `localhost:5000`: serve per accedere al servizio python per l'inferenza su un certo dataset con un certo modello - rotta POST `\inference'
+- `localhost:6379`: serve per accedere al servizio redis
+- `localhost:5432`: serve per accedere al servizio postgress.
+
+
+## Q & A
+
+1.  Cosa succede se non inserisco il file _.env_ ?
+-   Il file '_.env_', contiene passoword per la connessione al db e la firma dei token jwt, il non inserirlo comporterebbe malfunzionamenti del sistema nel suo complesso.
+
+2.  Durante la build del progetto, è stato sollevato un errore a causa del file: '_entrypoint.sh_', come faccio per risolvere?
+-   Semplice ! Occorre eseguire i seguenti passaggi in ordine:
+    1. Copia il contenuto del file '_entrypoint.sh_'.
+    2. Cancella il file '_entrypoint.sh_'.
+    3. Nello stesso punto dove il file è stato cancellato, crea un nuovo file chiamato: '_entrypoint.sh_' ed incolla il contenuto precedentemente copiato.
+
