@@ -963,9 +963,7 @@ sequenceDiagram
 ### Admin
 
 #### Get Tokens 🔐
-
 Routes:
-
 ```
 GET /admin/tokens
 ```
@@ -973,7 +971,6 @@ Request:
 ```
 Authorization: Bearer {token}
 ```
-
 Response: 
 ```json
 {
@@ -990,19 +987,19 @@ Response:
     ]
 }
 ```
+
 #### Recharge Tokens 🔐
 ```
-PUT /admin/recharge-tokens?email=mariorossi@gmail.com&tokens_to_charge=200
+PUT /admin/recharge-tokens
 ```
 Request:
 ```
 Authorization: Bearer {token}
 ```
 ```params
-email = "mariorossi@gmail.com"
+email = mariorossi@gmail.com
 tokens_to_charge = 200
 ```
-
 Response: 
 ```json
     {
@@ -1012,7 +1009,6 @@ Response:
 ```
 
 #### Get all Datasets 🔐
-
 ```
 GET /admin/dataset
 ```
@@ -1046,7 +1042,6 @@ Response:
 ```
 
 #### Get all users 🔐
-
 ```
 GET /admin/users
 ```
@@ -1078,7 +1073,6 @@ Response:
 ```
 
 #### Create user 🔐
-
 ```
 POST /admin/create-user
 ```
@@ -1086,7 +1080,6 @@ Request:
 ```
 Authorization: Bearer {token}
 ```
-
 ```json
 {
     "name": "Agnese",
@@ -1113,7 +1106,6 @@ Response:
 ### User
 
 #### Create dataset 🔐
-
 ```
 POST /create-dataset
 ```
@@ -1121,7 +1113,6 @@ Request:
 ```
 Authorization: Bearer {token}
 ```
-
 ```json
 {
     "dataset_name": "prova"
@@ -1133,7 +1124,6 @@ Response:
 ```
 
 #### Get dataset 🔐
-
 ```
 GET /dataset
 ```
@@ -1161,7 +1151,6 @@ Response:
 ```
 
 #### Update dataset 🔐
-
 ```
 PUT /modify-dataset
 ```
@@ -1181,13 +1170,159 @@ Response:
 }
 ```
 
+#### Insert videos into dataset 🔐
+```
+PUT /dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = prova2
+```
+```json
+{
+  "new_videos": [
+    "1.mp4",
+    "2.mp4",
+    "3.mp4",
+    "10.mp4"
+  ]
+}
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": "I video sono stati correttamente inseriti nel dataset"
+}
+```
 
+#### Delete dataset 🔐
+```
+DELETE /dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = prova
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": "Dataset rimosso correttamente dal DB."
+}
+```
 
+#### Inference 🔐
+```
+POST /inference
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = prova
+model_name = model.tflite
+```
+Response: 
+```json
+{
+    "job_id": "1"
+}
+```
 
+#### User jobs 🔐
+```
+GET /user-jobs
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+Response: 
+```json
+[
+    {
+        "process_id": "3",
+        "status": "active"
+    },
+    {
+        "process_id": "2",
+        "status": "completed",
+        "data": {
+            "status": 200,
+            "message": {
+                "/app/dataset_&_modelli/dataset/22.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/34.mp4": "Violento",
+                "/app/dataset_&_modelli/dataset/50.mp4": "Violento",
+                "/app/dataset_&_modelli/dataset/52.mp4": "Non Violento"
+            }
+        }
+    },
+    {
+        "process_id": "1",
+        "status": "completed",
+        "data": {
+            "status": 200,
+            "message": {
+                "/app/dataset_&_modelli/dataset/1.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/10.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/2.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/3.mp4": "Violento"
+            }
+        }
+    }
+]
+```
 
+#### Result 🔐
+```
+GET /result
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+id = 3
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": {
+        "status": 200,
+        "message": {
+            "/app/dataset_&_modelli/dataset/11.mp4": "Violento",
+            "/app/dataset_&_modelli/dataset/12.mp4": "Violento",
+            "/app/dataset_&_modelli/dataset/13.mp4": "Violento",
+            "/app/dataset_&_modelli/dataset/14.mp4": "Non Violento"
+        }
+    }
+}
+```
 
-
-
+#### Get tokens 🔐
+```
+GET /tokens
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": 132
+}
+```
 
 
 
