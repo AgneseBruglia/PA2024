@@ -86,7 +86,7 @@ graph TD;
     AppModel.ts --- redis
     AppController.ts --- postgress
     AppController.ts --- Server.py
-    AppController.ts --- AuthServer.py
+    AppController.ts --- AuthServer.ts
     AppController.ts --- Cost_services.py
 
 ```
