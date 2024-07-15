@@ -18,8 +18,31 @@
     <a href="#startup"><strong>Startup</strong></a> .
     <a href="#q--a"><strong>Api docs</strong></a> .
     <a href="#autori-e-contributi"><strong>Autori</strong></a> .
-  </p>
+ <p>Check the new <a href="https://optimalbits.github.io/bull/"><strong>Guide!</strong></p>
   <br/>
+  <p>
+    <a href="https://gitter.im/OptimalBits/bull">
+      <img src="https://badges.gitter.im/Join%20Chat.svg"/>
+    </a>
+    <a href="https://gitter.im/OptimalBits/bull">
+      <img src="https://img.shields.io/npm/dm/bull.svg?maxAge=2592000"/>
+    </a>
+    <a href="http://badge.fury.io/js/bull">
+      <img src="https://badge.fury.io/js/bull.svg"/>
+    </a>
+    <a href="https://coveralls.io/github/OptimalBits/bull?branch=master">
+      <img src="https://coveralls.io/repos/github/OptimalBits/bull/badge.svg?branch=master"/>
+    </a>
+    <a href="http://isitmaintained.com/project/OptimalBits/bull">
+      <img src="http://isitmaintained.com/badge/open/optimalbits/bull.svg"/>
+    </a>
+    <a href="http://isitmaintained.com/project/OptimalBits/bull">
+      <img src="http://isitmaintained.com/badge/resolution/optimalbits/bull.svg"/>
+    </a>
+        <a href="https://twitter.com/manast">
+      <img src="https://img.shields.io/twitter/follow/manast?label=Stay%20updated&style=social"/>
+    </a>
+  </p>
 </div>
 
 
