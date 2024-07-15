@@ -21,8 +21,8 @@
  <p>Check the new <a href="https://optimalbits.github.io/bull/"><strong>Guide!</strong></p>
   <br/>
   <p>
-    <a href="https://gitter.im/OptimalBits/bull">
-      <img src="https://badges.gitter.im/Join%20Chat.svg"/>
+    <a href="https://www.docker.com/">
+      <img src="https://img.shields.io/badge/just%20the%20message-8A2BE2"/>
     </a>
     <a href="https://gitter.im/OptimalBits/bull">
       <img src="https://img.shields.io/npm/dm/bull.svg?maxAge=2592000"/>
