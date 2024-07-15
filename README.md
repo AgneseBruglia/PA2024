@@ -18,7 +18,7 @@
     <a href="#startup"><strong>Startup</strong></a> .
     <a href="#q--a"><strong>Api docs</strong></a> .
     <a href="#autori-e-contributi"><strong>Autori</strong></a> .
- <p>Check the new <a href="https://optimalbits.github.io/bull/"><strong>Guide!</strong></p>
+ <p><strong>Tecnologie utilizzate: </strong></p>
   <br/>
   <p>
     <a href="https://www.docker.com/">
