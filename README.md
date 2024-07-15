@@ -52,7 +52,7 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto e ch
 
 
 ```mermaid
-graph LR;
+graph TB;
 
     subgraph Redis
     redis
