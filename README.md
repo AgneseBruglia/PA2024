@@ -265,7 +265,7 @@ sequenceDiagram
     actor Admin
     Server->>Middleware: checkAuthHeader()
     Middleware->>Server: result
-    Server->Middleware: checkJwt()
+    Server->>Middleware: checkJwt()
     Middleware->>Server: result
     Server->>Middleware: VerifyAndAuthenticate() 
     Middleware->>Server: result
@@ -550,7 +550,9 @@ sequenceDiagram
 ```
 
 ### PUT dataset/insert-videos
-La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. I controlli che vengono effettuati nel middleware sono i seguenti:
+La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. La rotta prende come _query parameters_  il '_dataset_name_' overo il nome del dataset dentro il quale si vuole aggiungere nuovi filmati e nel _body_ della richiesta, prende in input l'array di nuovi video: '_videos_', che dovranno confluire nel dataset.
+
+I controlli che vengono effettuati nel middleware sono i seguenti:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo sulla presenza del payload header**: In caso di errore genera l'eccezione: _PayloadHeaderError_.
@@ -699,7 +701,7 @@ sequenceDiagram
 ```
 
 ### Put modify-dataset
-La seguente rotta ha lo scopo di fornire all'utente la possibilità di modificare il nome del dataset ad esso associato. I controlli middleware effettuati sono: 
+La rotta prende in input, come _query parameters_, il nome del dataset da modificare: _dataset_name_ ed il nuovo nome: _new_dataset_name_ , effettuando la modifica.
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -839,7 +841,11 @@ sequenceDiagram
     alt Supera Middleware
         Server->>Redis: add_process
         Redis->>Server: result
-        Server->>User/Admin: response
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
     else Non supera Middleware
         Server->>User/Admin: errore
     end
@@ -847,7 +853,7 @@ sequenceDiagram
 ```
 
 ### Get result
-La rotta, prende come input nella query della richiesta, l'_id_ corrispondente al processo di inferenza effettuato dall'utene e di cui si vuole conoscere il risultato. Il middleware implementato per la richiesta è il seguente:
+La rotta, prende come input nella query della richiesta, l'_id_ corrispondente al processo di inferenza effettuato dall'utente e di cui si vuole conoscere il risultato. Il middleware implementato per la richiesta è il seguente:
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -895,7 +901,11 @@ sequenceDiagram
         Controller->>Redis: getJobs()
         Redis->>Controller: result
         Controller->>Server: result
-        Server->>User/Admin: response
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
     else Non supera Middleware
         Server->>User/Admin: errore
     end
@@ -951,12 +961,57 @@ sequenceDiagram
         Controller->>Redis: getState()
         Redis->>Controller: result
         Controller->>Server: result
-        Server->>User/Admin: response
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
     else Non supera Middleware
         Server->>User/Admin: errore
     end
 
 ```
+
+### Get /generate-jwt
+La rotta restituisce un token Jwt, con algoritmo di firma: '_HS256_'. La chiave segreta per firmare il _JWT_ è presente nel file _.env_, non disponibile nella repository. Per funzionaere correttamente, dovranno essere inseriti nei _query parameters_ i seguenti:
+
+- **email**: Email dell'utente.
+- **type**: Tipo di utente: user o admin.
+- **expiration**: Tempo di validità del token dal momento in cui viene generato. Si tenga presente che tale tempo, per comodità, è espresso in giorni.
+
+  E' stato implementato un controllo middleware sulla correttezza dei dati di input:
+
+  - **email**: Deve essere un email valida e lunga non più di 50 caratteri.
+  - **type**: Il tipo deve essere una stringa popolata solo da due possibili valori: '_USER_' oppure '_ADMIN_'.
+  - **expiration**: Deve essere un numero intero positivo compreso tra 1 e 48.
+
+  Nel caso in cui, anche solo uno dei tre(3) parametri elencati dovesse essere non presente o scorretto, verrebbe generato l'errore: _IncorrectInputError_.
+
+
+
+```mermaid
+sequenceDiagram
+    actor User/Admin
+
+    User/Admin->>Server: Get /generate-jwt
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result     
+
+    alt Supera Middleware
+        Server->>Controller: generateJwt()
+        Controller->>Server: result
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
+    else Non supera Middleware
+        Server->>User/Admin: errore
+    end
+
+```
+
 
 ## API Docs
 
