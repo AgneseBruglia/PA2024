@@ -2,7 +2,7 @@
 
 ## :dart: Obiettivo
 
-L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con modelli di Deep-Learning per il riconoscimento di scene di violenza in ambito edge.
+L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con [modelli di Deep-Learning](https://github.com/lucabellantee/Violence-Detection-for-edge-AI/edit/main/README.md) per il riconoscimento di scene di violenza in ambito edge. 
 
 
 ## Progettazione
@@ -1427,4 +1427,19 @@ Inoltre, è possibile accedere ai servizi in questa maniera:
     1. Copia il contenuto del file '_entrypoint.sh_'.
     2. Cancella il file '_entrypoint.sh_'.
     3. Nello stesso punto dove il file è stato cancellato, crea un nuovo file chiamato: '_entrypoint.sh_' ed incolla il contenuto precedentemente copiato.
+
+
+## Autori e Contributi
+
+<table>
+  <tr>
+    <td><a href="https://github.com/lucabellantee"><strong>Luca Bellante</strong></a></td>
+    <td><progress value="50" max="100"></progress> 50%</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/AgneseBruglia"><strong>Agnese Bruglia</strong></a></td>
+    <td><progress value="50" max="100"></progress> 50%</td>
+  </tr>
+</table>
+
 
