@@ -1,0 +1,724 @@
+{
+	"info": {
+		"_postman_id": "62b0554d-1e0f-465e-9cf9-1dd172babdec",
+		"name": "PA2024",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36690031",
+		"_collection_link": "https://galactic-crescent-291978.postman.co/workspace/Esame-PA2024~569e3daa-8b91-4aa2-a145-973f3e078de4/collection/36690031-62b0554d-1e0f-465e-9cf9-1dd172babdec?action=share&source=collection_link&creator=36690031"
+	},
+	"item": [
+		{
+			"name": "app",
+			"item": [
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "GetAllTokens",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmlvcm9zc2lAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzIxMDM4Mzk3LCJleHAiOjE3MjIyNDc5OTd9.ELSg2Gpun0m_Z98JFb7bEnkkp3ls3wOa9dWRNiUnywU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/admin/tokens",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"admin",
+										"tokens"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RechargeTokens",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmlvcm9zc2lAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzIxMDM4Mzk3LCJleHAiOjE3MjIyNDc5OTd9.ELSg2Gpun0m_Z98JFb7bEnkkp3ls3wOa9dWRNiUnywU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/admin/recharge-tokens?email=giuseppeverdi@gmail.com&tokens_to_charge=50",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"admin",
+										"recharge-tokens"
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "giuseppeverdi@gmail.com"
+										},
+										{
+											"key": "tokens_to_charge",
+											"value": "50"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAllDataset",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmlvcm9zc2lAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzIxMDM4Mzk3LCJleHAiOjE3MjIyNDc5OTd9.ELSg2Gpun0m_Z98JFb7bEnkkp3ls3wOa9dWRNiUnywU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/admin/dataset",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"admin",
+										"dataset"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAllUsers",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmlvcm9zc2lAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzIxMDM4Mzk3LCJleHAiOjE3MjIyNDc5OTd9.ELSg2Gpun0m_Z98JFb7bEnkkp3ls3wOa9dWRNiUnywU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/admin/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"admin",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmlvcm9zc2lAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzIxMDM4Mzk3LCJleHAiOjE3MjIyNDc5OTd9.ELSg2Gpun0m_Z98JFb7bEnkkp3ls3wOa9dWRNiUnywU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Camillo\",\n    \"surname\": \"Benso\",\n    \"email\": \"contedicavour@gmail.com\",\n    \"type\": \"USER\",\n    \"residual_tokens\": 200\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/admin/create-user",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"admin",
+										"create-user"
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "GetDatasets",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/dataset",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"dataset"
+									],
+									"query": [
+										{
+											"key": "dataset_name",
+											"value": "prova",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateDataset",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"dataset_name\": \"test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/create-dataset",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"create-dataset"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "InsertVideoIntoDataset",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"new_videos\": [\r\n    \"1.mp4\",\r\n    \"2.mp4\",\r\n    \"3.mp4\",\r\n    \"10.mp4\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/dataset/insert-videos?dataset_name=test",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"dataset",
+										"insert-videos"
+									],
+									"query": [
+										{
+											"key": "dataset_name",
+											"value": "test"
+										},
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetTokens",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/tokens",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"tokens"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateDataset",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/modify-dataset?dataset_name=test&new_dataset_name=prova",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"modify-dataset"
+									],
+									"query": [
+										{
+											"key": "dataset_name",
+											"value": "test"
+										},
+										{
+											"key": "new_dataset_name",
+											"value": "prova"
+										},
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Inference",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/inference?dataset_name=test&model_name=model.tflite",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"inference"
+									],
+									"query": [
+										{
+											"key": "dataset_name",
+											"value": "test"
+										},
+										{
+											"key": "model_name",
+											"value": "model.tflite"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Result",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/result?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"result"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserJobs",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/user-jobs",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"user-jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteDataset",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdpdXNlcHBldmVyZGlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjEwMzg1NTcsImV4cCI6MTcyMjI0ODE1N30.ISQfmGYx1Ov7YEY_u0x_feuWENMqTGXvM-oNOSeXHHo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/remove-dataset?dataset_name=test",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"remove-dataset"
+									],
+									"query": [
+										{
+											"key": "dataset_name",
+											"value": "test"
+										},
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CreateJWTToken",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3100/generate-token?email=giuseppeverdi@gmail.com&type=USER&expiration=14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3100",
+							"path": [
+								"generate-token"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "giuseppeverdi@gmail.com"
+								},
+								{
+									"key": "type",
+									"value": "USER"
+								},
+								{
+									"key": "expiration",
+									"value": "14"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "authentication-services",
+			"item": [
+				{
+					"name": "CreateJWTToken",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3100/generate-token?email=giuseppeverdi@gmail.com&type=USER&expiration=14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3100",
+							"path": [
+								"generate-token"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "giuseppeverdi@gmail.com"
+								},
+								{
+									"key": "type",
+									"value": "USER"
+								},
+								{
+									"key": "expiration",
+									"value": "14"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cost-services",
+			"item": [
+				{
+					"name": "Cost",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"video_paths\": [\r\n    \"/app/dataset_&_modelli/dataset/1.mp4\",\r\n    \"/app/dataset_&_modelli/dataset/2.mp4\",\r\n    \"/app/dataset_&_modelli/dataset/3.mp4\",\r\n    \"/app/dataset_&_modelli/dataset/4.mp4\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5005/cost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"cost"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "python-services",
+			"item": [
+				{
+					"name": "Inference",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"model_name\": \"model.tflite\",\r\n    \"videos\": [\r\n        \"/app/dataset_&_modelli/dataset/8.mp4\",\r\n        \"/app/dataset_&_modelli/dataset/2.mp4\",\r\n        \"/app/dataset_&_modelli/dataset/3.mp4\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/inference",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"inference"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
