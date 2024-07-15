@@ -52,7 +52,9 @@ L'infrastruttura `Docker` che si è implementata per realizzare il progetto e ch
 
 ```mermaid
 graph TD;
+
     subgraph App
+    style App fill:#f9f,stroke:#333,stroke-width:2px;
     Server.ts --- AppController.ts 
     AppController.ts 
     AppModel.ts 
@@ -60,10 +62,12 @@ graph TD;
     end
 
     subgraph Redis
+    style Redis fill:#f9f,stroke:#333,stroke-width:2px;
     redis
     end
 
     subgraph Authentication
+    style Authentication fill:#f9f,stroke:#333,stroke-width:2px;
     Server.ts --- AuthController.ts
     AuthController.ts 
     AuthModel.ts 
@@ -71,15 +75,18 @@ graph TD;
     end
 
     subgraph Inference
+    style Inference fill:#f9f,stroke:#333,stroke-width:2px;
     Server.py --- InfController.py
     InfController.py
     end
 
     subgraph Postgress
+    style Postgress fill:#f9f,stroke:#333,stroke-width:2px;
     postgress
     end
 
     subgraph Cost
+    style Cost fill:#f9f,stroke:#333,stroke-width:2px;
     Cost_services.py
     end
 
@@ -88,6 +95,9 @@ graph TD;
     AppController.ts --- Server.py
     AppController.ts --- redis
     AppController.ts --- Cost_services.py
+
+    %% Style lines
+    style Server.ts, AuthController.ts, InfController.py, AppModel.ts, Cost_services.py fill:#fff,stroke:#333,stroke-width:2px;
 
 ```
 
