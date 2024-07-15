@@ -1447,11 +1447,15 @@ Response:
 
 ## Startup
 
-Per eseguire il progeto, dopo avere eseguito la `clone` del progetto, in locale procedere nel seguente modo:
+Per eseguire il progetto procedere nel seguente modo:
 
-1. Aprire la shell nella directory di progetto, ovvero dentro la cartella _/PA2024_.
+1. Scaricare la repository da _GitHUb_ aprendo il terminale e digitando il seguente comando: 
+```
+git clone git@github.com:AgneseBruglia/PA2024.git
+```   
+2. Aprire la shell nella directory di progetto, ovvero dentro la cartella _/PA2024_.
 
-2. Copiare il file di ambiente e apportare le modifiche, in particolare alle password
+3. Copiare il file _.env_ delle variabili d'ambiente dentro la directory _PA2024_ a livello del file: _docker-compose.yml_.
 **Windows**
 ```
 copy <PERCORSO_FILE_\.env> 
@@ -1460,7 +1464,7 @@ copy <PERCORSO_FILE_\.env>
 ```
 cp <PERCORSO_FILE_\.env> 
 ```
-2. Tramite Docker CLI eseguire il seguente comando:
+4. Tramite Docker CLI eseguire il seguente comando:
 ```
 docker-compose up -d --build
 ```
