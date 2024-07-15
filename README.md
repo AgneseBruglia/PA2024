@@ -1325,13 +1325,6 @@ Response:
 ```
 
 
-
-### Altre Risorse
-
-Rotte analoghe si hanno per le altre risorse, tranne per alcune in cui non è prevista la rotta che implementa il verbo HTTP `DELETE`.
-La lista è disponibile all'interno della collection Postman.
-
-
 ## Startup
 
 Per eseguire il progeto, dopo avere eseguito la `clone` del progetto, in locale procedere nel seguente modo:
@@ -1344,8 +1337,8 @@ cp .env.template .env
 ```
 docker-compose up -d --build
 ```
-
-Così facendo si esegue il progetto, in questo modo è possibile accedere ai seguenti servizi:
-- `localhost:4200`: si accede al frontend dell'applicazione realizzata tramite angular
-- `localhost:3000`: è l'URL base per contattare le API e interrogare gli endpoint specificati nella sezione API Docs
-- `localhost:8081`: si accede a mongo express, un tool grafico per manipolare il database
+Inoltre, è possibile accedere ai servizi in questa maniera:
+- `localhost:3000`: è destinato alle chiamate API e all'interrogazione degli endpoint come descritto nella sezione 'API Docs'
+- `localhost:3100`: serve per accedere al servizio di generazione del jwt - rotta POST `\generate-token'
+- `localhost:5005`: serve per accedere al servizio per il conteggio del numero di token necessari per fare inferenza su un certo dataset - rotta POST `\cost'
+- `localhost:5000`: serve per accedere al servizio python per l'inferenza su un certo dataset con un certo modello - rotta POST `\inference'
