@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const secretKey = process.env.JWT_SECRET_KEY || '';
+const secretKey = process.env.JWT_SECRET_KEY as string;
 
 // Struttra dati per distinguere la tipologia di utente
 export enum typeOfUser {
