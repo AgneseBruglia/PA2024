@@ -22,25 +22,19 @@
   <br/>
   <p>
     <a href="https://www.docker.com/">
-      <img src="https://img.shields.io/badge/just%20the%20message-8A2BE2"/>
+      <img src="https://img.shields.io/badge/Docker-009edc"/>
     </a>
-    <a href="https://gitter.im/OptimalBits/bull">
-      <img src="https://img.shields.io/npm/dm/bull.svg?maxAge=2592000"/>
+    <a href="https://www.postgresql.org/">
+      <img src="https://img.shields.io/badge/PostgreSQL-009edc"/>
     </a>
-    <a href="http://badge.fury.io/js/bull">
-      <img src="https://badge.fury.io/js/bull.svg"/>
+    <a href="https://sequelize.org/">
+      <img src="https://img.shields.io/badge/Sequelize-009edc"/>
     </a>
-    <a href="https://coveralls.io/github/OptimalBits/bull?branch=master">
-      <img src="https://coveralls.io/repos/github/OptimalBits/bull/badge.svg?branch=master"/>
+    <a href="https://github.com/OptimalBits/bull">
+      <img src="https://img.shields.io/badge/Bull-009edc"/>
     </a>
-    <a href="http://isitmaintained.com/project/OptimalBits/bull">
-      <img src="http://isitmaintained.com/badge/open/optimalbits/bull.svg"/>
-    </a>
-    <a href="http://isitmaintained.com/project/OptimalBits/bull">
-      <img src="http://isitmaintained.com/badge/resolution/optimalbits/bull.svg"/>
-    </a>
-        <a href="https://twitter.com/manast">
-      <img src="https://img.shields.io/twitter/follow/manast?label=Stay%20updated&style=social"/>
+    <a href="https://www.tensorflow.org/">
+      <img src="https://img.shields.io/badge/TensorFlow-009edc"/>
     </a>
   </p>
 </div>
