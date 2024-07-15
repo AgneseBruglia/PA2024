@@ -70,6 +70,10 @@ graph TD;
     InfController.py
     end
 
+    subgraph Postgress
+    postgress
+    end
+
     subgraph App
     Server.ts --- AppController.ts 
     AppController.ts 
@@ -79,10 +83,6 @@ graph TD;
 
     subgraph Cost
     Cost_services.py
-    end
-
-    subgraph Postgress
-    postgress
     end
 
     AppModel.ts --- redis
