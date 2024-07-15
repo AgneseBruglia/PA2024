@@ -942,16 +942,17 @@ sequenceDiagram
     end
 
 ```
+
 ## API Docs
 
-### Clients
+### Admin
 
-#### Get All
+#### Get Tokens 🔐
 
 Routes:
 
 ```
-GET /clients
+GET /admin/tokens
 ```
 Request:
 ```
@@ -960,30 +961,23 @@ Authorization: Bearer {token}
 
 Response: 
 ```json
-[
-    {
-        "_id": "64a9241a89ceaecac3a5b609",
-        "firstName": "Mario",
-        "lastName": "Rossi",
-        "birthDate": "1990-01-01T00:00:00.000Z",
-        "fiscalCode": "ABCD1234E",
-        "vatNumber": "12345678901",
-        "address": "Montagana 123"
-    },
-    {
-        "_id": "64a9a5bf4891a8cd8a5c70d6",
-        "firstName": "Luigi",
-        "lastName": "Neri",
-        "birthDate": "1990-01-01T00:00:00.000Z",
-        "fiscalCode": "ERGDF34",
-        "vatNumber": "12345689021",
-        "address": "Andiamo a Mordor 123"
-    },
-]
+{
+"successo": true,
+    "data": [
+        {
+            "email": "mariorossi@gmail.com",
+            "residual_tokens": 2000
+        },
+        {
+            "email": "francor@gmail.com",
+            "residual_tokens": 150
+        }
+    ]
+}
 ```
-#### Get by ID
+#### Recharge Tokens 🔐
 ```
-GET /clients/:id
+PUT /admin/recharge-tokens?email=mariorossi@gmail.com&tokens_to_charge=200
 ```
 Request:
 ```
@@ -993,22 +987,15 @@ Authorization: Bearer {token}
 Response: 
 ```json
     {
-        "_id": "64a9241a89ceaecac3a5b609",
-        "firstName": "Mario",
-        "lastName": "Rossi",
-        "birthDate": "1990-01-01T00:00:00.000Z",
-        "fiscalCode": "ABCD1234E",
-        "vatNumber": "12345678901",
-        "address": "Montagana 123"
+    "successo": true,
+    "data": "Credito correttamente aggiornato."
     }
 ```
 
-#### Update Clients 🔐
-
-Per l'aggiornamento del cliente si era indecisi se utilizzare il metodo PUT o PATCH. Dato che le richieste verranno sempre fatte dal frontend si è deciso di utilizzare il metodo PUT, il quale prevede di specificare nel corpo della richiesta tutti i parametri anche quelli non modificati.
+#### Get all Datasets 🔐
 
 ```
-PUT /clients/:id
+GET /admin/dataset
 ```
 Request:
 ```
@@ -1016,34 +1003,101 @@ Authorization: Bearer {token}
 ```
 
 ```json
- {
-    "firstName": "Franco",
-    "lastName": "Rossi",
-    "birthDate": "1990-01-01T00:00:00.000Z",
-    "fiscalCode": "ABCD1234E",
-    "vatNumber": "12345678901",
-    "address": "Montagana 123"
-}
+
 ```
 Response: 
-```
-OK
+```json
+{
+    "successo": true,
+    "data": [
+        {
+            "id": 1,
+            "dataset_name": "prova",
+            "videos": ["1.mp4", "2.mp4", "3.mp4"],
+            "email": "mariorossi@gmail.com",
+            "createdAt": "2024-07-14T17:24:05.700Z",
+            "updatedAt": "2024-07-14T17:24:05.700Z"
+        },
+        {
+            "id": 2,
+            "dataset_name": "test",
+            "videos": ["4.mp4", "5.mp4", "6.mp4"],
+            "email": "francor@gmail.com",
+            "createdAt": "2024-07-14T17:24:05.700Z",
+            "updatedAt": "2024-07-14T17:24:05.700Z"
+        }
+    ]
+}
 ```
 
-#### Delete 🔐
+#### Get all users 🔐
 
-L'eliminazione di un cliente prevede solo il settaggio di un flag, questo per mantenere i dati all'interno del database.
 ```
-DELETE /clients/:id
+GET /admin/users
 ```
 Request:
 ```
 Authorization: Bearer {token}
 ```
 Response: 
+```json
+{
+    "successo": true,
+    "data": [
+        {
+            "user_id": 1,
+            "name": "Mario",
+            "surname": "Rossi",
+            "email": "mariorossi@gmail.com",
+            "residual_tokens": 200
+        },
+        {
+            "user_id": 2,
+            "name": "Franco",
+            "surname": "Verdi",
+            "email": "francor@gmail.com",
+            "residual_tokens": 150
+        }
+    ]
+}
 ```
-OK
+
+#### Create user 🔐
+
 ```
+POST /admin/create-user
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+
+```json
+{
+    "name": "Agnese",
+    "surname": "Bruglia",
+    "email": "agnese.b@gmail.com",
+    "type": "ADMIN",
+    "residual_tokens": 500
+}
+```
+Response: 
+```json
+{
+    "user_id": 3,
+    "name": "Agnese",
+    "surname": "Bruglia",
+    "email": "agnese.b@gmail.com",
+    "type": "ADMIN",
+    "residual_tokens": 500,
+    "updatedAt": "2024-07-14T17:36:57.943Z",
+    "createdAt": "2024-07-14T17:36:57.943Z"
+}
+```
+
+### User
+
+
 
 ### Altre Risorse
 
@@ -1068,5 +1122,3 @@ Così facendo si esegue il progetto, in questo modo è possibile accedere ai seg
 - `localhost:4200`: si accede al frontend dell'applicazione realizzata tramite angular
 - `localhost:3000`: è l'URL base per contattare le API e interrogare gli endpoint specificati nella sezione API Docs
 - `localhost:8081`: si accede a mongo express, un tool grafico per manipolare il database
-
-
