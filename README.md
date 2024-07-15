@@ -1112,10 +1112,10 @@ Response:
 
 ### User
 
-#### Create user 🔐
+#### Create dataset 🔐
 
 ```
-POST /admin/create-user
+POST /create-dataset
 ```
 Request:
 ```
@@ -1124,26 +1124,68 @@ Authorization: Bearer {token}
 
 ```json
 {
-    "name": "Agnese",
-    "surname": "Bruglia",
-    "email": "agnese.b@gmail.com",
-    "type": "ADMIN",
-    "residual_tokens": 500
+    "dataset_name": "prova"
 }
 ```
 Response: 
 ```json
+"prova"
+```
+
+#### Get dataset 🔐
+
+```
+GET /dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+Response: 
+```json
 {
-    "user_id": 3,
-    "name": "Agnese",
-    "surname": "Bruglia",
-    "email": "agnese.b@gmail.com",
-    "type": "ADMIN",
-    "residual_tokens": 500,
-    "updatedAt": "2024-07-14T17:36:57.943Z",
-    "createdAt": "2024-07-14T17:36:57.943Z"
+    "successo": true,
+    "data": [
+        {
+            "dataset_name": "prova",
+            "videos": [],
+            "email": "mariorossi@gmail.com"
+        },
+        {
+            "dataset_name": "test",
+            "videos": [],
+            "email": "mariorossi@gmail.com"
+        }
+    ]
 }
 ```
+
+#### Update dataset 🔐
+
+```
+PUT /modify-dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = test
+new_dataset_name = prova2
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": "Modifica del dataset avvenuta correttamente."
+}
+```
+
+
+
+
+
+
 
 
 
