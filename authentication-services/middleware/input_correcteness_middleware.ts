@@ -24,6 +24,15 @@ export const createTokensSchema = Joi.object({
     expiration: Joi.number().integer().min(1).max(48).required()
 });
 
+/**
+ * Middleware 'validateSchema'
+ * 
+ * Lambda function con lo scopo di validare la correttezza dell'input passato alla rotta 
+ * 
+ * @param schema Schema da validare
+ * @param source Sorgente da dove prelevare l'input: body o query
+ * @param includeEmail Variabile booleana per tracciare indirizzo email, utile per il meccanismo di visione isolata(per utente) della coda
+ */
 export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | 'query') => async (req: any, res: any, next: any): Promise<void> => {
     const data = source === 'body' ? req.body : req.query;
     try {

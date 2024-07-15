@@ -65,9 +65,6 @@ export const generateJwtSchema = Joi.object({
     expiration: Joi.number().integer().positive().min(1).max(48).required()
 });
 
-
-
-
 /**
  * Middleware 'validateSchema'
  * 
@@ -83,7 +80,6 @@ export const validateSchema = (schema: Joi.ObjectSchema<any>, source: 'body' | '
     if (includeEmail) {
         email = req.decodeJwt.email;
     }
-
     try {
         await schema.validateAsync(data);
         next();

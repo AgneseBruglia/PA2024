@@ -47,6 +47,14 @@ export enum EnumErrorAuth {
     IncorrectInputError
 }
 
+/**
+ * Funzione 'getError'
+ * 
+ * Funzione per creare l'istanza della classe corrispondente
+ * all'errore che si è verificato.
+ * 
+ * @param type Tipo di errore che si è verificato
+ */
 export function getError(type: EnumErrorAuth): IErrorObj {
     let val: IErrorObj | null = null;
     switch (type) {

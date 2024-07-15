@@ -12,7 +12,6 @@ const redisPort = process.env.REDIS_PORT || 6379;
 export const completedJobResults: CompletedJobMap = {};
 export const queue = new Queue('queue', { redis: { port: redisPort, host: redisHost } });
 
-
 /**
  * Implementazione della coda
  */
