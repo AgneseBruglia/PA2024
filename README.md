@@ -2,7 +2,7 @@
 
 ## :dart: Obiettivo
 
-L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con i modelli di Deep-Learning realizzati durante l'anno accademico 2023/2024. 
+L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con [modelli di Deep-Learning](https://github.com/lucabellantee/Violence-Detection-for-edge-AI/edit/main/README.md) per il riconoscimento di scene di violenza in ambito edge. 
 
 
 ## Progettazione
@@ -265,7 +265,7 @@ sequenceDiagram
     actor Admin
     Server->>Middleware: checkAuthHeader()
     Middleware->>Server: result
-    Server->Middleware: checkJwt()
+    Server->>Middleware: checkJwt()
     Middleware->>Server: result
     Server->>Middleware: VerifyAndAuthenticate() 
     Middleware->>Server: result
@@ -294,7 +294,7 @@ sequenceDiagram
 ```
 
 ### Put admin/recharge-tokens
-La rotta ha lo scopo di prendere in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. Restituisce in output un messaggio di buona riuscita oppure l'errore sollevato dal Middleware e/o Controller. I controlli effettuati nel _Middleware_ sono i seguenti:
+La rotta prende in input, come _query parameters_: _email_ e _tokens_to_charge_ da aggiungere all'utente. I controlli effettuati nel _Middleware_ sono i seguenti:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -469,7 +469,16 @@ sequenceDiagram
 ```
 
 ### Post admin/create-user
-La rotta, prende in input un nuovo utente. Aggiunge l'utente al database e ritorna in output l'utente precedentemente aggiunto. I controlli effettuati nel middleware sono:
+La rotta aggiunge un nuovo utente al database. Essa, prende in input nel _body_ della richiesta, i seguenti parametri:
+
+- **name**. 
+- **surname**.
+- **email**.
+- **tokens**: Crediti residui iniziali.
+- **type**: Tipologia di utente distinguibile tra '_USER_' o '_ADMIN_'.
+
+
+I controlli effettuati nel middleware sono:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo sulla presenza del payload header**: In caso di errore genera l'eccezione: _PayloadHeaderError_.
@@ -550,7 +559,9 @@ sequenceDiagram
 ```
 
 ### PUT dataset/insert-videos
-La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. I controlli che vengono effettuati nel middleware sono i seguenti:
+La rotta modifica lo stato della tupla della tabella _Dataset_ in Postgress aggiungendo nuovi video. La rotta prende come _query parameters_  il '_dataset_name_' overo il nome del dataset dentro il quale si vuole aggiungere nuovi filmati e nel _body_ della richiesta, prende in input l'array di nuovi video: '_videos_', che dovranno confluire nel dataset.
+
+I controlli che vengono effettuati nel middleware sono i seguenti:
 
 - **Controllo su presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo sulla presenza del payload header**: In caso di errore genera l'eccezione: _PayloadHeaderError_.
@@ -699,7 +710,7 @@ sequenceDiagram
 ```
 
 ### Put modify-dataset
-La seguente rotta ha lo scopo di fornire all'utente la possibilità di modificare il nome del dataset ad esso associato. I controlli middleware effettuati sono: 
+La rotta prende in input, come _query parameters_, il nome del dataset da modificare: _dataset_name_ ed il nuovo nome: _new_dataset_name_ , effettuando la modifica.
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -839,7 +850,11 @@ sequenceDiagram
     alt Supera Middleware
         Server->>Redis: add_process
         Redis->>Server: result
-        Server->>User/Admin: response
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
     else Non supera Middleware
         Server->>User/Admin: errore
     end
@@ -847,7 +862,7 @@ sequenceDiagram
 ```
 
 ### Get result
-La rotta, prende come input nella query della richiesta, l'_id_ corrispondente al processo di inferenza effettuato dall'utene e di cui si vuole conoscere il risultato. Il middleware implementato per la richiesta è il seguente:
+La rotta, prende come input nella query della richiesta, l'_id_ corrispondente al processo di inferenza effettuato dall'utente e di cui si vuole conoscere il risultato. Il middleware implementato per la richiesta è il seguente:
 
 - **Controllo presenza di _AuthenticationHeader_**: In caso di errore lancia opportuna eccezione: _AuthHeaderError_.
 - **Controllo su presenza del _Jwt_**: In caso di errore lancia opportuna eccezione: _NoJwtInTheHeaderError_.
@@ -895,7 +910,11 @@ sequenceDiagram
         Controller->>Redis: getJobs()
         Redis->>Controller: result
         Controller->>Server: result
-        Server->>User/Admin: response
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
     else Non supera Middleware
         Server->>User/Admin: errore
     end
@@ -951,21 +970,64 @@ sequenceDiagram
         Controller->>Redis: getState()
         Redis->>Controller: result
         Controller->>Server: result
-        Server->>User/Admin: response
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
     else Non supera Middleware
         Server->>User/Admin: errore
     end
 
 ```
 
+### Get /generate-jwt
+La rotta restituisce un token Jwt, con algoritmo di firma: '_HS256_'. La chiave segreta per firmare il _JWT_ è presente nel file _.env_, non disponibile nella repository. Per funzionaere correttamente, dovranno essere inseriti nei _query parameters_ i seguenti:
+
+- **email**: Email dell'utente.
+- **type**: Tipo di utente: user o admin.
+- **expiration**: Tempo di validità del token dal momento in cui viene generato. Si tenga presente che tale tempo, per comodità, è espresso in giorni.
+
+  E' stato implementato un controllo middleware sulla correttezza dei dati di input:
+
+  - **email**: Deve essere un email valida e lunga non più di 50 caratteri.
+  - **type**: Il tipo deve essere una stringa popolata solo da due possibili valori: '_USER_' oppure '_ADMIN_'.
+  - **expiration**: Deve essere un numero intero positivo compreso tra 1 e 48.
+
+  Nel caso in cui, anche solo uno dei tre(3) parametri elencati dovesse essere non presente o scorretto, verrebbe generato l'errore: _IncorrectInputError_.
+
+
+
+```mermaid
+sequenceDiagram
+    actor User/Admin
+
+    User/Admin->>Server: Get /generate-jwt
+
+    Server->>Middleware: validateSchema()
+    Middleware->>Server: result     
+
+    alt Supera Middleware
+        Server->>Controller: generateJwt()
+        Controller->>Server: result
+        alt Il controller non genera eccezione
+             Server->>User/Admin: response
+        else Il controller genera eccezione
+             Server->>User/Admin: errore
+        end 
+    else Non supera Middleware
+        Server->>User/Admin: errore
+    end
+
+```
+
+
 ## API Docs
 
 ### Admin
 
 #### Get Tokens 🔐
-
 Routes:
-
 ```
 GET /admin/tokens
 ```
@@ -973,7 +1035,6 @@ Request:
 ```
 Authorization: Bearer {token}
 ```
-
 Response: 
 ```json
 {
@@ -990,19 +1051,19 @@ Response:
     ]
 }
 ```
+
 #### Recharge Tokens 🔐
 ```
-PUT /admin/recharge-tokens?email=mariorossi@gmail.com&tokens_to_charge=200
+PUT /admin/recharge-tokens
 ```
 Request:
 ```
 Authorization: Bearer {token}
 ```
 ```params
-email = "mariorossi@gmail.com"
+email = mariorossi@gmail.com
 tokens_to_charge = 200
 ```
-
 Response: 
 ```json
     {
@@ -1012,7 +1073,6 @@ Response:
 ```
 
 #### Get all Datasets 🔐
-
 ```
 GET /admin/dataset
 ```
@@ -1046,7 +1106,6 @@ Response:
 ```
 
 #### Get all users 🔐
-
 ```
 GET /admin/users
 ```
@@ -1078,7 +1137,6 @@ Response:
 ```
 
 #### Create user 🔐
-
 ```
 POST /admin/create-user
 ```
@@ -1086,7 +1144,6 @@ Request:
 ```
 Authorization: Bearer {token}
 ```
-
 ```json
 {
     "name": "Agnese",
@@ -1112,63 +1169,277 @@ Response:
 
 ### User
 
-#### Create user 🔐
-
+#### Create dataset 🔐
 ```
-POST /admin/create-user
+POST /create-dataset
 ```
 Request:
 ```
 Authorization: Bearer {token}
 ```
-
 ```json
 {
-    "name": "Agnese",
-    "surname": "Bruglia",
-    "email": "agnese.b@gmail.com",
-    "type": "ADMIN",
-    "residual_tokens": 500
+    "dataset_name": "prova"
+}
+```
+Response: 
+```json
+"prova"
+```
+
+#### Get dataset 🔐
+```
+GET /dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": [
+        {
+            "dataset_name": "prova",
+            "videos": [],
+            "email": "mariorossi@gmail.com"
+        },
+        {
+            "dataset_name": "test",
+            "videos": [],
+            "email": "mariorossi@gmail.com"
+        }
+    ]
+}
+```
+
+#### Update dataset 🔐
+```
+PUT /modify-dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = test
+new_dataset_name = prova2
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": "Modifica del dataset avvenuta correttamente."
+}
+```
+
+#### Insert videos into dataset 🔐
+```
+PUT /dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = prova2
+```
+```json
+{
+  "new_videos": [
+    "1.mp4",
+    "2.mp4",
+    "3.mp4",
+    "10.mp4"
+  ]
 }
 ```
 Response: 
 ```json
 {
-    "user_id": 3,
-    "name": "Agnese",
-    "surname": "Bruglia",
-    "email": "agnese.b@gmail.com",
-    "type": "ADMIN",
-    "residual_tokens": 500,
-    "updatedAt": "2024-07-14T17:36:57.943Z",
-    "createdAt": "2024-07-14T17:36:57.943Z"
+    "successo": true,
+    "data": "I video sono stati correttamente inseriti nel dataset"
 }
 ```
 
+#### Delete dataset 🔐
+```
+DELETE /dataset
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = prova
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": "Dataset rimosso correttamente dal DB."
+}
+```
 
+#### Inference 🔐
+```
+POST /inference
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+dataset_name = prova
+model_name = model.tflite
+```
+Response: 
+```json
+{
+    "job_id": "1"
+}
+```
 
+#### User jobs 🔐
+```
+GET /user-jobs
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+Response: 
+```json
+[
+    {
+        "process_id": "3",
+        "status": "active"
+    },
+    {
+        "process_id": "2",
+        "status": "completed",
+        "data": {
+            "status": 200,
+            "message": {
+                "/app/dataset_&_modelli/dataset/22.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/34.mp4": "Violento",
+                "/app/dataset_&_modelli/dataset/50.mp4": "Violento",
+                "/app/dataset_&_modelli/dataset/52.mp4": "Non Violento"
+            }
+        }
+    },
+    {
+        "process_id": "1",
+        "status": "completed",
+        "data": {
+            "status": 200,
+            "message": {
+                "/app/dataset_&_modelli/dataset/1.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/10.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/2.mp4": "Non Violento",
+                "/app/dataset_&_modelli/dataset/3.mp4": "Violento"
+            }
+        }
+    }
+]
+```
 
+#### Result 🔐
+```
+GET /result
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+```params
+id = 3
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": {
+        "status": 200,
+        "message": {
+            "/app/dataset_&_modelli/dataset/11.mp4": "Violento",
+            "/app/dataset_&_modelli/dataset/12.mp4": "Violento",
+            "/app/dataset_&_modelli/dataset/13.mp4": "Violento",
+            "/app/dataset_&_modelli/dataset/14.mp4": "Non Violento"
+        }
+    }
+}
+```
 
-### Altre Risorse
-
-Rotte analoghe si hanno per le altre risorse, tranne per alcune in cui non è prevista la rotta che implementa il verbo HTTP `DELETE`.
-La lista è disponibile all'interno della collection Postman.
+#### Get tokens 🔐
+```
+GET /tokens
+```
+Request:
+```
+Authorization: Bearer {token}
+```
+Response: 
+```json
+{
+    "successo": true,
+    "data": 132
+}
+```
 
 
 ## Startup
 
 Per eseguire il progeto, dopo avere eseguito la `clone` del progetto, in locale procedere nel seguente modo:
 
-1. Copiare il file di ambiente e apportare le modifiche, in particolare alle password
+1. Aprire la shell nella directory di progetto, ovvero dentro la cartella _/PA2024_.
+
+2. Copiare il file di ambiente e apportare le modifiche, in particolare alle password
+**Windows**
 ```
-cp .env.template .env
+copy <PERCORSO_FILE_\.env> 
+```   
+**Linux**
+```
+cp <PERCORSO_FILE_\.env> 
 ```
 2. Tramite Docker CLI eseguire il seguente comando:
 ```
 docker-compose up -d --build
 ```
+Inoltre, è possibile accedere ai servizi in questa maniera:
+- `localhost:3000`: è destinato alle chiamate API e all'interrogazione degli endpoint come descritto nella sezione 'API Docs'
+- `localhost:3100`: serve per accedere al servizio di generazione del jwt - rotta POST `\generate-token'
+- `localhost:5005`: serve per accedere al servizio per il conteggio del numero di token necessari per fare inferenza su un certo dataset - rotta POST `\cost'
+- `localhost:5000`: serve per accedere al servizio python per l'inferenza su un certo dataset con un certo modello - rotta POST `\inference'
+- `localhost:6379`: serve per accedere al servizio redis
+- `localhost:5432`: serve per accedere al servizio postgress.
 
-Così facendo si esegue il progetto, in questo modo è possibile accedere ai seguenti servizi:
-- `localhost:4200`: si accede al frontend dell'applicazione realizzata tramite angular
-- `localhost:3000`: è l'URL base per contattare le API e interrogare gli endpoint specificati nella sezione API Docs
-- `localhost:8081`: si accede a mongo express, un tool grafico per manipolare il database
+
+## Q & A
+
+1.  Cosa succede se non inserisco il file _.env_ ?
+-   Il file '_.env_', contiene passoword per la connessione al db e la firma dei token jwt, il non inserirlo comporterebbe malfunzionamenti del sistema nel suo complesso.
+
+2.  Durante la build del progetto, è stato sollevato un errore a causa del file: '_entrypoint.sh_', come faccio per risolvere?
+-   Semplice ! Occorre eseguire i seguenti passaggi in ordine:
+    1. Copia il contenuto del file '_entrypoint.sh_'.
+    2. Cancella il file '_entrypoint.sh_'.
+    3. Nello stesso punto dove il file è stato cancellato, crea un nuovo file chiamato: '_entrypoint.sh_' ed incolla il contenuto precedentemente copiato.
+
+
+## Autori e Contributi
+
+<table>
+  <tr>
+    <td><a href="https://github.com/lucabellantee"><strong>Luca Bellante</strong></a></td>
+    <td><progress value="50" max="100"></progress> 50%</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/AgneseBruglia"><strong>Agnese Bruglia</strong></a></td>
+    <td><progress value="50" max="100"></progress> 50%</td>
+  </tr>
+</table>
+
+
