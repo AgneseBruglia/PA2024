@@ -71,7 +71,8 @@ graph TD;
     end
 
     subgraph App
-    Server.ts --- AppController.ts 
+    Server.ts --- AppController.ts
+    Server.ts
     AppController.ts 
     AppModel.ts 
     AppController.ts --- AppModel.ts
@@ -88,7 +89,6 @@ graph TD;
     AppModel.ts --- redis
     AppController.ts --- postgress
     AppController.ts --- Server.py
-    AppController.ts --- redis
     AppController.ts --- Cost_services.py
 
 ```
