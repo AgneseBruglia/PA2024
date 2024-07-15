@@ -1,5 +1,28 @@
 # Progetto PA & CVDL 23/24
 
+<div align="center">
+  <br/>
+  <img src="./img/logo_PA2024.png" width="300" />
+  <br/>
+  <br/>
+  <p>
+    L'AI non è mai stata così semplice... Fino ad ora ! <br/>
+    Microservizi per la gestione efficiente di un modello di Deep Learning.
+  </p>
+  <br/>
+  <p>
+    <a href="##Obiettivo"><strong>Obiettivo</strong></a> ·
+    <a href="##Progettazione"><strong>Progettazione</strong></a> .
+    <a href="##Rotte"><strong>Rotte</strong></a> .
+    <a href="##API Docs"><strong>Api docs</strong></a> .
+    <a href="##Startup"><strong>Startup</strong></a> .
+    <a href="##Q &amp A"><strong>Api docs</strong></a> .
+    <a href="##Autori e Contributi"><strong>Autori</strong></a> .
+  </p>
+  <br/>
+</div>
+
+
 ## :dart: Obiettivo
 
 L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con [modelli di Deep-Learning](https://github.com/lucabellantee/Violence-Detection-for-edge-AI/edit/main/README.md) per il riconoscimento di scene di violenza in ambito edge. 
