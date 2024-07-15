@@ -65,16 +65,16 @@ graph TD;
     AuthController.ts --- AuthModel.ts
     end
 
+    subgraph Inference
+    Server.py --- InfController.py
+    InfController.py
+    end
+
     subgraph App
     Server.ts --- AppController.ts 
     AppController.ts 
     AppModel.ts 
     AppController.ts --- AppModel.ts
-    end
-
-    subgraph Inference
-    Server.py --- InfController.py
-    InfController.py
     end
 
     subgraph Postgress
