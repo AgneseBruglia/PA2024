@@ -1426,7 +1426,7 @@ Response:
 }
 ```
 
-#### Create JWT 🔐
+#### Create JWT
 ```
 GET /generate-token
 ```
