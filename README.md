@@ -59,7 +59,7 @@ graph TD;
     end
 
     subgraph Authentication
-    Server.ts --- AuthController.ts
+    AuthServer.ts --- AuthController.ts
     AuthController.ts 
     AuthModel.ts 
     AuthController.ts --- AuthModel.ts
@@ -86,6 +86,7 @@ graph TD;
     AppModel.ts --- redis
     AppController.ts --- postgress
     AppController.ts --- Server.py
+    AppController.ts --- AuthServer.py
     AppController.ts --- Cost_services.py
 
 ```
