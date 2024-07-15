@@ -2,7 +2,7 @@
 
 ## :dart: Obiettivo
 
-L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con i modelli di Deep-Learning realizzati durante l'anno accademico 2023/2024. 
+L'obiettivo del progetto è quello di realizzare microservizi in _TypeScript_ allo scopo di interagire con modelli di Deep-Learning per il riconoscimento di scene di violenza in ambito edge.
 
 
 ## Progettazione
