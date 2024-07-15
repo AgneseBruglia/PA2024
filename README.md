@@ -1426,7 +1426,7 @@ Response:
 }
 ```
 
-#### Create JWT 🔐
+#### Create JWT
 ```
 GET /generate-token
 ```
@@ -1475,8 +1475,8 @@ Inoltre, è possibile accedere ai servizi in questa maniera:
 
 ## Q & A
 
-1.  Cosa succede se non inserisco il file _.env_ ?
--   Il file '_.env_', contiene passoword per la connessione al db e la firma dei token jwt, il non inserirlo comporterebbe malfunzionamenti del sistema nel suo complesso.
+1.  Cosa succede se non inserisco il file _.env_ o lo inserisco ma nella posizione sbagliata?
+-   Il file '_.env_', contiene le password per la connessione al db e la firma dei token jwt, il non inserirlo o inserirlo in maniera errata, comporterebbe malfunzionamenti del sistema nel suo complesso.
 
 2.  Durante la build del progetto, è stato sollevato un errore a causa del file: '_entrypoint.sh_', come faccio per risolvere?
 -   Semplice ! Occorre eseguire i seguenti passaggi in ordine:
